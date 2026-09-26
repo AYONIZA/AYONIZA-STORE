@@ -164,25 +164,220 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') closeCart();
   });
 
-  /* Checkout via WhatsApp */
-  checkoutBtn?.addEventListener('click', () => {
-    if (cart.length === 0) return;
+  /* ---------- Checkout modal (delivery details + payment step) ---------- */
+  const WA_NUMBER = WHATSAPP_NUMBER;
+  const STORAGE_KEY = 'ayonizaCustomerInfo';
 
-    const lines = cart.map(item =>
+  const checkoutOverlay = document.getElementById('checkoutOverlay');
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutClose = document.getElementById('checkoutClose');
+  const checkoutBack = document.getElementById('checkoutBack');
+  const checkoutTitle = document.getElementById('checkoutTitle');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const checkoutPaymentStep = document.getElementById('checkoutPaymentStep');
+  const orderSummaryEl = document.getElementById('orderSummary');
+  const orderTotalEl = document.getElementById('orderTotal');
+  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const saveInfoCheckbox = document.getElementById('saveInfo');
+
+  let checkoutItems = []; // items being purchased in this checkout flow
+
+  function loadSavedInfo() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function prefillForm() {
+    const saved = loadSavedInfo();
+    if (!saved) return;
+    checkoutForm.custName.value = saved.name || '';
+    checkoutForm.custMobile.value = saved.mobile || '';
+    checkoutForm.custAddress.value = saved.address || '';
+    checkoutForm.custLandmark.value = saved.landmark || '';
+    checkoutForm.custCity.value = saved.city || '';
+    checkoutForm.custState.value = saved.state || '';
+    checkoutForm.custPin.value = saved.pin || '';
+    checkoutForm.custCountry.value = saved.country || 'India';
+    saveInfoCheckbox.checked = true;
+  }
+
+  function openCheckout(items) {
+    if (!items || items.length === 0) return;
+    checkoutItems = items;
+    checkoutForm.hidden = false;
+    checkoutPaymentStep.hidden = true;
+    checkoutBack.hidden = true;
+    checkoutTitle.textContent = 'Delivery Details';
+    prefillForm();
+    closeCart();
+    checkoutOverlay.classList.add('active');
+    checkoutModal.classList.add('open');
+    checkoutModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeCheckout() {
+    checkoutOverlay.classList.remove('active');
+    checkoutModal.classList.remove('open');
+    checkoutModal.setAttribute('aria-hidden', 'true');
+  }
+
+  const UPI_ID = '9589790094-2@ybl';
+  const upiCopyBtn = document.getElementById('upiCopyBtn');
+  const upiPayLink = document.getElementById('upiPayLink');
+
+  upiCopyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(UPI_ID);
+    } catch {
+      // Fallback for browsers without clipboard API access
+      const temp = document.createElement('textarea');
+      temp.value = UPI_ID;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+    }
+    upiCopyBtn.textContent = 'Copied!';
+    upiCopyBtn.classList.add('copied');
+    setTimeout(() => {
+      upiCopyBtn.textContent = 'Copy';
+      upiCopyBtn.classList.remove('copied');
+    }, 1800);
+  });
+
+  function renderOrderSummary() {
+    orderSummaryEl.innerHTML = '';
+    let total = 0;
+    checkoutItems.forEach(item => {
+      const lineTotal = item.price * item.qty;
+      total += lineTotal;
+      const row = document.createElement('div');
+      row.className = 'order-summary-row';
+      row.innerHTML = `<span>${item.name} x${item.qty}</span><span>${formatRupees(lineTotal)}</span>`;
+      orderSummaryEl.appendChild(row);
+    });
+    orderTotalEl.textContent = formatRupees(total);
+
+    if (upiPayLink) {
+      const upiParams = new URLSearchParams({
+        pa: UPI_ID,
+        pn: 'AYONIZA',
+        am: String(total),
+        cu: 'INR',
+        tn: 'AYONIZA order'
+      });
+      upiPayLink.href = `upi://pay?${upiParams.toString()}`;
+    }
+
+    return total;
+  }
+
+  checkoutForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!checkoutForm.checkValidity()) {
+      checkoutForm.reportValidity();
+      return;
+    }
+
+    const info = {
+      name: checkoutForm.custName.value.trim(),
+      mobile: checkoutForm.custMobile.value.trim(),
+      address: checkoutForm.custAddress.value.trim(),
+      landmark: checkoutForm.custLandmark.value.trim(),
+      city: checkoutForm.custCity.value.trim(),
+      state: checkoutForm.custState.value.trim(),
+      pin: checkoutForm.custPin.value.trim(),
+      country: checkoutForm.custCountry.value.trim()
+    };
+
+    if (saveInfoCheckbox.checked) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    checkoutForm.dataset.pendingInfo = JSON.stringify(info);
+
+    checkoutForm.hidden = true;
+    checkoutPaymentStep.hidden = false;
+    checkoutBack.hidden = false;
+    checkoutTitle.textContent = 'Payment';
+    renderOrderSummary();
+  });
+
+  checkoutBack.addEventListener('click', () => {
+    checkoutPaymentStep.hidden = true;
+    checkoutForm.hidden = false;
+    checkoutBack.hidden = true;
+    checkoutTitle.textContent = 'Delivery Details';
+  });
+
+  checkoutClose.addEventListener('click', closeCheckout);
+  checkoutOverlay.addEventListener('click', closeCheckout);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCheckout();
+  });
+
+  placeOrderBtn.addEventListener('click', () => {
+    const info = JSON.parse(checkoutForm.dataset.pendingInfo || '{}');
+    const total = checkoutItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+    const itemLines = checkoutItems.map(item =>
       `${item.name} x${item.qty} - ${formatRupees(item.price * item.qty)}`
     );
-    const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
     const message = [
-      'Hello AYONIZA, I would like to order:',
+      'Hello AYONIZA, I would like to place an order:',
       '',
-      ...lines,
+      ...itemLines,
       '',
-      `Total: ${formatRupees(total)}`
+      `Total: ${formatRupees(total)}`,
+      '',
+      'Delivery details:',
+      `Name: ${info.name}`,
+      `Mobile: ${info.mobile}`,
+      `Address: ${info.address}${info.landmark ? ', Landmark: ' + info.landmark : ''}`,
+      `City: ${info.city}`,
+      `State: ${info.state}`,
+      `PIN Code: ${info.pin}`,
+      `Country: ${info.country}`
     ].join('\n');
 
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener');
+
+    // If this checkout came from the cart, clear it after placing the order
+    if (checkoutItems === cart || checkoutItems.__fromCart) {
+      cart = [];
+      renderCart();
+    }
+
+    closeCheckout();
+  });
+
+  /* Cart drawer's "Proceed to Checkout" opens the delivery-details form with the full cart */
+  checkoutBtn?.addEventListener('click', () => {
+    if (cart.length === 0) return;
+    const items = cart.map(i => ({ ...i }));
+    items.__fromCart = true;
+    openCheckout(items);
+  });
+
+  /* Each product's "Buy Now" opens checkout directly with just that one item */
+  document.querySelectorAll('.buy-now-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openCheckout([{
+        id: btn.dataset.id,
+        name: btn.dataset.name,
+        price: Number(btn.dataset.price),
+        image: btn.dataset.image,
+        qty: 1
+      }]);
+    });
   });
 
   renderCart();
