@@ -60,7 +60,25 @@ footer{border-top:1px solid var(--border);background:#f7f0e5;padding:35px 8%;dis
 @media(max-width:700px){.products-grid{grid-template-columns:repeat(2,1fr)}.shop-section,.section{padding-left:5%;padding-right:5%}}
 @media(max-width:520px){.logo-text{font-size:27px}.nav-actions{width:100%;justify-content:center}.products-grid{grid-template-columns:1fr}.cart-item{grid-template-columns:65px 1fr auto}.cart-item img{width:65px;height:65px}}
 
-/* RETURN POLICY PAGE */
+/* ================= FOOTER LINKS ================= */
+
+.footer-links {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+}
+
+.footer-links a {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+.footer-links a:hover {
+    color: var(--dark-gold);
+}
+
+
+/* ================= POLICY PAGE ================= */
 
 .policy-page {
     padding: 80px 6%;
@@ -117,7 +135,13 @@ footer{border-top:1px solid var(--border);background:#f7f0e5;padding:35px 8%;dis
     margin-bottom: 8px;
 }
 
-@media (max-width: 600px) {
+
+@media (max-width: 700px) {
+
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 
     .policy-page {
         padding: 40px 5%;
