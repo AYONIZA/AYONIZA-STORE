@@ -43,26 +43,34 @@ h1 span{display:block;color:var(--dark-gold);font-style:italic}
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    width: 100%;
 }
 
 .add-cart-btn,
 .product-button {
     width: 100%;
     min-height: 42px;
+
     display: inline-flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+
     border: 1px solid var(--dark-gold);
+
     padding: 8px 10px;
+
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
+
     cursor: pointer;
     text-decoration: none;
+
+    font-family: inherit;
 }
 
 .add-cart-btn {
-    background: white;
+    background: #ffffff;
     color: var(--dark-gold);
 }
 
@@ -72,13 +80,12 @@ h1 span{display:block;color:var(--dark-gold);font-style:italic}
 
 .product-button {
     background: var(--dark-gold);
-    color: white;
+    color: #ffffff;
 }
 
 .product-button:hover {
     background: #6f511b;
 }
-
 .section{max-width:1300px;margin:auto;padding:100px 8%}.about{border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10%}.about h2{font-size:60px}.about-text{color:var(--gray)}.about-text p+p{margin-top:18px}
 .contact{text-align:center}.contact>p:not(.small-title){max-width:600px;margin:0 auto 25px;color:var(--gray)}.contact .buttons{justify-content:center}
 footer{border-top:1px solid var(--border);background:#f7f0e5;padding:35px 8%;display:flex;justify-content:space-between;align-items:center;color:var(--gray);font-size:12px}footer div{display:flex;flex-direction:column}footer strong{font-family:"Cormorant Garamond",serif;font-size:27px;color:var(--dark-gold);letter-spacing:4px}
