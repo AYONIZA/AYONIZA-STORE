@@ -39,8 +39,45 @@ h1 span{display:block;color:var(--dark-gold);font-style:italic}
 .product-image img{width:100%;height:100%;object-fit:cover;display:block}
 .product-info{padding:20px}.product-category{color:var(--gold);font-size:10px;letter-spacing:2px;margin-bottom:8px}.product-info h3{font-size:27px;margin-bottom:10px}.product-description{color:var(--gray);font-size:12px;min-height:55px}
 .product-bottom{margin-top:18px}.product-price{display:block;color:var(--dark-gold);font-size:20px;font-weight:600;margin-bottom:12px}.product-actions{display:flex}
-.add-cart-btn{width:100%;display:inline-flex;justify-content:center;align-items:center;min-height:42px;border:1px solid var(--dark-gold);padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;background:var(--dark-gold);color:#fff}
-.add-cart-btn:hover{background:#6f511b}
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.add-cart-btn,
+.product-button {
+    width: 100%;
+    min-height: 42px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--dark-gold);
+    padding: 8px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.add-cart-btn {
+    background: white;
+    color: var(--dark-gold);
+}
+
+.add-cart-btn:hover {
+    background: #f7efe2;
+}
+
+.product-button {
+    background: var(--dark-gold);
+    color: white;
+}
+
+.product-button:hover {
+    background: #6f511b;
+}
 
 .section{max-width:1300px;margin:auto;padding:100px 8%}.about{border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10%}.about h2{font-size:60px}.about-text{color:var(--gray)}.about-text p+p{margin-top:18px}
 .contact{text-align:center}.contact>p:not(.small-title){max-width:600px;margin:0 auto 25px;color:var(--gray)}.contact .buttons{justify-content:center}
@@ -157,6 +194,14 @@ footer{border-top:1px solid var(--border);background:#f7f0e5;padding:35px 8%;dis
 
     .policy-container h2 {
         font-size: 27px;
+    }
+
+}
+
+@media (max-width: 520px) {
+
+    .product-actions {
+        grid-template-columns: 1fr;
     }
 
 }
