@@ -1,6 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
   const WHATSAPP_NUMBER = '919203703177';
 
+  /* ---------- Discount badges ---------- */
+  document.querySelectorAll('.product-card').forEach(card => {
+    const discount = Number(card.dataset.discount || 0);
+    if (!discount) return;
+
+    const priceEl = card.querySelector('.product-price');
+    const image = card.querySelector('.product-image');
+    if (!priceEl || !image) return;
+
+    const currentPrice = Number(priceEl.dataset.price || priceEl.textContent.replace(/[^\d]/g, ''));
+    const originalPrice = Math.round(currentPrice / (1 - discount / 100));
+
+    const badge = document.createElement('span');
+    badge.className = 'discount-badge';
+    badge.textContent = `${discount}% OFF`;
+    image.appendChild(badge);
+
+    const group = document.createElement('span');
+    group.className = 'price-group';
+    const originalSpan = document.createElement('span');
+    originalSpan.className = 'price-original';
+    originalSpan.textContent = '₹' + originalPrice.toLocaleString('en-IN');
+
+    priceEl.replaceWith(group);
+    group.appendChild(originalSpan);
+    group.appendChild(priceEl);
+  });
+
   /* ---------- Mobile nav ---------- */
   const menuToggle = document.getElementById('menuToggle');
   const primaryNav = document.getElementById('primaryNav');
