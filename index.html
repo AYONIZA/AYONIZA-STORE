@@ -4,33 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AYONIZA | Purity with Grace</title>
+<meta name="description" content="AYONIZA — graceful, timeless jewellery for women and girls who love a modern touch of elegance.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="navbar">
   <a href="#home" class="logo-text">AYONIZA</a>
-  <nav>
+
+  <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="primaryNav">
     <a href="#home">Home</a>
     <a href="#shop">Shop</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
+
   <div class="nav-actions">
     <a class="instagram-btn" href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Instagram</a>
-    <button class="cart-btn" id="openCartBtn" type="button">🛒 Cart <span id="cartCount">0</span></button>
+    <button class="cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
+      🛒 Cart <span id="cartCount">0</span>
+    </button>
   </div>
 </header>
 
 <main>
+
 <section id="home" class="hero">
   <div class="hero-content">
-    <p class="small-title">ELEGANCE • SIMPLICITY • GRACE</p>
+    <p class="small-title">Elegance, simplicity, grace</p>
     <h1>Jewellery that feels <span>uniquely yours.</span></h1>
     <p class="hero-description">Discover graceful jewellery pieces designed to add a refined touch to every look.</p>
     <div class="buttons">
       <a class="btn primary" href="#shop">Shop Collection</a>
-      <a class="btn secondary" href="https://wa.me/919203703177" target="_blank">WhatsApp Us</a>
+      <a class="btn secondary" href="https://wa.me/919203703177" target="_blank" rel="noopener">WhatsApp Us</a>
     </div>
   </div>
   <div class="hero-logo">
@@ -40,12 +50,12 @@
 
 <section id="shop" class="shop-section">
   <div class="section-title">
-    <p class="small-title">AYONIZA COLLECTION</p>
+    <p class="small-title">Ayoniza collection</p>
     <h2>Shop Jewellery</h2>
     <p>Explore our jewellery collection and find a piece that matches your style.</p>
   </div>
 
-  <div class="category-buttons">
+  <div class="category-buttons" role="tablist" aria-label="Filter by category">
     <button class="category-btn active" data-category="all">All</button>
     <button class="category-btn" data-category="earrings">Earrings</button>
     <button class="category-btn" data-category="bracelets">Bracelets</button>
@@ -53,199 +63,114 @@
     <button class="category-btn" data-category="kamarbandh">Kamarbandh</button>
   </div>
 
-  <div class="products-grid">
+  <div class="products-grid" id="productsGrid">
+
     <article class="product-card" data-category="earrings">
-      <div class="product-image"><img src="assets/earring-1.jpg" alt="Pink Bloom Pearl Hoops"></div>
+      <div class="product-image"><img src="assets/earring-1.jpg" alt="Pink Bloom Pearl Hoops" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">EARRINGS</p>
+        <p class="product-category">Earrings</p>
         <h3>Pink Bloom Pearl Hoops</h3>
         <p class="product-description">Elegant floral-inspired hoops with pearl and soft pink detailing.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
-<div class="product-actions">
+          <div class="product-actions">
+            <button class="add-cart-btn" data-id="pink-bloom-pearl-hoops" data-name="Pink Bloom Pearl Hoops" data-price="199" data-image="assets/earring-1.jpg">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Bloom%20Pearl%20Hoops%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
-    <button
-        class="add-cart-btn"
-        data-id="pink-bloom-pearl-hoops"
-        data-name="Pink Bloom Pearl Hoops"
-        data-price="199"
-        data-image="assets/earring-1.jpg">
-        Add to Cart
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Bloom%20Pearl%20Hoops%20for%20%E2%82%B9199."
-        target="_blank"
-        rel="noopener">
-        Buy Now
-    </a>
-
-</div>
     <article class="product-card" data-category="earrings">
-      <div class="product-image"><img src="assets/earring-2.jpg" alt="Pink Tulip Bloom Earrings"></div>
+      <div class="product-image"><img src="assets/earring-2.jpg" alt="Pink Tulip Bloom Earrings" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">EARRINGS</p>
+        <p class="product-category">Earrings</p>
         <h3>Pink Tulip Bloom Earrings</h3>
         <p class="product-description">Beautiful floral earrings featuring soft pink petals and green leaf accents.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
           <div class="product-actions">
-
-    <button
-        class="add-cart-btn"
-        data-id="pink-tulip-bloom-earrings"
-        data-name="Pink Tulip Bloom Earrings"
-        data-price="199"
-        data-image="assets/earring-2.jpg">
-
-        Add to Cart
-
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Tulip%20Bloom%20Earrings%20for%20%E2%82%B9199."
-        target="_blank">
-
-        Buy Now
-
-    </a>
-
-</div>
+            <button class="add-cart-btn" data-id="pink-tulip-bloom-earrings" data-name="Pink Tulip Bloom Earrings" data-price="199" data-image="assets/earring-2.jpg">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Tulip%20Bloom%20Earrings%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
     <article class="product-card" data-category="earrings">
-      <div class="product-image"><img src="assets/earring-3.jpg" alt="Pearl Bow Crystal Studs"></div>
+      <div class="product-image"><img src="assets/earring-3.jpg" alt="Pearl Bow Crystal Studs" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">EARRINGS</p>
+        <p class="product-category">Earrings</p>
         <h3>Pearl Bow Crystal Studs</h3>
         <p class="product-description">Classic pearl drop earrings with a delicate sparkling bow design.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
           <div class="product-actions">
-
-    <button
-        class="add-cart-btn"
-        data-id="pearl-bow-crystal-studs"
-        data-name="Pearl Bow Crystal Studs"
-        data-price="199"
-        data-image="assets/earring-3.jpg">
-
-        Add to Cart
-
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pearl%20Bow%20Crystal%20Studs%20for%20%E2%82%B9199."
-        target="_blank">
-
-        Buy Now
-
-    </a>
-
-</div>
+            <button class="add-cart-btn" data-id="pearl-bow-crystal-studs" data-name="Pearl Bow Crystal Studs" data-price="199" data-image="assets/earring-3.jpg">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pearl%20Bow%20Crystal%20Studs%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
     <article class="product-card" data-category="earrings">
-      <div class="product-image"><img src="assets/earring-4.jpg" alt="Golden Leaf Pearl Earrings"></div>
+      <div class="product-image"><img src="assets/earring-4.jpg" alt="Golden Leaf Pearl Earrings" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">EARRINGS</p>
+        <p class="product-category">Earrings</p>
         <h3>Golden Leaf Pearl Earrings</h3>
         <p class="product-description">Elegant gold-toned leaf earrings finished with sparkling details and pearls.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
           <div class="product-actions">
-
-    <button
-        class="add-cart-btn"
-        data-id="golden-leaf-pearl-earrings"
-        data-name="Golden Leaf Pearl Earrings"
-        data-price="199"
-        data-image="assets/earring-4.jpg">
-
-        Add to Cart
-
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Leaf%20Pearl%20Earrings%20for%20%E2%82%B9199."
-        target="_blank">
-
-        Buy Now
-
-    </a>
-
-</div>
+            <button class="add-cart-btn" data-id="golden-leaf-pearl-earrings" data-name="Golden Leaf Pearl Earrings" data-price="199" data-image="assets/earring-4.jpg">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Leaf%20Pearl%20Earrings%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
     <article class="product-card" data-category="kamarbandh">
-      <div class="product-image"><img src="assets/kamarbandh-1.png" alt="Golden Star Charm Kamarbandh"></div>
+      <div class="product-image"><img src="assets/kamarbandh-1.png" alt="Golden Star Charm Kamarbandh" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">KAMARBANDH</p>
+        <p class="product-category">Kamarbandh</p>
         <h3>Golden Star Charm Kamarbandh</h3>
         <p class="product-description">Elegant layered kamarbandh with delicate star-shaped charms.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
           <div class="product-actions">
-
-    <button
-        class="add-cart-btn"
-        data-id="golden-star-charm-kamarbandh"
-        data-name="Golden Star Charm Kamarbandh"
-        data-price="199"
-        data-image="assets/kamarbandh-1.png">
-
-        Add to Cart
-
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199."
-        target="_blank">
-
-        Buy Now
-
-    </a>
-
-</div>
+            <button class="add-cart-btn" data-id="golden-star-charm-kamarbandh" data-name="Golden Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-1.png">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
     <article class="product-card" data-category="kamarbandh">
-      <div class="product-image"><img src="assets/kamarbandh-2.png" alt="Silver Star Charm Kamarbandh"></div>
+      <div class="product-image"><img src="assets/kamarbandh-2.png" alt="Silver Star Charm Kamarbandh" loading="lazy"></div>
       <div class="product-info">
-        <p class="product-category">KAMARBANDH</p>
+        <p class="product-category">Kamarbandh</p>
         <h3>Silver Star Charm Kamarbandh</h3>
         <p class="product-description">Delicate silver-tone kamarbandh featuring tiny star charms.</p>
         <div class="product-bottom">
           <span class="product-price">₹199</span>
           <div class="product-actions">
+            <button class="add-cart-btn" data-id="silver-star-charm-kamarbandh" data-name="Silver Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-2.png">Add to Cart</button>
+            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Silver%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
-    <button
-        class="add-cart-btn"
-        data-id="silver-star-charm-kamarbandh"
-        data-name="Silver Star Charm Kamarbandh"
-        data-price="199"
-        data-image="assets/kamarbandh-2.png">
+  </div>
 
-        Add to Cart
-
-    </button>
-
-    <a
-        class="product-button"
-        href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Silver%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199."
-        target="_blank">
-
-        Buy Now
-
-    </a>
-
-</div>
-        
+  <p class="no-results" id="noResults" hidden>No pieces in this category yet — check back soon.</p>
 </section>
 
 <section id="about" class="about section">
-  <div><p class="small-title">ABOUT AYONIZA</p><h2>Purity with Grace</h2></div>
+  <div>
+    <p class="small-title">About Ayoniza</p>
+    <h2>Purity with Grace</h2>
+  </div>
   <div class="about-text">
     <p>AYONIZA is a jewellery brand created for women and girls who love timeless elegance with a modern touch.</p>
     <p>We believe jewellery is more than an accessory. It is a beautiful expression of personality, confidence and grace.</p>
@@ -253,71 +178,47 @@
 </section>
 
 <section id="contact" class="contact section">
-  <p class="small-title">STAY CONNECTED</p>
+  <p class="small-title">Stay connected</p>
   <h2>Let's stay in touch.</h2>
   <p>Follow AYONIZA for new launches, jewellery styling ideas and updates.</p>
   <div class="buttons">
-    <a class="btn primary" href="https://www.instagram.com/_ayoniza_/" target="_blank">Follow Instagram</a>
-    <a class="btn secondary" href="https://wa.me/919203703177" target="_blank">WhatsApp</a>
+    <a class="btn primary" href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Follow Instagram</a>
+    <a class="btn secondary" href="https://wa.me/919203703177" target="_blank" rel="noopener">WhatsApp</a>
   </div>
 </section>
+
 </main>
 
 <footer>
-
-    <div class="footer-brand">
-
-        <strong>
-            AYONIZA
-        </strong>
-
-        <span>
-            Purity with Grace
-        </span>
-
-    </div>
-
-
-    <div class="footer-links">
-
-        <a href="return-policy.html">
-            Return Policy
-        </a>
-
-        <a href="index.html#shop">
-            Shop
-        </a>
-
-        <a href="https://www.instagram.com/_ayoniza_/"
-           target="_blank"
-           rel="noopener">
-            Instagram
-        </a>
-
-        <a href="https://wa.me/919203703177"
-           target="_blank"
-           rel="noopener">
-            WhatsApp
-        </a>
-
-    </div>
-
-
-    <p>
-        © 2026 AYONIZA. All rights reserved.
-    </p>
-
-</footer>
-  
-  <div class="cart-overlay" id="cartOverlay"></div>
-
-<aside class="cart-drawer" id="cartDrawer">
-  <div class="cart-header">
-    <div><p class="small-title">YOUR BAG</p><h3>Shopping Cart</h3></div>
-    <button class="close-cart" id="closeCartBtn" type="button">×</button>
+  <div class="footer-brand">
+    <strong>AYONIZA</strong>
+    <span>Purity with Grace</span>
   </div>
 
-  <div class="cart-items" id="cartItems"></div>
+  <div class="footer-links">
+    <a href="return-policy.html">Return Policy</a>
+    <a href="index.html#shop">Shop</a>
+    <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://wa.me/919203703177" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+
+  <p>© 2026 AYONIZA. All rights reserved.</p>
+</footer>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+  <div class="cart-header">
+    <div>
+      <p class="small-title">Your bag</p>
+      <h3>Shopping Cart</h3>
+    </div>
+    <button class="close-cart" id="closeCartBtn" type="button" aria-label="Close cart">×</button>
+  </div>
+
+  <div class="cart-items" id="cartItems">
+    <p class="cart-empty" id="cartEmpty">Your bag is empty.</p>
+  </div>
 
   <div class="cart-footer">
     <div class="cart-total-row">
