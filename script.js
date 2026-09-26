@@ -1,164 +1,189 @@
-const CART_KEY = "ayonizaCart";
+document.addEventListener('DOMContentLoaded', () => {
+  const WHATSAPP_NUMBER = '919203703177';
 
-let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-
-const cartDrawer = document.getElementById("cartDrawer");
-const cartOverlay = document.getElementById("cartOverlay");
-const cartItems = document.getElementById("cartItems");
-const cartCount = document.getElementById("cartCount");
-const cartTotal = document.getElementById("cartTotal");
-
-function saveCart() {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
-
-function money(value) {
-  return "₹" + Number(value).toLocaleString("en-IN");
-}
-
-function totalItems() {
-  return cart.reduce((sum, item) => sum + item.quantity, 0);
-}
-
-function totalPrice() {
-  return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-}
-
-function renderCart() {
-  cartCount.textContent = totalItems();
-  cartTotal.textContent = money(totalPrice());
-
-  if (cart.length === 0) {
-    cartItems.innerHTML = `
-      <div class="empty-cart">
-        <div class="empty-cart-icon">🛍️</div>
-        <h4>Your cart is empty</h4>
-        <p>Add your favourite AYONIZA pieces to your cart.</p>
-      </div>
-    `;
-    return;
+  /* ---------- Mobile nav ---------- */
+  const menuToggle = document.getElementById('menuToggle');
+  const primaryNav = document.getElementById('primaryNav');
+  if (menuToggle && primaryNav) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = primaryNav.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+    primaryNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        primaryNav.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
   }
 
-  cartItems.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <img src="${item.image}" alt="${item.name}">
-      <div>
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">${money(item.price)}</div>
-        <div class="quantity-controls">
-          <button class="quantity-btn" type="button" data-minus="${item.id}">−</button>
-          <span class="quantity-value">${item.quantity}</span>
-          <button class="quantity-btn" type="button" data-plus="${item.id}">+</button>
+  /* ---------- Category filter ---------- */
+  const categoryButtons = document.querySelectorAll('.category-btn');
+  const productCards = document.querySelectorAll('.product-card');
+  const noResults = document.getElementById('noResults');
+
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoryButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const category = btn.dataset.category;
+      let visibleCount = 0;
+
+      productCards.forEach(card => {
+        const match = category === 'all' || card.dataset.category === category;
+        card.classList.toggle('is-hidden', !match);
+        if (match) visibleCount++;
+      });
+
+      if (noResults) noResults.hidden = visibleCount !== 0;
+    });
+  });
+
+  /* ---------- Cart state ---------- */
+  let cart = [];
+
+  const cartCountEl = document.getElementById('cartCount');
+  const cartItemsEl = document.getElementById('cartItems');
+  const cartEmptyEl = document.getElementById('cartEmpty');
+  const cartTotalEl = document.getElementById('cartTotal');
+  const cartDrawer = document.getElementById('cartDrawer');
+  const cartOverlay = document.getElementById('cartOverlay');
+  const openCartBtn = document.getElementById('openCartBtn');
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  const continueShoppingBtn = document.getElementById('continueShoppingBtn');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  function formatRupees(amount) {
+    return '₹' + amount.toLocaleString('en-IN');
+  }
+
+  function openCart() {
+    cartDrawer.classList.add('open');
+    cartOverlay.classList.add('active');
+    cartDrawer.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeCart() {
+    cartDrawer.classList.remove('open');
+    cartOverlay.classList.remove('active');
+    cartDrawer.setAttribute('aria-hidden', 'true');
+  }
+
+  function renderCart() {
+    // Clear existing item rows (keep the empty-state paragraph as a template)
+    cartItemsEl.querySelectorAll('.cart-item').forEach(el => el.remove());
+
+    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+    const totalPrice = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+    cartCountEl.textContent = totalQty;
+    cartTotalEl.textContent = formatRupees(totalPrice);
+    checkoutBtn.disabled = cart.length === 0;
+
+    if (cart.length === 0) {
+      cartEmptyEl.hidden = false;
+      return;
+    }
+    cartEmptyEl.hidden = true;
+
+    cart.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <div>
+          <p class="cart-item-name">${item.name}</p>
+          <p class="cart-item-price">${formatRupees(item.price)}</p>
+          <div class="cart-item-qty">
+            <button class="qty-btn" data-action="decrease" data-id="${item.id}" aria-label="Decrease quantity">−</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" data-action="increase" data-id="${item.id}" aria-label="Increase quantity">+</button>
+          </div>
         </div>
-      </div>
-      <button class="remove-item" type="button" data-remove="${item.id}">Remove</button>
-    </div>
-  `).join("");
-
-  cartItems.querySelectorAll("[data-minus]").forEach(btn => {
-    btn.addEventListener("click", () => changeQty(btn.dataset.minus, -1));
-  });
-
-  cartItems.querySelectorAll("[data-plus]").forEach(btn => {
-    btn.addEventListener("click", () => changeQty(btn.dataset.plus, 1));
-  });
-
-  cartItems.querySelectorAll("[data-remove]").forEach(btn => {
-    btn.addEventListener("click", () => removeItem(btn.dataset.remove));
-  });
-}
-
-function addToCart(product) {
-  const existing = cart.find(item => item.id === product.id);
-  if (existing) {
-    existing.quantity += 1;
-  } else {
-    cart.push({...product, quantity: 1});
+        <button class="remove-item" data-action="remove" data-id="${item.id}">Remove</button>
+      `;
+      cartItemsEl.appendChild(row);
+    });
   }
-  saveCart();
-  renderCart();
-  openCart();
-}
 
-function changeQty(id, amount) {
-  const item = cart.find(item => item.id === id);
-  if (!item) return;
-  item.quantity += amount;
-  if (item.quantity <= 0) {
-    cart = cart.filter(item => item.id !== id);
+  function addToCart({ id, name, price, image }) {
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id, name, price: Number(price), image, qty: 1 });
+    }
+    renderCart();
+    openCart();
   }
-  saveCart();
-  renderCart();
-}
 
-function removeItem(id) {
-  cart = cart.filter(item => item.id !== id);
-  saveCart();
-  renderCart();
-}
+  function changeQty(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+      cart = cart.filter(i => i.id !== id);
+    }
+    renderCart();
+  }
 
-function openCart() {
-  cartDrawer.classList.add("open");
-  cartOverlay.classList.add("show");
-  document.body.classList.add("cart-open");
-}
+  function removeItem(id) {
+    cart = cart.filter(i => i.id !== id);
+    renderCart();
+  }
 
-function closeCart() {
-  cartDrawer.classList.remove("open");
-  cartOverlay.classList.remove("show");
-  document.body.classList.remove("cart-open");
-}
-
-document.querySelectorAll(".add-cart-btn").forEach(button => {
-  button.addEventListener("click", () => {
-    addToCart({
-      id: button.dataset.id,
-      name: button.dataset.name,
-      price: Number(button.dataset.price),
-      image: button.dataset.image
+  /* Add to cart buttons */
+  document.querySelectorAll('.add-cart-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      addToCart({
+        id: btn.dataset.id,
+        name: btn.dataset.name,
+        price: btn.dataset.price,
+        image: btn.dataset.image
+      });
     });
   });
-});
 
-document.querySelectorAll(".category-btn").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".category-btn").forEach(btn => btn.classList.remove("active"));
-    button.classList.add("active");
-
-    const category = button.dataset.category;
-
-    document.querySelectorAll(".product-card").forEach(card => {
-      card.style.display =
-        category === "all" || card.dataset.category === category ? "" : "none";
-    });
+  /* Cart item qty / remove (event delegation) */
+  cartItemsEl.addEventListener('click', (e) => {
+    const target = e.target.closest('button[data-action]');
+    if (!target) return;
+    const { action, id } = target.dataset;
+    if (action === 'increase') changeQty(id, 1);
+    if (action === 'decrease') changeQty(id, -1);
+    if (action === 'remove') removeItem(id);
   });
+
+  /* Drawer open/close */
+  openCartBtn?.addEventListener('click', openCart);
+  closeCartBtn?.addEventListener('click', closeCart);
+  continueShoppingBtn?.addEventListener('click', closeCart);
+  cartOverlay?.addEventListener('click', closeCart);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+  });
+
+  /* Checkout via WhatsApp */
+  checkoutBtn?.addEventListener('click', () => {
+    if (cart.length === 0) return;
+
+    const lines = cart.map(item =>
+      `${item.name} x${item.qty} - ${formatRupees(item.price * item.qty)}`
+    );
+    const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+    const message = [
+      'Hello AYONIZA, I would like to order:',
+      '',
+      ...lines,
+      '',
+      `Total: ${formatRupees(total)}`
+    ].join('\n');
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener');
+  });
+
+  renderCart();
 });
-
-document.getElementById("openCartBtn").addEventListener("click", openCart);
-document.getElementById("closeCartBtn").addEventListener("click", closeCart);
-document.getElementById("continueShoppingBtn").addEventListener("click", closeCart);
-cartOverlay.addEventListener("click", closeCart);
-
-document.getElementById("checkoutBtn").addEventListener("click", () => {
-  if (cart.length === 0) {
-    alert("Your cart is empty.");
-    return;
-  }
-
-  const lines = cart.map((item, i) =>
-    `${i + 1}. ${item.name} x ${item.quantity} = ${money(item.price * item.quantity)}`
-  );
-
-  const message =
-    `Hello AYONIZA,%0A%0AI would like to place an order:%0A%0A` +
-    `${lines.join("%0A")}%0A%0A` +
-    `Total: ${money(totalPrice())}%0A%0APlease share the next steps for delivery.`;
-
-  window.open(`https://wa.me/919203703177?text=${message}`, "_blank");
-});
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeCart();
-});
-
-renderCart();
