@@ -21,6 +21,7 @@
     <a href="#shop">Shop</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
+    <a href="return-policy.html">Return Policy</a>
   </nav>
 
   <div class="nav-actions">
@@ -75,7 +76,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="pink-bloom-pearl-hoops" data-name="Pink Bloom Pearl Hoops" data-price="199" data-image="assets/earring-1.jpg">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Bloom%20Pearl%20Hoops%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="pink-bloom-pearl-hoops" data-name="Pink Bloom Pearl Hoops" data-price="199" data-image="assets/earring-1.jpg">Buy Now</button>
           </div>
         </div>
       </div>
@@ -91,7 +92,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="pink-tulip-bloom-earrings" data-name="Pink Tulip Bloom Earrings" data-price="199" data-image="assets/earring-2.jpg">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pink%20Tulip%20Bloom%20Earrings%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="pink-tulip-bloom-earrings" data-name="Pink Tulip Bloom Earrings" data-price="199" data-image="assets/earring-2.jpg">Buy Now</button>
           </div>
         </div>
       </div>
@@ -107,7 +108,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="pearl-bow-crystal-studs" data-name="Pearl Bow Crystal Studs" data-price="199" data-image="assets/earring-3.jpg">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Pearl%20Bow%20Crystal%20Studs%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="pearl-bow-crystal-studs" data-name="Pearl Bow Crystal Studs" data-price="199" data-image="assets/earring-3.jpg">Buy Now</button>
           </div>
         </div>
       </div>
@@ -123,7 +124,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="golden-leaf-pearl-earrings" data-name="Golden Leaf Pearl Earrings" data-price="199" data-image="assets/earring-4.jpg">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Leaf%20Pearl%20Earrings%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="golden-leaf-pearl-earrings" data-name="Golden Leaf Pearl Earrings" data-price="199" data-image="assets/earring-4.jpg">Buy Now</button>
           </div>
         </div>
       </div>
@@ -139,7 +140,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="golden-star-charm-kamarbandh" data-name="Golden Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-1.png">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Golden%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="golden-star-charm-kamarbandh" data-name="Golden Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-1.png">Buy Now</button>
           </div>
         </div>
       </div>
@@ -155,7 +156,7 @@
           <span class="product-price">₹199</span>
           <div class="product-actions">
             <button class="add-cart-btn" data-id="silver-star-charm-kamarbandh" data-name="Silver Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-2.png">Add to Cart</button>
-            <a class="product-button" href="https://wa.me/919203703177?text=Hello%20AYONIZA%2C%20I%20want%20to%20buy%20Silver%20Star%20Charm%20Kamarbandh%20for%20%E2%82%B9199." target="_blank" rel="noopener">Buy Now</a>
+            <button class="product-button buy-now-btn" data-id="silver-star-charm-kamarbandh" data-name="Silver Star Charm Kamarbandh" data-price="199" data-image="assets/kamarbandh-2.png">Buy Now</button>
           </div>
         </div>
       </div>
@@ -225,11 +226,86 @@
       <span>Subtotal</span>
       <strong id="cartTotal">₹0</strong>
     </div>
-    <p class="cart-note">Checkout will open WhatsApp with your order summary.</p>
-    <button class="checkout-btn" id="checkoutBtn" type="button">Order on WhatsApp</button>
+    <p class="cart-note">Next step: enter your delivery details, then confirm on WhatsApp.</p>
+    <button class="checkout-btn" id="checkoutBtn" type="button">Proceed to Checkout</button>
     <button class="continue-btn" id="continueShoppingBtn" type="button">Continue Shopping</button>
   </div>
 </aside>
+
+<div class="checkout-overlay" id="checkoutOverlay"></div>
+
+<div class="checkout-modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-labelledby="checkoutTitle">
+  <div class="checkout-header">
+    <button class="checkout-back" id="checkoutBack" type="button" aria-label="Back" hidden>←</button>
+    <h3 id="checkoutTitle">Delivery Details</h3>
+    <button class="checkout-close" id="checkoutClose" type="button" aria-label="Close">×</button>
+  </div>
+
+  <div class="checkout-body">
+
+    <form class="checkout-step" id="checkoutForm" novalidate>
+      <label>Full Name
+        <input type="text" id="custName" name="custName" required autocomplete="name">
+      </label>
+      <label>Mobile Number
+        <input type="tel" id="custMobile" name="custMobile" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile number" autocomplete="tel">
+      </label>
+      <label>Address
+        <input type="text" id="custAddress" name="custAddress" required placeholder="House no., street, area" autocomplete="address-line1">
+      </label>
+      <label>Landmark <span class="optional">(optional)</span>
+        <input type="text" id="custLandmark" name="custLandmark" autocomplete="address-line2">
+      </label>
+      <div class="form-row">
+        <label>City
+          <input type="text" id="custCity" name="custCity" required autocomplete="address-level2">
+        </label>
+        <label>State
+          <input type="text" id="custState" name="custState" required autocomplete="address-level1">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>PIN Code
+          <input type="text" id="custPin" name="custPin" required inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code">
+        </label>
+        <label>Country
+          <input type="text" id="custCountry" name="custCountry" required value="India" autocomplete="country-name">
+        </label>
+      </div>
+      <label class="checkbox-row">
+        <input type="checkbox" id="saveInfo" name="saveInfo">
+        Save this information for next time
+      </label>
+      <button type="submit" class="btn primary checkout-continue">Continue to Payment</button>
+    </form>
+
+    <div class="checkout-step" id="checkoutPaymentStep" hidden>
+      <div class="payment-info-box">
+        <p class="payment-methods-line">Pay via UPI</p>
+        <div class="upi-qr-wrap">
+          <img src="assets/payment-qr.png" alt="PhonePe UPI QR code for AYONIZA" class="upi-qr-img">
+        </div>
+        <p class="upi-scan-label">Scan &amp; Pay using any UPI app</p>
+        <div class="upi-id-row">
+          <span class="upi-id-value" id="upiIdValue">9589790094-2@ybl</span>
+          <button type="button" class="upi-copy-btn" id="upiCopyBtn">Copy</button>
+        </div>
+        <a class="upi-pay-link" id="upiPayLink" href="#">Pay with UPI App</a>
+        <p class="payment-sub">After paying, tap "Place Order on WhatsApp" below and share your payment screenshot there — your order will be confirmed once payment is verified.</p>
+      </div>
+
+      <div class="order-summary" id="orderSummary"></div>
+
+      <div class="order-total-row">
+        <span>Total</span>
+        <strong id="orderTotal">₹0</strong>
+      </div>
+
+      <button type="button" class="btn primary checkout-submit" id="placeOrderBtn">Place Order on WhatsApp</button>
+    </div>
+
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
