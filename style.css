@@ -66,6 +66,17 @@ h1, h2, h3 {
 .btn.secondary { border-color: var(--plum); color: var(--plum); }
 .btn.secondary:hover { background: var(--plum); color: var(--ivory); }
 
+/* ---------- Announcement bar ---------- */
+.announcement-bar {
+  background: var(--plum-deep);
+  color: var(--ivory);
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+.announcement-bar p { margin: 0; }
+
 /* ---------- Navbar ---------- */
 .navbar {
   position: sticky;
@@ -184,6 +195,37 @@ nav a:hover::after { width: 100%; }
 }
 .hero-logo img { width: 100%; height: 100%; object-fit: cover; }
 
+/* ---------- Trust strip ---------- */
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem) clamp(2rem, 5vw, 3.5rem);
+}
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+.trust-icon {
+  width: 30px; height: 30px;
+  color: var(--gold);
+}
+.trust-icon svg { width: 100%; height: 100%; }
+.trust-item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--plum-deep);
+}
+
 /* ---------- Sections ---------- */
 .section-title {
   text-align: center;
@@ -246,11 +288,32 @@ nav a:hover::after { width: 100%; }
 .product-card.is-hidden { display: none; }
 
 .product-image {
+  position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--ivory-deep);
 }
 .product-image img { width: 100%; height: 100%; object-fit: cover; }
+
+.discount-badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  background: var(--plum);
+  color: var(--ivory);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.price-group { display: flex; align-items: baseline; gap: 0.5rem; }
+.price-original {
+  font-size: 0.9rem;
+  color: rgba(43, 32, 36, 0.45);
+  text-decoration: line-through;
+}
 
 .product-info { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; flex: 1; }
 .product-category {
@@ -317,22 +380,83 @@ nav a:hover::after { width: 100%; }
 .contact .buttons { justify-content: center; }
 
 /* ---------- Footer ---------- */
-footer {
-  border-top: 1px solid var(--line);
-  padding: 2.5rem clamp(1.25rem, 4vw, 3rem);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  font-size: 0.88rem;
-  color: rgba(43, 32, 36, 0.7);
+.site-footer {
+  background: var(--plum-deep);
+  color: rgba(250, 246, 242, 0.82);
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.25rem, 4vw, 3rem) 1.5rem;
 }
-.footer-brand { display: flex; flex-direction: column; }
-.footer-brand strong { font-family: var(--font-display); font-size: 1.2rem; color: var(--plum-deep); }
-.footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-.footer-links a:hover { color: var(--plum); }
-footer > p { width: 100%; text-align: center; margin: 0; }
+.footer-top {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(250, 246, 242, 0.15);
+}
+.footer-col { display: flex; flex-direction: column; gap: 0.7rem; }
+.footer-col h4 {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-soft);
+  margin: 0 0 0.3rem;
+}
+.footer-col a {
+  font-size: 0.88rem;
+  color: rgba(250, 246, 242, 0.82);
+}
+.footer-col a:hover { color: var(--gold-soft); }
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--ivory);
+  letter-spacing: 0.05em;
+}
+.footer-tagline { margin: 0.2rem 0 0.6rem; font-size: 0.85rem; color: var(--gold-soft); }
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+}
+.footer-contact a { color: inherit; }
+.footer-socials { display: flex; gap: 0.75rem; }
+.footer-socials a {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(250, 246, 242, 0.3);
+  border-radius: 50%;
+  color: var(--ivory);
+}
+.footer-socials a:hover { border-color: var(--gold-soft); color: var(--gold-soft); }
+.footer-socials svg { width: 16px; height: 16px; }
+
+.footer-bottom {
+  max-width: 1280px;
+  margin: 1.2rem auto 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(250, 246, 242, 0.6);
+}
+
+/* ---------- Floating WhatsApp button ---------- */
+.whatsapp-float {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 52px; height: 52px;
+  background: #25D366;
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  z-index: 60;
+}
+.whatsapp-float svg { width: 26px; height: 26px; }
+.whatsapp-float:hover { transform: scale(1.06); }
 
 /* ---------- Cart drawer ---------- */
 .cart-overlay {
@@ -658,6 +782,9 @@ footer > p { width: 100%; text-align: center; margin: 0; }
   .hero-logo { order: 1; }
   .buttons { justify-content: center; }
 
+  .trust-strip { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+
   .menu-toggle { display: flex; }
   nav {
     position: absolute;
@@ -676,4 +803,6 @@ footer > p { width: 100%; text-align: center; margin: 0; }
 @media (max-width: 480px) {
   .product-actions { flex-direction: column; width: 100%; }
   .product-bottom { flex-direction: column; align-items: flex-start; }
+  .footer-top { grid-template-columns: 1fr; }
+  .whatsapp-float { width: 46px; height: 46px; bottom: 1rem; right: 1rem; }
 }
