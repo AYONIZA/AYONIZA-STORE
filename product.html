@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product | AYONIZA</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .pp { max-width: 1050px; margin: 0 auto; padding: 28px 20px 60px; }
+  .pp-back { display: inline-block; margin-bottom: 18px; color: inherit; text-decoration: none; opacity: .75; font-size: 15px; }
+  .pp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+  .pp-gallery { position: relative; }
+  .pp-slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 14px; background: #f6eef0; }
+  .pp-slides::-webkit-scrollbar { display: none; }
+  .pp-slide { flex: 0 0 100%; scroll-snap-align: center; aspect-ratio: 1 / 1; }
+  .pp-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pp-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.18); font-size: 22px; line-height: 1; cursor: pointer; }
+  .pp-prev { left: 10px; } .pp-next { right: 10px; }
+  .pp-dots { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+  .pp-dot { width: 9px; height: 9px; border-radius: 50%; border: 0; padding: 0; background: #d8c3ca; cursor: pointer; }
+  .pp-dot.on { background: #8c3b5a; }
+  .pp-cat { letter-spacing: .14em; font-size: 13px; opacity: .7; margin: 0 0 8px; }
+  .pp-name { margin: 0 0 12px; font-size: 32px; line-height: 1.2; }
+  .pp-price { font-size: 26px; margin: 0 0 16px; }
+  .pp-desc { line-height: 1.7; margin: 0 0 24px; opacity: .85; }
+  .pp-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pp-actions .add-cart-btn, .pp-actions .product-button { display: inline-block; padding: 13px 26px; border-radius: 999px; font-size: 16px; cursor: pointer; text-decoration: none; text-align: center; border: 1px solid #8c3b5a; }
+  .pp-actions .add-cart-btn { background: #8c3b5a; color: #fff; }
+  .pp-actions .product-button { background: transparent; color: #8c3b5a; }
+  .pp-missing { text-align: center; padding: 80px 20px; }
+  @media (max-width: 768px) {
+    .pp-grid { grid-template-columns: 1fr; gap: 22px; }
+    .pp-name { font-size: 26px; }
+    .pp-actions .add-cart-btn, .pp-actions .product-button { flex: 1 1 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html#home" class="logo-text">AYONIZA</a>
+  <nav>
+    <a href="index.html#home">Home</a>
+    <a href="index.html#shop">Shop</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#contact">Contact</a>
+  </nav>
+  <div class="nav-actions">
+    <a class="auth-btn" id="authLink" href="login.html">Login</a>
+    <button class="cart-btn" id="openCartBtn" type="button">🛒 Cart <span id="cartCount">0</span></button>
+  </div>
+</header>
+
+<main class="pp" id="productPage"></main>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <div><p class="small-title">YOUR BAG</p><h3>Shopping Cart</h3></div>
+    <button class="close-cart" id="closeCartBtn" type="button">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row"><span>Subtotal</span><strong id="cartTotal">₹0</strong></div>
+    <p class="cart-note">Checkout will open WhatsApp with your order summary.</p>
+    <button class="checkout-btn" id="checkoutBtn" type="button">Order on WhatsApp</button>
+    <button class="continue-btn" id="continueShoppingBtn" type="button">Continue Shopping</button>
+  </div>
+</aside>
+
+<script src="products.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(window.location.search);
+  var id = q.get("id"), name = q.get("name"), price = q.get("price"), img = q.get("img");
+  var page = document.getElementById("productPage");
+
+  if (!id || !name || !img) {
+    page.innerHTML = '<div class="pp-missing"><h2>Product nahi mila</h2><p><a href="index.html#shop">Shop par wapas jayein</a></p></div>';
+    return;
+  }
+
+  document.title = name + " | AYONIZA";
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+  function attr(s) { return esc(s).replace(/"/g, "&quot;"); }
+
+  var shown = q.get("ptxt") || ("₹" + price);
+  var waText = "Hello AYONIZA, I want to buy " + name + " for " + shown + ".";
+  var waLink = "https://wa.me/919203703177?text=" + encodeURIComponent(waText);
+
+  page.innerHTML =
+    '<a class="pp-back" href="index.html#shop">← Back to shop</a>' +
+    '<div class="pp-grid">' +
+      '<div class="pp-gallery">' +
+        '<div class="pp-slides" id="ppSlides"></div>' +
+        '<button class="pp-arrow pp-prev" id="ppPrev" type="button" aria-label="Previous image">‹</button>' +
+        '<button class="pp-arrow pp-next" id="ppNext" type="button" aria-label="Next image">›</button>' +
+        '<div class="pp-dots" id="ppDots"></div>' +
+      '</div>' +
+      '<div>' +
+        '<p class="pp-cat">' + esc(q.get("cat") || "") + '</p>' +
+        '<h1 class="pp-name">' + esc(name) + '</h1>' +
+        '<p class="pp-price">' + esc(shown) + '</p>' +
+        '<p class="pp-desc">' + esc(q.get("desc") || "") + '</p>' +
+        '<div class="pp-actions">' +
+          '<button class="add-cart-btn" type="button" data-id="' + attr(id) + '" data-name="' + attr(name) + '" data-price="' + attr(price) + '" data-image="' + attr(img) + '">Add to Cart</button>' +
+          '<a class="product-button" href="' + attr(waLink) + '" target="_blank" rel="noopener">Buy Now</a>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  /* ----- Image slider ----- */
+  var list = [img].concat((window.GALLERY && window.GALLERY[id]) || []);
+  list = list.filter(function (s, i) { return s && list.indexOf(s) === i; }).slice(0, 5);
+
+  var track = document.getElementById("ppSlides");
+  var dots = document.getElementById("ppDots");
+  var prev = document.getElementById("ppPrev");
+  var next = document.getElementById("ppNext");
+
+  function build() {
+    track.innerHTML = "";
+    dots.innerHTML = "";
+    list.forEach(function (src, i) {
+      var slide = document.createElement("div");
+      slide.className = "pp-slide";
+      var im = document.createElement("img");
+      im.src = src;
+      im.alt = name + " - image " + (i + 1);
+      im.onerror = function () {          // file nahi mili to slide hata do
+        var k = list.indexOf(src);
+        if (k > -1 && list.length > 1) { list.splice(k, 1); build(); }
+      };
+      slide.appendChild(im);
+      track.appendChild(slide);
+
+      var d = document.createElement("button");
+      d.type = "button";
+      d.className = "pp-dot" + (i === 0 ? " on" : "");
+      d.setAttribute("aria-label", "Image " + (i + 1));
+      d.onclick = function () { track.scrollTo({ left: i * track.clientWidth, behavior: "smooth" }); };
+      dots.appendChild(d);
+    });
+    var many = list.length > 1;
+    prev.style.display = next.style.display = dots.style.display = many ? "" : "none";
+  }
+
+  track.addEventListener("scroll", function () {
+    var i = Math.round(track.scrollLeft / (track.clientWidth || 1));
+    Array.prototype.forEach.call(dots.children, function (d, k) { d.classList.toggle("on", k === i); });
+  });
+  prev.onclick = function () { track.scrollBy({ left: -track.clientWidth, behavior: "smooth" }); };
+  next.onclick = function () { track.scrollBy({ left: track.clientWidth, behavior: "smooth" }); };
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") prev.click();
+    if (e.key === "ArrowRight") next.click();
+  });
+
+  build();
+})();
+</script>
+<script src="script.js"></script>
+<script type="module" src="auth.js"></script>
+</body>
+</html>
