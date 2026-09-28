@@ -806,3 +806,22 @@ nav a:hover::after { width: 100%; }
   .footer-top { grid-template-columns: 1fr; }
   .whatsapp-float { width: 46px; height: 46px; bottom: 1rem; right: 1rem; }
 }
+
+.auth-btn {
+  display: inline-flex !important;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 14px;
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
