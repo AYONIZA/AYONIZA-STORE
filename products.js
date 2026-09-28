@@ -11,8 +11,7 @@ window.GALLERY = {
   "silver-star-charm-kamarbandh": ["assets/kamarbandh-2-2.png", "assets/kamarbandh-2-3.png", "assets/kamarbandh-2-4.png"],
   "golden-heart-pendant-necklace": ["assets/necklace-1-2.jpg", "assets/necklace-1-3.jpg", "assets/necklace-1-4.jpg"],
   "pearl-hand-chain-hathphool": ["assets/hathphool-3beads-2.png", "assets/hathphool-3beads-3.png", "assets/hathphool-3beads-4.png"]
-  
-};
+  };
 // Naya product jodne par aise likhein:
   // , "product-ka-data-id": ["assets/naam-2.jpg", "assets/naam-3.jpg"]
 };
