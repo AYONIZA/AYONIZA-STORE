@@ -14,4 +14,3 @@ window.GALLERY = {
 };
 // Naya product jodne par aise likhein:
   // , "product-ka-data-id": ["assets/naam-2.jpg", "assets/naam-3.jpg"]
-};
