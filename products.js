@@ -9,7 +9,8 @@ window.GALLERY = {
   "golden-leaf-pearl-earrings":   ["assets/earring-4-2.jpg", "assets/earring-4-3.jpg", "assets/earring-4-4.jpg"],
   "golden-star-charm-kamarbandh": ["assets/kamarbandh-1-2.png", "assets/kamarbandh-1-3.png", "assets/kamarbandh-1-4.png"],
   "silver-star-charm-kamarbandh": ["assets/kamarbandh-2-2.png", "assets/kamarbandh-2-3.png", "assets/kamarbandh-2-4.png"],
-  "golden-heart-pendant-necklace": ["assets/necklace-1-2.jpg", "assets/necklace-1-3.jpg", "assets/necklace-1-4.jpg"]
+  "golden-heart-pendant-necklace": ["assets/necklace-1-2.jpg", "assets/necklace-1-3.jpg", "assets/necklace-1-4.jpg"],
+  "pearl-hand-chain-hathphool": ["assets/hathphool-2.png", "assets/hathphool-3.png", "assets/hathphool-4.png"]
 };
 // Naya product jodne par aise likhein:
   // , "product-ka-data-id": ["assets/naam-2.jpg", "assets/naam-3.jpg"]
