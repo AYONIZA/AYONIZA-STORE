@@ -866,7 +866,7 @@ nav a:hover::after { width: 100%; }
   display: none;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 12px 20px 0;
+  padding: 14px 20px 0;
 }
 #searchBar.open { display: block; }
 #searchBar input {
@@ -875,8 +875,5 @@ nav a:hover::after { width: 100%; }
   border-radius: 999px;
   border: 1px solid #d8c3ca;
   font-size: 15px;
-}
-/* Desktop par yeh extra link chhupa rahe, kyunki desktop mein Login button already hai */
-.mobile-auth-link {
-  display: none;
+  font-family: inherit;
 }
