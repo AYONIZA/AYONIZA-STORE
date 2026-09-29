@@ -45,29 +45,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- Category filter ---------- */
+   /* ---------- Category filter + Search (dono saath kaam karte hain) ---------- */
   const categoryButtons = document.querySelectorAll('.category-btn');
   const productCards = document.querySelectorAll('.product-card');
   const noResults = document.getElementById('noResults');
+
+  let currentCategory = 'all';
+  let currentSearch = '';
+
+  function applyFilters() {
+    let visibleCount = 0;
+
+    productCards.forEach(card => {
+      const categoryMatch = currentCategory === 'all' || card.dataset.category === currentCategory;
+
+      const name = card.querySelector('h3')?.textContent.toLowerCase() || '';
+      const desc = card.querySelector('.product-description')?.textContent.toLowerCase() || '';
+      const cat = card.querySelector('.product-category')?.textContent.toLowerCase() || '';
+      const searchMatch = currentSearch === '' || name.includes(currentSearch) || desc.includes(currentSearch) || cat.includes(currentSearch);
+
+      const match = categoryMatch && searchMatch;
+      card.classList.toggle('is-hidden', !match);
+      if (match) visibleCount++;
+    });
+
+    if (noResults) noResults.hidden = visibleCount !== 0;
+  }
 
   categoryButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       categoryButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      const category = btn.dataset.category;
-      let visibleCount = 0;
-
-      productCards.forEach(card => {
-        const match = category === 'all' || card.dataset.category === category;
-        card.classList.toggle('is-hidden', !match);
-        if (match) visibleCount++;
-      });
-
-      if (noResults) noResults.hidden = visibleCount !== 0;
+      currentCategory = btn.dataset.category;
+      applyFilters();
     });
   });
 
+  /* ---------- Search bar open/close + typing ---------- */
+  const openSearchBtn = document.getElementById('openSearchBtn');
+  const searchBar = document.getElementById('searchBar');
+  const searchInput = document.getElementById('searchInput');
+
+  openSearchBtn?.addEventListener('click', () => {
+    searchBar.classList.toggle('open');
+    if (searchBar.classList.contains('open')) {
+      searchInput.focus();
+    } else {
+      searchInput.value = '';
+      currentSearch = '';
+      applyFilters();
+    }
+  });
+
+  searchInput?.addEventListener('input', () => {
+    currentSearch = searchInput.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && searchBar?.classList.contains('open')) {
+      searchBar.classList.remove('open');
+      searchInput.value = '';
+      currentSearch = '';
+      applyFilters();
+    }
+  });
+  
   /* ---------- Cart state ---------- */
   let cart = [];
 
