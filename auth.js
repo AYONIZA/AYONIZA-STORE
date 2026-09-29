@@ -9,29 +9,35 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ---------- Navbar: Login / Logout ----------
+// ---------- Navbar: Login / Logout (desktop + mobile menu dono) ----------
 const authLink = document.getElementById("authLink");
+const authLinkMobile = document.getElementById("authLinkMobile");
 let currentUser = null;
 let authReady = false;
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  authReady = true;
-  if (!authLink) return;
+
+function setAuthLink(el, user) {
+  if (!el) return;
   if (user) {
     const name = (user.displayName || user.email.split("@")[0]).split(" ")[0];
-    authLink.textContent = "Logout (" + name + ")";
-    authLink.href = "#";
-    authLink.onclick = async (e) => {
+    el.textContent = "Logout (" + name + ")";
+    el.href = "#";
+    el.onclick = async (e) => {
       e.preventDefault();
       await signOut(auth);
     };
   } else {
-    authLink.textContent = "Login";
-    authLink.href = "login.html";
-    authLink.onclick = null;
+    el.textContent = "Login";
+    el.href = "login.html";
+    el.onclick = null;
   }
-});
+}
 
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  authReady = true;
+  setAuthLink(authLink, user);
+  setAuthLink(authLinkMobile, user);
+});
 // ---------- Login page ----------
 const form = document.getElementById("authForm");
 if (form) {
