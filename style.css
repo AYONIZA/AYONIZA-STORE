@@ -825,3 +825,35 @@ nav a:hover::after { width: 100%; }
     font-size: 13px;
   }
 }
+
+/* Hamburger ko logo ke LEFT mein le jana + menu mein Login/Logout dikhana */
+@media (max-width: 768px) {
+  .navbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .menu-toggle {
+    order: -1;
+    margin-right: 8px;
+  }
+  .logo-text {
+    order: 0;
+  }
+  #primaryNav {
+    order: 3;
+    width: 100%;
+  }
+  .nav-actions {
+    order: 2;
+    margin-left: auto;
+  }
+  .mobile-auth-link {
+    display: block !important;
+  }
+}
+
+/* Desktop par yeh extra link chhupa rahe, kyunki desktop mein Login button already hai */
+.mobile-auth-link {
+  display: none;
+}
