@@ -45,52 +45,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-   /* ---------- Category filter + Search (kuch bhi products tabhi dikhenge jab category chuni jaye) ---------- */
+    /* ---------- Category grid + pills + Search ---------- */
+  const categoryGrid = document.getElementById('categoryGrid');
+  const categoryButtonsBar = document.getElementById('categoryButtonsBar');
+  const backToCategories = document.getElementById('backToCategories');
   const categoryButtons = document.querySelectorAll('.category-btn');
   const productCards = document.querySelectorAll('.product-card');
   const noResults = document.getElementById('noResults');
-  const categoryPrompt = document.getElementById('categoryPrompt');
 
-  let currentCategory = null; // shuru mein koi category chuni nahi hoti
+  let currentCategory = null;
   let currentSearch = '';
 
+  function showGridView() {
+    currentCategory = null;
+    categoryGrid.hidden = false;
+    categoryButtonsBar.hidden = true;
+    productCards.forEach(card => card.classList.add('is-hidden'));
+    if (noResults) noResults.hidden = true;
+  }
+
   function applyFilters() {
-    if (currentCategory === null) {
-      productCards.forEach(card => card.classList.add('is-hidden'));
-      if (categoryPrompt) categoryPrompt.hidden = false;
-      if (noResults) noResults.hidden = true;
-      return;
-    }
-
-    if (categoryPrompt) categoryPrompt.hidden = true;
     let visibleCount = 0;
-
     productCards.forEach(card => {
       const categoryMatch = currentCategory === 'all' || card.dataset.category === currentCategory;
-
       const name = card.querySelector('h3')?.textContent.toLowerCase() || '';
       const desc = card.querySelector('.product-description')?.textContent.toLowerCase() || '';
       const cat = card.querySelector('.product-category')?.textContent.toLowerCase() || '';
       const searchMatch = currentSearch === '' || name.includes(currentSearch) || desc.includes(currentSearch) || cat.includes(currentSearch);
-
       const match = categoryMatch && searchMatch;
       card.classList.toggle('is-hidden', !match);
       if (match) visibleCount++;
     });
-
     if (noResults) noResults.hidden = visibleCount !== 0;
   }
 
-  categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      categoryButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentCategory = btn.dataset.category;
-      applyFilters();
-    });
+  function selectCategory(category) {
+    currentCategory = category;
+    categoryGrid.hidden = true;
+    categoryButtonsBar.hidden = false;
+    categoryButtons.forEach(b => b.classList.toggle('active', b.dataset.category === category));
+    applyFilters();
+    document.getElementById('shop').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  categoryGrid.querySelectorAll('.category-tile').forEach(tile => {
+    tile.addEventListener('click', () => selectCategory(tile.dataset.category));
   });
 
-  /* ---------- Search bar open/close + typing ---------- */
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => selectCategory(btn.dataset.category));
+  });
+
+  backToCategories.addEventListener('click', showGridView);
+
+  /* ---------- Search bar ---------- */
   const openSearchBtn = document.getElementById('openSearchBtn');
   const searchBar = document.getElementById('searchBar');
   const searchInput = document.getElementById('searchInput');
@@ -102,17 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       searchInput.value = '';
       currentSearch = '';
-      applyFilters();
+      if (currentCategory !== null) applyFilters();
     }
   });
 
   searchInput?.addEventListener('input', () => {
     currentSearch = searchInput.value.trim().toLowerCase();
-    if (currentCategory === null) {
-      currentCategory = 'all'; // search shuru karte hi sab categories mein dhoondhna shuru ho jaye
-      categoryButtons.forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
-    }
-    applyFilters();
+    if (currentCategory === null) selectCategory('all');
+    else applyFilters();
   });
 
   document.addEventListener('keydown', (e) => {
@@ -120,11 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
       searchBar.classList.remove('open');
       searchInput.value = '';
       currentSearch = '';
-      applyFilters();
+      if (currentCategory !== null) applyFilters();
     }
   });
 
-  applyFilters(); // page load hote hi shuru mein sab chhupa dein  
+  showGridView(); // page load hote hi grid dikhayein, products chhupe rahein
+  
   /* ---------- Cart state ---------- */
   let cart = [];
 
