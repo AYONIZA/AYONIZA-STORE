@@ -112,7 +112,38 @@
     <p>Explore our jewellery collection and find a piece that matches your style.</p>
   </div>
 
-  <div class="category-buttons" role="tablist" aria-label="Filter by category">
+   <div class="category-grid" id="categoryGrid">
+    <button class="category-tile" data-category="earrings">
+      <img src="assets/earring-1.jpg" alt="Earrings"><span>Earrings</span>
+    </button>
+    <button class="category-tile category-tile-text" data-category="bracelets">
+      <span>Bracelets</span>
+    </button>
+    <button class="category-tile category-tile-text" data-category="sets">
+      <span>Jewellery Sets</span>
+    </button>
+    <button class="category-tile" data-category="kamarbandh">
+      <img src="assets/kamarbandh-1.png" alt="Kamarbandh"><span>Kamarbandh</span>
+    </button>
+    <button class="category-tile" data-category="necklaces">
+      <img src="assets/necklace-1.jpg" alt="Necklaces"><span>Necklaces</span>
+    </button>
+    <button class="category-tile" data-category="hathphool">
+      <img src="assets/hathphool-infinity.png" alt="Hathphool"><span>Hathphool</span>
+    </button>
+    <button class="category-tile category-tile-text" data-category="hair-accessories">
+      <span>Hair Accessories</span>
+    </button>
+    <button class="category-tile category-tile-text" data-category="anklets">
+      <span>Anklets</span>
+    </button>
+    <button class="category-tile category-tile-text" data-category="rings">
+      <span>Rings</span>
+    </button>
+  </div>
+
+  <div class="category-buttons" id="categoryButtonsBar" role="tablist" aria-label="Filter by category" hidden>
+    <button class="back-to-categories" id="backToCategories" type="button">← All Categories</button>
     <button class="category-btn" data-category="all">All</button>
     <button class="category-btn" data-category="earrings">Earrings</button>
     <button class="category-btn" data-category="bracelets">Bracelets</button>
@@ -124,7 +155,8 @@
     <button class="category-btn" data-category="anklets">Anklets</button>
     <button class="category-btn" data-category="rings">Rings</button>
   </div>
- <p id="categoryPrompt" class="category-prompt">✦ Apni pasand ki category chunein upar se ✦</p>
+
+    <div class="products-grid" id="productsGrid"> <p id="categoryPrompt" class="category-prompt">✦ Apni pasand ki category chunein upar se ✦</p>
     <div class="products-grid" id="productsGrid">
 
     <article class="product-card" data-category="earrings" data-discount="25">
