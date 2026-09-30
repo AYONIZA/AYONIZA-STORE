@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoryGrid = document.getElementById('categoryGrid');
   const categoryButtonsBar = document.getElementById('categoryButtonsBar');
   const backToCategories = document.getElementById('backToCategories');
-  const categoryButtons = document.querySelectorAll('.category-btn');
   const productCards = document.querySelectorAll('.product-card');
   const noResults = document.getElementById('noResults');
 
@@ -83,17 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
     currentCategory = category;
     categoryGrid.hidden = true;
     categoryButtonsBar.hidden = false;
-    categoryButtons.forEach(b => b.classList.toggle('active', b.dataset.category === category));
+    const label = category === 'all' ? 'All Jewellery' : document.querySelector(`.category-tile[data-category="${category}"] span`)?.textContent || category;
+    document.getElementById('selectedCategoryTitle').textContent = label;
     applyFilters();
     document.getElementById('shop').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   categoryGrid.querySelectorAll('.category-tile').forEach(tile => {
     tile.addEventListener('click', () => selectCategory(tile.dataset.category));
-  });
-
-  categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => selectCategory(btn.dataset.category));
   });
 
   backToCategories.addEventListener('click', showGridView);
