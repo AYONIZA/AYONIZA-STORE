@@ -919,3 +919,17 @@ nav a:hover::after { width: 100%; }
 @media (max-width: 480px) {
   .collection-tile, .collection-tile img { flex-basis: 110px; width: 110px; height: 110px; }
 }
+
+.reviews-grid-section { padding: 50px 20px; text-align: center; }
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  max-width: 950px;
+  margin: 28px auto 0;
+}
+.review-tile { background: #fff; border: 1px solid #e4d3d8; border-radius: 12px; padding: 14px; text-align: left; }
+.review-tile img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+.stars { color: #c99a3c; margin: 0 0 6px; font-size: 14px; }
+.review-text { font-size: 13.5px; line-height: 1.5; margin: 0 0 6px; opacity: .85; }
+.review-name { font-size: 12px; opacity: .6; margin: 0; }
