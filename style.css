@@ -933,3 +933,11 @@ nav a:hover::after { width: 100%; }
 .stars { color: #c99a3c; margin: 0 0 6px; font-size: 14px; }
 .review-text { font-size: 13.5px; line-height: 1.5; margin: 0 0 6px; opacity: .85; }
 .review-name { font-size: 12px; opacity: .6; margin: 0; }
+
+.category-prompt {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 15px;
+  opacity: .6;
+  letter-spacing: .04em;
+}
