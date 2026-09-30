@@ -68,14 +68,23 @@ h1, h2, h3 {
 
 /* ---------- Announcement bar ---------- */
 .announcement-bar {
-  background: var(--plum-deep);
-  color: var(--ivory);
-  text-align: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
+  background: #3a1220;
+  color: #f3e6ea;
+  overflow: hidden;
+  padding: 10px 0;
 }
-.announcement-bar p { margin: 0; }
+.announcement-track {
+  display: flex;
+  gap: 48px;
+  white-space: nowrap;
+  animation: scrollBar 22s linear infinite;
+  width: max-content;
+}
+.announcement-track span { font-size: 14px; letter-spacing: .02em; }
+@keyframes scrollBar {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
 
 /* ---------- Navbar ---------- */
 .navbar {
