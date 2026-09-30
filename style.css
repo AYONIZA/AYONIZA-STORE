@@ -992,3 +992,9 @@ nav a:hover::after { width: 100%; }
   font-family: inherit;
   margin-right: 6px;
 }
+
+.selected-category-title {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: .02em;
+}
