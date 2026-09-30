@@ -45,15 +45,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-   /* ---------- Category filter + Search (dono saath kaam karte hain) ---------- */
+   /* ---------- Category filter + Search (kuch bhi products tabhi dikhenge jab category chuni jaye) ---------- */
   const categoryButtons = document.querySelectorAll('.category-btn');
   const productCards = document.querySelectorAll('.product-card');
   const noResults = document.getElementById('noResults');
+  const categoryPrompt = document.getElementById('categoryPrompt');
 
-  let currentCategory = 'all';
+  let currentCategory = null; // shuru mein koi category chuni nahi hoti
   let currentSearch = '';
 
   function applyFilters() {
+    if (currentCategory === null) {
+      productCards.forEach(card => card.classList.add('is-hidden'));
+      if (categoryPrompt) categoryPrompt.hidden = false;
+      if (noResults) noResults.hidden = true;
+      return;
+    }
+
+    if (categoryPrompt) categoryPrompt.hidden = true;
     let visibleCount = 0;
 
     productCards.forEach(card => {
@@ -99,6 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchInput?.addEventListener('input', () => {
     currentSearch = searchInput.value.trim().toLowerCase();
+    if (currentCategory === null) {
+      currentCategory = 'all'; // search shuru karte hi sab categories mein dhoondhna shuru ho jaye
+      categoryButtons.forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
+    }
     applyFilters();
   });
 
@@ -110,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
       applyFilters();
     }
   });
-  
+
+  applyFilters(); // page load hote hi shuru mein sab chhupa dein  
   /* ---------- Cart state ---------- */
   let cart = [];
 
