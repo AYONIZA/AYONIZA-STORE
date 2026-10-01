@@ -998,3 +998,7 @@ nav a:hover::after { width: 100%; }
   font-size: 20px;
   letter-spacing: .02em;
 }
+
+.products-grid[hidden] {
+  display: none !important;
+}
