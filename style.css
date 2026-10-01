@@ -1040,12 +1040,3 @@ nav a:hover::after { width: 100%; }
 .hero-banner-slide.active {
   opacity: 1;
 }
-
-@media (max-width: 768px) {
-  .hero-banner-slider {
-    width: 100%;
-    max-width: none;
-    aspect-ratio: 16 / 10;
-    border-radius: 18px;
-  }
-}
