@@ -496,5 +496,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+    /* ---------- Hero banner auto-slider ---------- */
+  const heroSlides = document.querySelectorAll('.hero-banner-slide');
+  if (heroSlides.length > 1) {
+    let slideIndex = 0;
+    setInterval(() => {
+      heroSlides[slideIndex].classList.remove('active');
+      slideIndex = (slideIndex + 1) % heroSlides.length;
+      heroSlides[slideIndex].classList.add('active');
+    }, 4000);
+  }
+  
   renderCart();
 });
