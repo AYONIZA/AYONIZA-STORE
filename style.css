@@ -1048,7 +1048,7 @@ nav a:hover::after { width: 100%; }
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     aspect-ratio: 4 / 3;
-    border-radius: 0;
+    border-radius: 10;
     box-shadow: none;
   }
 }
