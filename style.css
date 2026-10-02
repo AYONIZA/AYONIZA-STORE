@@ -1020,7 +1020,7 @@ nav a:hover::after { width: 100%; }
   position: relative;
   width: 100%;
   max-width: none;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 3 / 2;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(122,44,69,.15);
