@@ -13,5 +13,6 @@ window.GALLERY = {
   "pearl-hand-chain-hathphool":        ["assets/hathphool-3beads-2.png", "assets/hathphool-3beads-3.png", "assets/hathphool-3beads-4.png"],
   "multi-pearl-hand-chain-hathphool":  ["assets/hathphool-pearl-chain-2.png", "assets/hathphool-pearl-chain-3.png" , "assets/hathphool-pearl-chain-4.png"],
   "black-bead-hand-chain-hathphool":   ["assets/hathphool-black-beads-2.png", "assets/hathphool-black-beads-3.png"],
-  "gold-infinity-hand-bracelet":       ["assets/hathphool-infinity-2.png", "assets/hathphool-infinity-3.png" , "assets/hathphool-infinity (4).png"]
+  "gold-infinity-hand-bracelet":       ["assets/hathphool-infinity-2.png", "assets/hathphool-infinity-3.png" , "assets/hathphool-infinity (4).png"],
+  "chunky-gold-hoop-earrings":         ["assets/earring-chunky-gold-2.webp" , "assets/earring-chunky-gold-3.webp" , "assets/earring-chunky-gold-3.webp"]
 };
