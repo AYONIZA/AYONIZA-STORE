@@ -458,8 +458,25 @@
 <div class="checkout-modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-labelledby="checkoutTitle">
   <div class="checkout-header">
     <button class="checkout-back" id="checkoutBack" type="button" aria-label="Back" hidden>←</button>
-    <h3 id="checkoutTitle">Delivery Details</h3>
+    <h3 id="checkoutTitle">Address</h3>
     <button class="checkout-close" id="checkoutClose" type="button" aria-label="Close">×</button>
+  </div>
+
+  <div class="checkout-steps" id="checkoutSteps">
+    <div class="step-item active" data-step="1">
+      <span class="step-circle">1</span>
+      <span class="step-label">Address</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" data-step="2">
+      <span class="step-circle">2</span>
+      <span class="step-label">Confirm</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" data-step="3">
+      <span class="step-circle">3</span>
+      <span class="step-label">Payment</span>
+    </div>
   </div>
 
   <div class="checkout-body">
@@ -497,8 +514,28 @@
         <input type="checkbox" id="saveInfo" name="saveInfo">
         Save this information for next time
       </label>
-      <button type="submit" class="btn primary checkout-continue">Continue to Payment</button>
+      <button type="submit" class="btn primary checkout-continue">Continue</button>
     </form>
+
+    <div class="checkout-step" id="checkoutConfirmStep" hidden>
+      <div class="confirm-address-box">
+        <div class="confirm-address-top">
+          <strong id="confirmName"></strong>
+          <button type="button" class="change-link" id="changeAddressBtn">Change</button>
+        </div>
+        <p class="confirm-address-line" id="confirmAddressLine"></p>
+        <p class="confirm-phone-line">📞 <span id="confirmPhoneLine"></span></p>
+      </div>
+
+      <div class="order-summary" id="confirmOrderSummary"></div>
+
+      <div class="order-total-row">
+        <span>Total</span>
+        <strong id="confirmOrderTotal">₹0</strong>
+      </div>
+
+      <button type="button" class="btn primary checkout-continue" id="confirmContinueBtn">Continue to Payment</button>
+    </div>
 
     <div class="checkout-step" id="checkoutPaymentStep" hidden>
       <div class="payment-info-box">
@@ -527,7 +564,7 @@
 
   </div>
 </div>
-
+  
 <script src="script.js"></script>
 <script type="module" src="auth.js"></script>
 </body>
