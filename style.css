@@ -1052,3 +1052,7 @@ nav a:hover::after { width: 100%; }
     box-shadow: none;
   }
 }
+
+.checkout-step[hidden] {
+  display: none !important;
+}
