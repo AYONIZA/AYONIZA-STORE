@@ -100,24 +100,50 @@ function setAuthLink(element, user) {
       "Account"
     ).split(" ")[0];
 
-    element.textContent = "Logout (" + name + ")";
-    element.href = "#";
-
-    element.onclick = async function (event) {
-      event.preventDefault();
-
-      try {
-        await signOut(auth);
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
-    };
+    // Login hone par "My Account" dikhao (Logout account page par hai)
+    element.textContent = "My Account";
+    element.title = "Logged in as " + name;
+    element.href = "account.html";
+    element.onclick = null;
   } else {
+    element.title = "";
     element.textContent = "Login";
     element.href = "login.html";
     element.onclick = null;
   }
+}
+
+
+/* ================= EXTRA LOGIN BUTTON (header ka pill button) ================= */
+
+// Navbar ke bahar jo bhi "Login" button/link login.html par ja raha hai,
+// login hone par wo "Logout" ban jata hai.
+async function doLogout(event) {
+  event.preventDefault();
+
+  try {
+    await signOut(auth);
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+}
+
+function setExtraLoginButtons(user) {
+  document.querySelectorAll('a[href$="login.html"], a[data-was-login="1"]').forEach((el) => {
+    if (el === authLink || el === authLinkMobile) return;
+
+    if (user) {
+      el.dataset.wasLogin = "1";
+      el.textContent = "Logout";
+      el.href = "#";
+      el.onclick = doLogout;
+    } else if (el.dataset.wasLogin === "1") {
+      el.textContent = "Login";
+      el.href = "login.html";
+      el.onclick = null;
+    }
+  });
 }
 
 
@@ -129,6 +155,7 @@ onAuthStateChanged(auth, async (user) => {
 
   setAuthLink(authLink, user);
   setAuthLink(authLinkMobile, user);
+  setExtraLoginButtons(user);
 
   // Signup ke beech me skip: signup flow khud naam ke saath save karega
   if (user && !signupInProgress) {
@@ -451,3 +478,8 @@ document.addEventListener(
     window.location.href = "product.html?" + params.toString();
   });
 })();
+
+
+/* ================= EXPORTS (account.html use karta hai) ================= */
+
+export { auth, db };
