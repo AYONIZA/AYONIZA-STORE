@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account | AYONIZA</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css">
+
+<style>
+  /* Sirf My Account page ke styles. Sab #accountPage ke andar scoped hain,
+     taaki style.css ke .btn / .card jaise classes se na takraayein. */
+  #accountPage { max-width: 920px; margin: 0 auto; padding: 40px 20px 72px; color: #2b1b21; }
+  #accountPage *, #accountPage *::before, #accountPage *::after { box-sizing: border-box; }
+  #accountPage [hidden] { display: none !important; }
+
+  #accountPage h1 { font-size: 36px; color: #3d1221; margin: 0 0 4px; }
+  #accountPage .sub { color: #7a6a70; margin: 0 0 28px; }
+
+  #accountPage .card {
+    background: #fff;
+    border: 1px solid #e6dfd6;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 0 0 24px;
+    box-shadow: none;
+  }
+  #accountPage .card h2 { font-size: 26px; color: #3d1221; margin: 0 0 16px; }
+
+  /* Forms */
+  #accountPage .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #accountPage .grid .full { grid-column: 1 / -1; }
+  #accountPage label { display: block; font-size: 14px; color: #7a6a70; margin: 0 0 6px; }
+  #accountPage input,
+  #accountPage select {
+    width: 100%;
+    font: inherit;
+    padding: 11px 12px;
+    border: 1px solid #e6dfd6;
+    border-radius: 8px;
+    background: #fff;
+    color: #2b1b21;
+    margin: 0;
+  }
+  #accountPage input:focus,
+  #accountPage select:focus { outline: 2px solid #6b3a4a; outline-offset: 1px; }
+  #accountPage input[readonly] { background: #f4f0ea; color: #7a6a70; }
+  #accountPage .check { display: flex; align-items: center; gap: 8px; }
+  #accountPage .check input { width: auto; }
+  #accountPage .check label { margin: 0; color: #2b1b21; }
+
+  #accountPage .btn {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 11px 26px;
+    border: 1px solid #3d1221;
+    background: #3d1221;
+    color: #fff;
+    text-decoration: none;
+  }
+  #accountPage .btn:disabled { opacity: .6; cursor: not-allowed; }
+  #accountPage .btn.ghost { background: transparent; color: #3d1221; }
+  #accountPage .btn.small { padding: 6px 16px; font-size: 14px; }
+  #accountPage .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+  #accountPage .msg { margin-top: 12px; font-size: 14px; min-height: 20px; }
+  #accountPage .msg.ok { color: #2e7d4f; }
+  #accountPage .msg.err { color: #b3261e; }
+
+  /* Addresses */
+  #accountPage .addr-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+  #accountPage .addr { border: 1px solid #e6dfd6; border-radius: 12px; padding: 16px; background: #fffdfa; }
+  #accountPage .addr.default { border-color: #6b3a4a; }
+  #accountPage .addr p { margin: 6px 0; font-size: 15px; }
+  #accountPage .addr .name { font-weight: 500; }
+  #accountPage .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #f1e6ea;
+    color: #3d1221;
+    margin-right: 6px;
+  }
+  #accountPage .empty { color: #7a6a70; margin: 0 0 12px; }
+  #accountPage .loading { text-align: center; padding: 80px 0; color: #7a6a70; }
+
+  /* Orders */
+  #accountPage .order { border: 1px solid #e6dfd6; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: #fffdfa; }
+  #accountPage .order-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  #accountPage .order-id { font-weight: 500; }
+  #accountPage .order-date { color: #7a6a70; font-size: 14px; }
+  #accountPage .order .tag { margin: 0 0 0 6px; }
+  #accountPage .order .tag.good { background: #e3f1e8; color: #2e7d4f; }
+  #accountPage .order .tag.bad { background: #f8e1df; color: #b3261e; }
+  #accountPage .order-items { list-style: none; margin: 0; padding: 10px 0; border-top: 1px solid #e6dfd6; border-bottom: 1px solid #e6dfd6; }
+  #accountPage .order-items li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 15px; }
+  #accountPage .order-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; font-size: 15px; }
+  #accountPage .order-foot .ship { color: #7a6a70; max-width: 70%; }
+  #accountPage .order-total { font-weight: 500; }
+
+  /* Overview */
+  #accountPage .overview { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin: 0; }
+  #accountPage .overview > div { min-width: 0; }
+  #accountPage .overview .full { grid-column: 1 / -1; }
+  #accountPage .overview dt { font-size: 13px; color: #7a6a70; margin: 0 0 2px; }
+  #accountPage .overview dd { margin: 0; font-size: 16px; color: #2b1b21; overflow-wrap: anywhere; white-space: pre-line; }
+  #accountPage .overview dd.none { color: #a99aa0; font-style: italic; }
+
+  @media (max-width: 640px) {
+    #accountPage .overview { grid-template-columns: 1fr; }
+    #accountPage .grid,
+    #accountPage .addr-list { grid-template-columns: 1fr; }
+    #accountPage h1 { font-size: 30px; }
+    #accountPage .order-foot .ship { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-track">
+    <span>✨ Buy any 2 & Get 10% Off</span>
+    <span>🎁 Buy any 3 & Get 15% Off</span>
+    <span>💳 Extra 10% OFF on Prepaid Orders</span>
+    <span>🚚 Free Shipping across India</span>
+    <span>✨ Buy any 2 & Get 10% Off</span>
+    <span>🎁 Buy any 3 & Get 15% Off</span>
+    <span>💳 Extra 10% OFF on Prepaid Orders</span>
+    <span>🚚 Free Shipping across India</span>
+  </div>
+</div>
+
+<header class="navbar">
+  <a href="index.html#home" class="logo-text"><img src="assets/ayoniza-logo.jpeg" alt="AYONIZA" class="nav-logo-img">AYONIZA</a>
+
+  <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="primaryNav">
+    <a href="index.html#home">Home</a>
+    <a href="index.html#shop">Shop</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#contact">Contact</a>
+    <a href="return-policy.html">Return Policy</a>
+    <a href="login.html" id="authLinkMobile" class="mobile-auth-link">Login</a>
+  </nav>
+
+  <div class="nav-actions">
+    <button class="search-btn" id="openSearchBtn" type="button" aria-label="Search products">🔍</button>
+    <a class="instagram-btn" href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Instagram</a>
+    <a class="auth-btn" id="authLink" href="login.html">Login</a>
+    <button class="cart-btn" id="openCartBtn" type="button" aria-label="Go to shop">
+      🛒 Cart
+    </button>
+  </div>
+</header>
+
+<main id="accountPage">
+    <div id="loading" class="loading">Loading your account...</div>
+
+    <div id="content" hidden>
+      <h1>My Account</h1>
+      <p class="sub" id="welcome"></p>
+      <div class="msg" id="loadMsg"></div>
+
+      <!-- ================= OVERVIEW ================= -->
+      <section class="card">
+        <h2>Account overview</h2>
+        <dl class="overview">
+          <div><dt>Name</dt><dd id="ovName"></dd></div>
+          <div><dt>Email</dt><dd id="ovEmail"></dd></div>
+          <div><dt>Mobile</dt><dd id="ovPhone"></dd></div>
+          <div><dt>Saved addresses</dt><dd id="ovCount"></dd></div>
+          <div class="full"><dt>Default address</dt><dd id="ovAddress"></dd></div>
+        </dl>
+      </section>
+
+      <!-- ================= PROFILE ================= -->
+      <section class="card">
+        <h2>Personal details</h2>
+        <form id="profileForm" novalidate>
+          <div class="grid">
+            <div>
+              <label for="pName">Full name *</label>
+              <input id="pName" type="text" maxlength="80" autocomplete="name" required>
+            </div>
+            <div>
+              <label for="pPhone">Mobile number *</label>
+              <input id="pPhone" type="tel" inputmode="numeric" maxlength="15" placeholder="10-digit mobile number" autocomplete="tel">
+            </div>
+            <div class="full">
+              <label for="pEmail">Email</label>
+              <input id="pEmail" type="email" readonly>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="profileBtn" type="submit">Save details</button>
+          </div>
+          <div class="msg" id="profileMsg"></div>
+        </form>
+      </section>
+
+      <!-- ================= ADDRESSES ================= -->
+      <section class="card">
+        <h2>Saved addresses</h2>
+        <div id="addrList" class="addr-list"></div>
+        <p id="addrEmpty" class="empty" hidden>No address saved yet. Add one to order faster.</p>
+        <button class="btn ghost" id="addAddrBtn" type="button">+ Add new address</button>
+        <div class="msg" id="addrMsg"></div>
+
+        <form id="addrForm" novalidate hidden style="margin-top:20px">
+          <h2 id="addrFormTitle" style="font-size:22px">New address</h2>
+          <div class="grid">
+            <div>
+              <label for="aName">Receiver's full name *</label>
+              <input id="aName" type="text" maxlength="80" autocomplete="name">
+            </div>
+            <div>
+              <label for="aPhone">Mobile number *</label>
+              <input id="aPhone" type="tel" inputmode="numeric" maxlength="15" autocomplete="tel">
+            </div>
+            <div class="full">
+              <label for="aLine1">House / Flat / Street *</label>
+              <input id="aLine1" type="text" maxlength="150" autocomplete="address-line1">
+            </div>
+            <div class="full">
+              <label for="aLine2">Area / Landmark (optional)</label>
+              <input id="aLine2" type="text" maxlength="150" autocomplete="address-line2">
+            </div>
+            <div>
+              <label for="aCity">City *</label>
+              <input id="aCity" type="text" maxlength="60" autocomplete="address-level2">
+            </div>
+            <div>
+              <label for="aState">State *</label>
+              <select id="aState"></select>
+            </div>
+            <div>
+              <label for="aPin">Pincode *</label>
+              <input id="aPin" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit pincode" autocomplete="postal-code">
+            </div>
+            <div>
+              <label for="aType">Address type</label>
+              <select id="aType">
+                <option value="Home">Home</option>
+                <option value="Work">Work</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="full check">
+              <input id="aDefault" type="checkbox">
+              <label for="aDefault">Make this my default address</label>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="addrSaveBtn" type="submit">Save address</button>
+            <button class="btn ghost" id="addrCancelBtn" type="button">Cancel</button>
+          </div>
+          <div class="msg" id="addrFormMsg"></div>
+        </form>
+      </section>
+
+      <!-- ================= ORDERS ================= -->
+      <section class="card">
+        <h2>My orders</h2>
+        <div id="orderList"></div>
+        <p id="orderEmpty" class="empty" hidden>You haven't placed any orders yet.</p>
+        <div class="msg" id="orderMsg"></div>
+      </section>
+
+      <div class="actions">
+        <button class="btn ghost" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </div>
+  </main>
+
+<footer class="site-footer">
+  <div class="footer-top">
+
+    <div class="footer-col footer-brand-col">
+      <a href="index.html#home" class="footer-logo">AYONIZA</a>
+      <p class="footer-tagline">Grace of Sita</p>
+      <p class="footer-contact">
+        <span>📍 Indore, Madhya Pradesh, India</span>
+        <span>📞 <a href="tel:+919203703177">+91 92037 03177</a></span>
+        <span>✉️ <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+      </p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        </a>
+        <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20l1.4-4.2A8 8 0 1 1 9 18.3L4 20z"/><path d="M8.5 9.7c.3 2.9 2.7 5.2 5.5 5.5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Help</h4>
+      <a href="return-policy.html">Return Policy</a>
+      <a href="https://wa.me/919203703177" target="_blank" rel="noopener">Track your Order</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="index.html#shop">All Jewellery</a>
+      <a href="index.html#shop">Earrings</a>
+      <a href="index.html#shop">Bracelets</a>
+      <a href="index.html#shop">Jewellery Sets</a>
+      <a href="index.html#shop">Kamarbandh</a>
+      <a href="index.html#shop">Necklaces</a>
+      <a href="index.html#shop">Hathphool</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+
+  </div>
+
+  <p class="footer-bottom">© 2026 AYONIZA. All rights reserved.</p>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z"/></svg>
+</a>
+
+<!-- Header ke chhote buttons (menu, search, cart): script.js is page par load nahi hota -->
+<script>
+  (function () {
+    // Mobile menu khulne par nav par ye class lagti hai.
+    // Agar mobile me menu na khule to script.js dekh kar yahan wahi class likho.
+    var NAV_OPEN_CLASS = "open";
+
+    var toggle = document.getElementById("menuToggle");
+    var nav = document.getElementById("primaryNav");
+
+    if (toggle && nav) {
+      toggle.addEventListener("click", function () {
+        var isOpen = nav.classList.toggle(NAV_OPEN_CLASS);
+        toggle.setAttribute("aria-expanded", String(isOpen));
+      });
+    }
+
+    // Search aur cart shop section par le jaate hain
+    ["openSearchBtn", "openCartBtn"].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", function () {
+          window.location.href = "index.html#shop";
+        });
+      }
+    });
+  })();
+</script>
+
+<script type="module">
+    import { auth, db } from "./auth.js";
+
+    import {
+      onAuthStateChanged,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      getDocs,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      query,
+      where,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    /* ================= HELPERS ================= */
+
+    const $ = (id) => document.getElementById(id);
+
+    const MAX_ADDRESSES = 5;
+
+    const STATES = [
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+      "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+      "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+      "Andaman and Nicobar Islands", "Chandigarh",
+      "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
+      "Ladakh", "Lakshadweep", "Puducherry"
+    ];
+
+    // State dropdown
+    const stateSelect = $("aState");
+    stateSelect.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select state";
+    stateSelect.appendChild(placeholder);
+    STATES.forEach((s) => {
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = s;
+      stateSelect.appendChild(opt);
+    });
+
+    function setMsg(el, text, ok = false) {
+      el.textContent = text;
+      el.className = "msg " + (text ? (ok ? "ok" : "err") : "");
+    }
+
+    // +91 / spaces / dashes hata kar 10 digit number nikalta hai
+    function cleanPhone(value) {
+      let digits = String(value || "").replace(/\D/g, "");
+      if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+      if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+      return digits;
+    }
+
+    const isValidPhone = (p) => /^[6-9]\d{9}$/.test(p);
+    const isValidPin = (p) => /^[1-9]\d{5}$/.test(p);
+
+
+    /* ================= STATE ================= */
+
+    let currentUser = null;
+    let editingId = null;
+    let addresses = [];
+    let profileData = {};
+
+
+    /* ================= PROFILE ================= */
+
+    // users/{uid} document nahi hai to rules ke hisaab se create karo
+    async function ensureProfile(user) {
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) return snap.data();
+
+      const data = {
+        uid: user.uid,
+        fullName: user.displayName || "",
+        email: user.email || "",
+        phone: "",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(ref, data);
+      return { fullName: data.fullName, email: data.email, phone: "" };
+    }
+
+    async function loadProfile(user) {
+      const data = await ensureProfile(user);
+      profileData = data;
+
+      $("pName").value = data.fullName || user.displayName || "";
+      $("pPhone").value = data.phone || "";
+      $("pEmail").value = user.email || data.email || "";
+
+      const first = ($("pName").value || user.email || "").split(" ")[0].split("@")[0];
+      $("welcome").textContent = first ? "Hello, " + first + "!" : "";
+    }
+
+    $("profileForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const msg = $("profileMsg");
+      const fullName = $("pName").value.trim();
+      const phone = cleanPhone($("pPhone").value);
+
+      if (!fullName) return setMsg(msg, "Please enter your full name.");
+      if (!isValidPhone(phone)) return setMsg(msg, "Please enter a valid 10-digit mobile number.");
+
+      $("profileBtn").disabled = true;
+
+      try {
+        // Rules: update me sirf fullName, phone, updatedAt allowed hain
+        await setDoc(
+          doc(db, "users", currentUser.uid),
+          { fullName, phone, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+
+        if (currentUser.displayName !== fullName) {
+          await updateProfile(currentUser, { displayName: fullName });
+        }
+
+        $("pPhone").value = phone;
+        profileData.fullName = fullName;
+        profileData.phone = phone;
+        renderOverview();
+        setMsg(msg, "Details saved.", true);
+      } catch (error) {
+        console.error("Profile save error:", error);
+        setMsg(msg, "Could not save your details. Please try again.");
+      } finally {
+        $("profileBtn").disabled = false;
+      }
+    });
+
+
+    /* ================= ADDRESSES ================= */
+
+    const addrCol = () => collection(db, "users", currentUser.uid, "addresses");
+
+    async function loadAddresses() {
+      const snap = await getDocs(addrCol());
+
+      addresses = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+      // Default pehle, phir naye pehle
+      addresses.sort((a, b) => {
+        if (!!b.isDefault !== !!a.isDefault) return b.isDefault ? 1 : -1;
+        const ta = a.createdAt?.seconds || 0;
+        const tb = b.createdAt?.seconds || 0;
+        return tb - ta;
+      });
+
+      renderAddresses();
+    }
+
+    function makeButton(text, onClick, extraClass = "") {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn ghost small " + extraClass;
+      btn.textContent = text;
+      btn.addEventListener("click", onClick);
+      return btn;
+    }
+
+    function renderAddresses() {
+      renderOverview();
+      const list = $("addrList");
+      list.innerHTML = "";
+
+      $("addrEmpty").hidden = addresses.length > 0;
+      $("addAddrBtn").hidden = addresses.length >= MAX_ADDRESSES;
+
+      addresses.forEach((a) => {
+        const card = document.createElement("div");
+        card.className = "addr" + (a.isDefault ? " default" : "");
+
+        const tags = document.createElement("div");
+        const typeTag = document.createElement("span");
+        typeTag.className = "tag";
+        typeTag.textContent = a.type || "Home";
+        tags.appendChild(typeTag);
+
+        if (a.isDefault) {
+          const defTag = document.createElement("span");
+          defTag.className = "tag";
+          defTag.textContent = "Default";
+          tags.appendChild(defTag);
+        }
+        card.appendChild(tags);
+
+        const name = document.createElement("p");
+        name.className = "name";
+        name.textContent = a.fullName || "";
+        card.appendChild(name);
+
+        const lines = document.createElement("p");
+        lines.textContent = [a.line1, a.line2].filter(Boolean).join(", ");
+        card.appendChild(lines);
+
+        const place = document.createElement("p");
+        place.textContent = [a.city, a.state].filter(Boolean).join(", ") + " - " + (a.pincode || "");
+        card.appendChild(place);
+
+        const phone = document.createElement("p");
+        phone.textContent = "Mobile: " + (a.phone || "");
+        card.appendChild(phone);
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        actions.style.marginTop = "12px";
+
+        actions.appendChild(makeButton("Edit", () => openAddressForm(a)));
+        if (!a.isDefault) {
+          actions.appendChild(makeButton("Set default", () => setDefault(a.id)));
+        }
+        actions.appendChild(makeButton("Delete", () => deleteAddress(a)));
+
+        card.appendChild(actions);
+        list.appendChild(card);
+      });
+    }
+
+    function openAddressForm(address = null) {
+      editingId = address ? address.id : null;
+
+      $("addrFormTitle").textContent = address ? "Edit address" : "New address";
+      $("aName").value = address?.fullName || $("pName").value || "";
+      $("aPhone").value = address?.phone || $("pPhone").value || "";
+      $("aLine1").value = address?.line1 || "";
+      $("aLine2").value = address?.line2 || "";
+      $("aCity").value = address?.city || "";
+      $("aState").value = address?.state || "";
+      $("aPin").value = address?.pincode || "";
+      $("aType").value = address?.type || "Home";
+      $("aDefault").checked = address ? !!address.isDefault : addresses.length === 0;
+
+      setMsg($("addrFormMsg"), "");
+      $("addrForm").hidden = false;
+      $("aName").focus();
+    }
+
+    function closeAddressForm() {
+      editingId = null;
+      $("addrForm").hidden = true;
+      setMsg($("addrFormMsg"), "");
+    }
+
+    $("addAddrBtn").addEventListener("click", () => {
+      if (addresses.length >= MAX_ADDRESSES) {
+        return setMsg($("addrMsg"), "You can save up to " + MAX_ADDRESSES + " addresses.");
+      }
+      setMsg($("addrMsg"), "");
+      openAddressForm();
+    });
+
+    $("addrCancelBtn").addEventListener("click", closeAddressForm);
+
+    // Doosre addresses se default hatao
+    async function clearOtherDefaults(exceptId) {
+      const others = addresses.filter((a) => a.isDefault && a.id !== exceptId);
+      for (const a of others) {
+        await updateDoc(doc(db, "users", currentUser.uid, "addresses", a.id), {
+          isDefault: false
+        });
+      }
+    }
+
+    async function setDefault(id) {
+      try {
+        await clearOtherDefaults(id);
+        await updateDoc(doc(db, "users", currentUser.uid, "addresses", id), {
+          isDefault: true
+        });
+        await loadAddresses();
+        setMsg($("addrMsg"), "Default address updated.", true);
+      } catch (error) {
+        console.error("Set default error:", error);
+        setMsg($("addrMsg"), "Could not update default address.");
+      }
+    }
+
+    async function deleteAddress(address) {
+      if (!confirm("Delete this address?")) return;
+
+      try {
+        await deleteDoc(doc(db, "users", currentUser.uid, "addresses", address.id));
+
+        // Default delete hua to bacha hua pehla address default bana do
+        if (address.isDefault) {
+          const next = addresses.find((a) => a.id !== address.id);
+          if (next) {
+            await updateDoc(doc(db, "users", currentUser.uid, "addresses", next.id), {
+              isDefault: true
+            });
+          }
+        }
+
+        if (editingId === address.id) closeAddressForm();
+
+        await loadAddresses();
+        setMsg($("addrMsg"), "Address deleted.", true);
+      } catch (error) {
+        console.error("Delete address error:", error);
+        setMsg($("addrMsg"), "Could not delete the address. Please try again.");
+      }
+    }
+
+    $("addrForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const msg = $("addrFormMsg");
+
+      const data = {
+        fullName: $("aName").value.trim(),
+        phone: cleanPhone($("aPhone").value),
+        line1: $("aLine1").value.trim(),
+        line2: $("aLine2").value.trim(),
+        city: $("aCity").value.trim(),
+        state: $("aState").value,
+        pincode: $("aPin").value.trim(),
+        type: $("aType").value,
+        isDefault: $("aDefault").checked
+      };
+
+      if (!data.fullName) return setMsg(msg, "Please enter the receiver's name.");
+      if (!isValidPhone(data.phone)) return setMsg(msg, "Please enter a valid 10-digit mobile number.");
+      if (!data.line1) return setMsg(msg, "Please enter house / flat / street.");
+      if (!data.city) return setMsg(msg, "Please enter your city.");
+      if (!data.state) return setMsg(msg, "Please select your state.");
+      if (!isValidPin(data.pincode)) return setMsg(msg, "Please enter a valid 6-digit pincode.");
+
+      // Pehla address hamesha default
+      if (addresses.length === 0 || (addresses.length === 1 && editingId)) {
+        data.isDefault = true;
+      }
+
+      $("addrSaveBtn").disabled = true;
+
+      try {
+        if (data.isDefault) await clearOtherDefaults(editingId);
+
+        if (editingId) {
+          await updateDoc(doc(db, "users", currentUser.uid, "addresses", editingId), {
+            ...data,
+            updatedAt: serverTimestamp()
+          });
+        } else {
+          await addDoc(addrCol(), {
+            ...data,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        }
+
+        closeAddressForm();
+        await loadAddresses();
+        setMsg($("addrMsg"), "Address saved.", true);
+      } catch (error) {
+        console.error("Address save error:", error);
+        setMsg(msg, "Could not save the address. Please try again.");
+      } finally {
+        $("addrSaveBtn").disabled = false;
+      }
+    });
+
+
+    /* ================= ORDERS ================= */
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    const rupees = (n) => "\u20B9" + Number(n || 0).toLocaleString("en-IN");
+
+    function titleCase(value) {
+      const s = String(value || "").replace(/[_-]+/g, " ").trim();
+      return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+    }
+
+    function statusClass(value) {
+      const v = String(value || "").toLowerCase();
+      if (["delivered", "paid", "completed", "shipped"].includes(v)) return "tag good";
+      if (["cancelled", "canceled", "failed", "refunded"].includes(v)) return "tag bad";
+      return "tag";
+    }
+
+    function renderOrder(order) {
+      const card = el("div", "order");
+
+      // Header: order id + date + status tags
+      const head = el("div", "order-head");
+      const left = el("div");
+      left.appendChild(el("div", "order-id", "Order #" + order.id.slice(0, 8).toUpperCase()));
+
+      const date = order.createdAt?.toDate ? order.createdAt.toDate() : null;
+      if (date) {
+        left.appendChild(
+          el("div", "order-date", date.toLocaleDateString("en-IN", {
+            day: "numeric", month: "short", year: "numeric"
+          }))
+        );
+      }
+      head.appendChild(left);
+
+      const tags = el("div");
+      if (order.status) {
+        tags.appendChild(el("span", statusClass(order.status), titleCase(order.status)));
+      }
+      if (order.paymentStatus) {
+        tags.appendChild(
+          el("span", statusClass(order.paymentStatus), "Payment: " + titleCase(order.paymentStatus))
+        );
+      }
+      head.appendChild(tags);
+      card.appendChild(head);
+
+      // Items
+      const items = Array.isArray(order.items) ? order.items : [];
+      if (items.length) {
+        const ul = el("ul", "order-items");
+        items.forEach((item) => {
+          const qty = Number(item.qty || item.quantity || 1);
+          const price = Number(item.price || 0);
+          const li = el("li");
+          li.appendChild(el("span", "", (item.name || "Item") + " \u00D7 " + qty));
+          li.appendChild(el("span", "", rupees(price * qty)));
+          ul.appendChild(li);
+        });
+        card.appendChild(ul);
+      }
+
+      // Footer: ship-to + total
+      const foot = el("div", "order-foot");
+      const a = order.shippingAddress || order.address;
+      if (a && typeof a === "object") {
+        const line = [a.fullName, a.line1, a.line2, a.city, a.state, a.pincode]
+          .filter(Boolean)
+          .join(", ");
+        foot.appendChild(el("div", "ship", "Ship to: " + line));
+      } else {
+        foot.appendChild(el("div"));
+      }
+
+      const total = order.total ?? order.amount ?? order.totalAmount;
+      if (total !== undefined) {
+        foot.appendChild(el("div", "order-total", "Total: " + rupees(total)));
+      }
+      card.appendChild(foot);
+
+      return card;
+    }
+
+    async function loadOrders() {
+      const list = $("orderList");
+
+      try {
+        // Rules ke liye query me userId filter hona zaroori hai
+        const q = query(collection(db, "orders"), where("userId", "==", currentUser.uid));
+        const snap = await getDocs(q);
+
+        const orders = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+        // Naye orders pehle (client side sort: index ki zaroorat nahi)
+        orders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        list.innerHTML = "";
+        $("orderEmpty").hidden = orders.length > 0;
+        orders.forEach((order) => list.appendChild(renderOrder(order)));
+      } catch (error) {
+        console.error("Orders load error:", error);
+        setMsg($("orderMsg"), "Could not load your orders. Please refresh the page.");
+      }
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    $("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    });
+
+
+    /* ================= OVERVIEW ================= */
+
+    function setOverview(id, text) {
+      const node = $(id);
+      node.textContent = text || "Not added yet";
+      node.className = text ? "" : "none";
+    }
+
+    function renderOverview() {
+      const user = currentUser;
+      if (!user) return;
+
+      const name = (profileData.fullName || user.displayName || "").trim();
+      const phone = (profileData.phone || "").trim();
+
+      setOverview("ovName", name);
+      setOverview("ovEmail", user.email || profileData.email || "");
+      setOverview("ovPhone", phone);
+      setOverview("ovCount", String(addresses.length) + (addresses.length === 1 ? " address" : " addresses"));
+
+      const a = addresses.find((x) => x.isDefault) || addresses[0];
+
+      if (a) {
+        const text = [
+          a.fullName,
+          [a.line1, a.line2].filter(Boolean).join(", "),
+          [a.city, a.state].filter(Boolean).join(", ") + (a.pincode ? " - " + a.pincode : ""),
+          a.phone ? "Mobile: " + a.phone : ""
+        ].filter(Boolean).join("\n");
+
+        setOverview("ovAddress", text);
+      } else {
+        setOverview("ovAddress", "");
+      }
+    }
+
+
+    /* ================= START ================= */
+
+    onAuthStateChanged(auth, async (user) => {
+      // Login nahi hai to login page par bhejo
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = user;
+
+      // Naam aur email login se turant dikhao (Firestore ke bina bhi)
+      $("pName").value = user.displayName || "";
+      $("pEmail").value = user.email || "";
+      profileData = { fullName: user.displayName || "", phone: "" };
+
+      const first = (user.displayName || user.email || "").split(" ")[0].split("@")[0];
+      $("welcome").textContent = first ? "Hello, " + first + "!" : "";
+
+      renderOverview();
+      $("loading").hidden = true;
+      $("content").hidden = false;
+
+      // Profile aur addresses alag try/catch me: ek fail ho to doosra dikhe
+      const problems = [];
+
+      try {
+        await loadProfile(user);
+      } catch (error) {
+        console.error("Profile load error:", error);
+        problems.push("profile: " + (error.code || error.message));
+      }
+
+      try {
+        await loadAddresses();
+      } catch (error) {
+        console.error("Addresses load error:", error);
+        problems.push("addresses: " + (error.code || error.message));
+      }
+
+      renderOverview();
+
+      if (problems.length) {
+        setMsg(
+          $("loadMsg"),
+          "Could not load some saved details (" + problems.join(", ") +
+          "). Please check that the Firestore rules are published, then refresh."
+        );
+      }
+
+      // Orders alag se load hote hain
+      loadOrders();
+    });
+  </script>
+</body>
+</html>
