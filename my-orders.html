@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Orders | AYONIZA</title><link rel="stylesheet" href="orders.css"></head>
+<body><div class="wrap">
+<div class="top"><h1>My Orders</h1><a href="index.html">Continue shopping</a></div>
+<div id="list"><p class="empty">Loading your orders…</p></div></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+const list = document.getElementById("list");
+const LABEL = { PENDING_PAYMENT:"Payment pending", PAYMENT_FAILED:"Payment failed", PLACED:"Order placed", CONFIRMED:"Confirmed", PACKED:"Packed", SHIPPED:"Shipped", OUT_FOR_DELIVERY:"Out for delivery", DELIVERED:"Delivered", CANCELLED:"Cancelled" };
+onAuthStateChanged(auth, (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  onSnapshot(query(collection(db, "orders"), where("uid", "==", user.uid)), (snap) => {
+    const docs = snap.docs.map(d => d.data()).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    list.innerHTML = "";
+    if (!docs.length) { list.innerHTML = '<p class="empty">No orders yet. Your orders will show up here after you pay.</p>'; return; }
+    docs.forEach(o => {
+      const a = document.createElement("a"); a.className = "card"; a.href = "order-details.html?id=" + encodeURIComponent(o.orderId);
+      const cls = o.status === "DELIVERED" ? "good" : (o.status === "CANCELLED" || o.status === "PAYMENT_FAILED") ? "bad" : "";
+      const d = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString("en-IN") : "";
+      a.innerHTML = `<div class="row"><strong></strong><span class="badge ${cls}"></span></div><p class="muted"></p><div class="row"><span class="muted"></span><strong></strong></div>`;
+      a.querySelector("strong").textContent = o.orderId;
+      a.querySelector(".badge").textContent = LABEL[o.status] || o.status;
+      a.querySelector("p").textContent = o.items.map(i => i.name + " ×" + i.qty).join(", ");
+      a.querySelectorAll(".row span")[1].textContent = d;
+      a.querySelectorAll(".row strong")[1].textContent = "₹" + o.total;
+      list.appendChild(a);
+    });
+  });
+});
+</script></body></html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order details | AYONIZA</title><link rel="stylesheet" href="orders.css"></head>
+<body><div class="wrap">
+<div class="top"><h1 id="title">Order</h1><a href="my-orders.html">All orders</a></div>
+<div id="box"><p class="empty">Loading…</p></div></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+import { firebaseConfig } from "./firebase-config.js";
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+const fns = getFunctions(app, "asia-south1");
+const CANCELLABLE = ["PLACED", "CONFIRMED", "PACKED"];
+const id = new URLSearchParams(location.search).get("id");
+const box = document.getElementById("box");
+const STEPS = [["PLACED","Order placed"],["CONFIRMED","Confirmed"],["PACKED","Packed"],["SHIPPED","Shipped"],["OUT_FOR_DELIVERY","Out for delivery"],["DELIVERED","Delivered"]];
+const txt = (s) => { const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; };
+const fmt = (t) => t ? new Date(t.seconds * 1000).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "";
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  document.getElementById("title").textContent = id;
+  let verified = false;
+  onSnapshot(doc(db, "orders", id), async (snap) => {
+    if (!snap.exists()) { box.innerHTML = '<p class="empty">Order not found.</p>'; return; }
+    const o = snap.data();
+    if (o.status === "PENDING_PAYMENT" && !verified) { verified = true; try { await httpsCallable(fns, "verifyPayment")({ orderId: id }); } catch (e) { console.error(e); } }
+    if (o.paymentStatus === "PAID" && sessionStorage.getItem("clearCartOnPaid") === id) { localStorage.removeItem("ayonizaCart"); sessionStorage.removeItem("clearCartOnPaid"); }
+    render(o);
+  });
+});
+
+function render(o) {
+  const when = {}; (o.history || []).forEach(h => when[h.status] = h);
+  let html = "";
+  if (o.status === "PENDING_PAYMENT") html += '<div class="card">Checking your payment… This page updates by itself.</div>';
+  if (o.status === "PAYMENT_FAILED") html += '<div class="card"><span class="badge bad">Payment failed</span><p>Your payment did not go through and you were not charged for this order. <a href="index.html#shop">Try again</a></p></div>';
+  if (o.status === "CANCELLED") html += '<div class="card"><span class="badge bad">Cancelled</span><p>This order was cancelled.' + (o.refundStatus === "REFUND_FAILED" ? " We will process your refund manually. Contact us on WhatsApp if it takes long." : o.refundStatus ? " Your refund of ₹" + o.total + " has been started and goes back to your original payment method (usually 5-7 working days)." : "") + '</p></div>';
+  if (o.paymentStatus === "PAID" && o.status !== "CANCELLED") {
+    html += '<div class="card"><strong>Order status</strong><ul class="timeline">' +
+      STEPS.map(([k, l]) => `<li class="${when[k] ? "done" : ""}">${l}<small>${when[k] ? fmt(when[k].time) : ""}</small></li>`).join("") + "</ul></div>";
+  }
+  if (CANCELLABLE.includes(o.status) && o.paymentStatus === "PAID") html += '<div class="card"><button id="cancelBtn" style="background:#b3261e">Cancel order</button><p class="muted">You can cancel until your order is shipped. The full amount is refunded to your original payment method.</p></div>';
+  if (o.shipment) html += `<div class="card"><strong>Shipment</strong><p>Courier: ${txt(o.shipment.courier)}<br>Tracking ID: ${txt(o.shipment.trackingId)}${o.shipment.expectedDelivery ? "<br>Expected delivery: " + txt(o.shipment.expectedDelivery) : ""}</p></div>`;
+  html += '<div class="card"><strong>Items</strong>' + o.items.map(i => `<div class="row"><span>${txt(i.name)} ×${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join("") +
+    `<hr style="border:0;border-top:1px solid var(--line)"><div class="row"><span>Amount paid after discounts</span><strong>₹${o.total}</strong></div></div>`;
+  const a = o.address;
+  html += `<div class="card"><strong>Delivering to</strong><p>${txt(a.name)}, ${txt(a.mobile)}<br>${txt(a.address)}${a.landmark ? " (" + txt(a.landmark) + ")" : ""}, ${txt(a.city)}, ${txt(a.state)} - ${txt(a.pin)}</p></div>`;
+  box.innerHTML = html;
+  const cb = document.getElementById("cancelBtn");
+  if (cb) cb.onclick = async () => {
+    if (!confirm("Cancel this order? Your payment will be refunded.")) return;
+    cb.disabled = true; cb.textContent = "Cancelling…";
+    try { await httpsCallable(fns, "cancelOrder")({ orderId: id }); }
+    catch (e) { alert(e.message); cb.disabled = false; cb.textContent = "Cancel order"; }
+  };
+}
+</script></body></html>
