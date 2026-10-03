@@ -333,21 +333,129 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function prefillForm() {
-    if (!checkoutForm) return;
-    const saved = loadSavedInfo();
-    if (!saved) return;
-    checkoutForm.custName.value = saved.name || '';
-    checkoutForm.custMobile.value = saved.mobile || '';
-    checkoutForm.custAddress.value = saved.address || '';
-    checkoutForm.custLandmark.value = saved.landmark || '';
-    checkoutForm.custCity.value = saved.city || '';
-    checkoutForm.custState.value = saved.state || '';
-    checkoutForm.custPin.value = saved.pin || '';
-    checkoutForm.custCountry.value = saved.country || 'India';
-    if (saveInfoCheckbox) saveInfoCheckbox.checked = true;
+ async function prefillForm() {
+
+  if (!checkoutForm) return;
+
+
+  let saved = loadSavedInfo();
+
+
+  // Firebase profile se data load karo
+  if (loggedInUser) {
+
+    try {
+
+      const userRef =
+        doc(
+          firestore,
+          "users",
+          loggedInUser.uid
+        );
+
+
+      const snapshot =
+        await getDoc(userRef);
+
+
+      if (snapshot.exists()) {
+
+        const data =
+          snapshot.data();
+
+
+        saved = {
+
+          name:
+            data.fullName ||
+            saved?.name ||
+            loggedInUser.displayName ||
+            "",
+
+          mobile:
+            data.phone ||
+            saved?.mobile ||
+            "",
+
+          address:
+            data.address ||
+            saved?.address ||
+            "",
+
+          landmark:
+            data.landmark ||
+            saved?.landmark ||
+            "",
+
+          city:
+            data.city ||
+            saved?.city ||
+            "",
+
+          state:
+            data.state ||
+            saved?.state ||
+            "",
+
+          pin:
+            data.pincode ||
+            saved?.pin ||
+            "",
+
+          country:
+            data.country ||
+            saved?.country ||
+            "India"
+
+        };
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Could not load customer profile:",
+        error
+      );
+
+    }
+
   }
 
+
+  if (!saved) return;
+
+
+  checkoutForm.custName.value =
+    saved.name || "";
+
+  checkoutForm.custMobile.value =
+    saved.mobile || "";
+
+  checkoutForm.custAddress.value =
+    saved.address || "";
+
+  checkoutForm.custLandmark.value =
+    saved.landmark || "";
+
+  checkoutForm.custCity.value =
+    saved.city || "";
+
+  checkoutForm.custState.value =
+    saved.state || "";
+
+  checkoutForm.custPin.value =
+    saved.pin || "";
+
+  checkoutForm.custCountry.value =
+    saved.country || "India";
+
+
+  if (saveInfoCheckbox) {
+    saveInfoCheckbox.checked = true;
+  }
+
+}
   const STEP_TITLES = { 1: 'Address', 2: 'Confirm Details', 3: 'Payment' };
 
   function goToStep(n) {
