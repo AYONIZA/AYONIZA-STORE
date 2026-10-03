@@ -15,6 +15,7 @@ import {
 import {
   getFirestore,
   doc,
+  getDoc,
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -25,9 +26,7 @@ import { firebaseConfig } from "./firebase-config.js";
 /* ================= FIREBASE ================= */
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
@@ -35,648 +34,324 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let authReady = false;
+let signupInProgress = false; // signup ke time listener profile save na kare (race condition fix)
 
 
 /* ================= SAVE USER TO FIRESTORE ================= */
 
-async function saveUserProfile(user) {
-
+async function saveUserProfile(user, extra = {}) {
   if (!user) return;
 
   try {
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
 
-    const userRef = doc(
-      db,
-      "users",
-      user.uid
-    );
+    const fullName = extra.fullName || user.displayName || "";
 
-    await setDoc(
-      userRef,
-      {
-        uid: user.uid,
+    // Jo fields hamesha update ho sakti hain
+    const data = {
+      uid: user.uid,
+      email: user.email || "",
+      updatedAt: serverTimestamp()
+    };
 
-        fullName:
-          user.displayName || "",
+    // Khaali naam se purana naam overwrite nahi hona chahiye
+    if (fullName) data.fullName = fullName;
 
-        email:
-          user.email || "",
+    // Sirf pehli baar defaults set karo.
+    // Pehle har login pe phone/address/city sab blank ho jata tha.
+    if (!snap.exists()) {
+      data.fullName = fullName;
+      data.phone = "";
+      data.address = "";
+      data.city = "";
+      data.state = "";
+      data.pincode = "";
+      data.createdAt = serverTimestamp();
+    }
 
-        phone: "",
-
-        address: "",
-
-        city: "",
-
-        state: "",
-
-        pincode: "",
-
-        updatedAt:
-          serverTimestamp()
-      },
-      {
-        merge: true
-      }
-    );
-
-    console.log("Firestore profile saved.");
-
+    await setDoc(userRef, data, { merge: true });
   } catch (error) {
-
-    // Technical error only in console.
-    // Customer ko nahi dikhana hai.
-    console.error(
-      "Firestore profile error:",
-      error
-    );
-
+    // Technical error sirf console me, customer ko nahi dikhana.
+    console.error("Firestore profile error:", error);
   }
-
 }
 
 
 /* ================= NAVBAR ================= */
 
-const authLink =
-  document.getElementById("authLink");
-
-const authLinkMobile =
-  document.getElementById("authLinkMobile");
-
+const authLink = document.getElementById("authLink");
+const authLinkMobile = document.getElementById("authLinkMobile");
 
 function setAuthLink(element, user) {
-
   if (!element) return;
 
   if (user) {
+    const name = (
+      user.displayName ||
+      user.email?.split("@")[0] ||
+      "Account"
+    ).split(" ")[0];
 
-    const name =
-      (
-        user.displayName ||
-        user.email?.split("@")[0] ||
-        "Account"
-      ).split(" ")[0];
-
-
-    element.textContent =
-      "Logout (" + name + ")";
-
+    element.textContent = "Logout (" + name + ")";
     element.href = "#";
 
+    element.onclick = async function (event) {
+      event.preventDefault();
 
-    element.onclick =
-      async function (event) {
-
-        event.preventDefault();
-
-        try {
-
-          await signOut(auth);
-
-          window.location.href =
-            "index.html";
-
-        } catch (error) {
-
-          console.error(
-            "Logout error:",
-            error
-          );
-
-        }
-
-      };
-
+      try {
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    };
   } else {
-
-    element.textContent =
-      "Login";
-
-    element.href =
-      "login.html";
-
+    element.textContent = "Login";
+    element.href = "login.html";
     element.onclick = null;
-
   }
-
 }
 
 
 /* ================= AUTH LISTENER ================= */
 
-onAuthStateChanged(
-  auth,
-  async (user) => {
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  authReady = true;
 
-    currentUser = user;
+  setAuthLink(authLink, user);
+  setAuthLink(authLinkMobile, user);
 
-    authReady = true;
-
-
-    setAuthLink(
-      authLink,
-      user
-    );
-
-
-    setAuthLink(
-      authLinkMobile,
-      user
-    );
-
-
-    if (user) {
-
-      await saveUserProfile(user);
-
-    }
-
+  // Signup ke beech me skip: signup flow khud naam ke saath save karega
+  if (user && !signupInProgress) {
+    await saveUserProfile(user);
   }
-);
+});
 
 
 /* ================= LOGIN PAGE ================= */
 
-const form =
-  document.getElementById("authForm");
-
+const form = document.getElementById("authForm");
 
 if (form) {
-
-  const msg =
-    document.getElementById("authMsg");
-
-  const nameField =
-    document.getElementById("nameField");
-
-  const submitBtn =
-    document.getElementById("submitBtn");
-
-  const tabs =
-    document.querySelectorAll(".tab");
-
-  const googleBtn =
-    document.getElementById("googleBtn");
-
-  const forgotBtn =
-    document.getElementById("forgotBtn");
-
+  const msg = document.getElementById("authMsg");
+  const nameField = document.getElementById("nameField");
+  const submitBtn = document.getElementById("submitBtn");
+  const tabs = document.querySelectorAll(".tab");
+  const googleBtn = document.getElementById("googleBtn");
+  const forgotBtn = document.getElementById("forgotBtn");
 
   let mode = "login";
 
-
-  function showMessage(
-    message,
-    success = false
-  ) {
-
+  function showMessage(message, success = false) {
     if (!msg) return;
-
-    msg.textContent =
-      message;
-
-    msg.className =
-      "msg " +
-      (success ? "ok" : "err");
-
+    msg.textContent = message;
+    msg.className = "msg " + (success ? "ok" : "err");
   }
 
-
   function friendlyError(code) {
-
     const errors = {
-
-      "auth/invalid-email":
-        "Please enter a valid email address.",
-
-      "auth/missing-password":
-        "Please enter your password.",
-
-      "auth/weak-password":
-        "Password must be at least 6 characters.",
-
-      "auth/email-already-in-use":
-        "This email already has an account. Please log in.",
-
-      "auth/invalid-credential":
-        "Email or password is incorrect.",
-
-      "auth/user-not-found":
-        "No account found with this email.",
-
-      "auth/wrong-password":
-        "Email or password is incorrect.",
-
-      "auth/too-many-requests":
-        "Too many attempts. Please try again later.",
-
-      "auth/popup-closed-by-user":
-        "Google login was closed.",
-
-      "auth/unauthorized-domain":
-        "This website is not authorized in Firebase.",
-
+      "auth/invalid-email": "Please enter a valid email address.",
+      "auth/missing-password": "Please enter your password.",
+      "auth/weak-password": "Password must be at least 6 characters.",
+      "auth/email-already-in-use": "This email already has an account. Please log in.",
+      "auth/invalid-credential": "Email or password is incorrect.",
+      "auth/user-not-found": "No account found with this email.",
+      "auth/wrong-password": "Email or password is incorrect.",
+      "auth/user-disabled": "This account has been disabled.",
+      "auth/too-many-requests": "Too many attempts. Please try again later.",
+      "auth/network-request-failed": "Network problem. Please check your internet connection.",
+      "auth/popup-closed-by-user": "Google login was closed.",
+      "auth/cancelled-popup-request": "Google login was cancelled.",
+      "auth/popup-blocked": "Popup was blocked. Please allow popups and try again.",
+      "auth/account-exists-with-different-credential":
+        "This email is already registered with a different login method.",
+      "auth/unauthorized-domain": "This website is not authorized in Firebase.",
+      "auth/operation-not-allowed": "This login method is not enabled.",
+      // Pehle yahan galat code tha, sahi code ye hai:
+      "auth/invalid-api-key": "Firebase configuration needs to be checked.",
       "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
         "Firebase configuration needs to be checked."
-
     };
 
-    return (
-      errors[code] ||
-      "Unable to complete this request. Please try again."
-    );
-
+    return errors[code] || "Unable to complete this request. Please try again.";
   }
 
 
   /* ================= LOGIN/SIGNUP TABS ================= */
 
-  tabs.forEach(
-    (tab) => {
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      mode = tab.dataset.mode;
 
-      tab.addEventListener(
-        "click",
-        () => {
+      tabs.forEach((item) => {
+        item.classList.toggle("active", item === tab);
+      });
 
-          mode =
-            tab.dataset.mode;
+      if (nameField) {
+        nameField.hidden = mode !== "signup";
+      }
 
+      if (submitBtn) {
+        submitBtn.textContent = mode === "signup" ? "Create account" : "Log in";
+      }
 
-          tabs.forEach(
-            (item) => {
-
-              item.classList.toggle(
-                "active",
-                item === tab
-              );
-
-            }
-          );
-
-
-          if (nameField) {
-
-            nameField.hidden =
-              mode !== "signup";
-
-          }
-
-
-          submitBtn.textContent =
-            mode === "signup"
-              ? "Create account"
-              : "Log in";
-
-
-          msg.textContent = "";
-
-          msg.className = "msg";
-
-        }
-      );
-
-    }
-  );
+      if (msg) {
+        msg.textContent = "";
+        msg.className = "msg";
+      }
+    });
+  });
 
 
   /* ================= OPEN SIGNUP ================= */
 
-  const urlMode =
-    new URLSearchParams(
-      window.location.search
-    ).get("mode");
-
+  const urlMode = new URLSearchParams(window.location.search).get("mode");
 
   if (urlMode === "signup") {
-
-    const signupTab =
-      [...tabs].find(
-        (tab) =>
-          tab.dataset.mode === "signup"
-      );
-
-
-    if (signupTab) {
-
-      signupTab.click();
-
-    }
-
+    const signupTab = [...tabs].find((tab) => tab.dataset.mode === "signup");
+    if (signupTab) signupTab.click();
   }
 
 
   /* ================= GO HOME ================= */
 
   function goHome() {
-
-    window.location.href =
-      "index.html";
-
+    window.location.href = "index.html";
   }
 
 
   /* ================= EMAIL LOGIN/SIGNUP ================= */
 
-  form.addEventListener(
-    "submit",
-    async (event) => {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      event.preventDefault();
+    const email = form.email.value.trim();
+    const password = form.password.value;
 
-
-      const email =
-        form.email.value.trim();
-
-      const password =
-        form.password.value;
-
-
-      if (!email) {
-
-        showMessage(
-          "Please enter your email."
-        );
-
-        return;
-
-      }
-
-
-      if (!password) {
-
-        showMessage(
-          "Please enter your password."
-        );
-
-        return;
-
-      }
-
-
-      submitBtn.disabled = true;
-
-
-      try {
-
-
-        /* ========== SIGNUP ========== */
-
-        if (mode === "signup") {
-
-          const fullName =
-            form.fullname.value.trim();
-
-
-          if (!fullName) {
-
-            showMessage(
-              "Please enter your full name."
-            );
-
-            submitBtn.disabled = false;
-
-            return;
-
-          }
-
-
-          const credential =
-            await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-
-          const user =
-            credential.user;
-
-
-          /* SAVE NAME */
-
-          await updateProfile(
-            user,
-            {
-              displayName: fullName
-            }
-          );
-
-
-          /* FIRESTORE */
-
-          await saveUserProfile(
-            user
-          );
-
-
-          showMessage(
-            "Account created successfully!",
-            true
-          );
-
-
-          setTimeout(
-            goHome,
-            700
-          );
-
-        }
-
-
-        /* ========== LOGIN ========== */
-
-        else {
-
-          const credential =
-            await signInWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-
-          const user =
-            credential.user;
-
-
-          await saveUserProfile(
-            user
-          );
-
-
-          goHome();
-
-        }
-
-
-      } catch (error) {
-
-        console.error(
-          "Authentication error:",
-          error
-        );
-
-
-        showMessage(
-          friendlyError(
-            error.code
-          )
-        );
-
-      } finally {
-
-        submitBtn.disabled =
-          false;
-
-      }
-
+    if (!email) {
+      showMessage("Please enter your email.");
+      return;
     }
-  );
+
+    if (!password) {
+      showMessage("Please enter your password.");
+      return;
+    }
+
+    // Signup me naam pehle check karo, account banane se pehle
+    let fullName = "";
+
+    if (mode === "signup") {
+      fullName = (form.fullname?.value || "").trim();
+
+      if (!fullName) {
+        showMessage("Please enter your full name.");
+        return;
+      }
+    }
+
+    submitBtn.disabled = true;
+
+    try {
+      /* ========== SIGNUP ========== */
+
+      if (mode === "signup") {
+        signupInProgress = true;
+
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = credential.user;
+
+        await updateProfile(user, { displayName: fullName });
+        await saveUserProfile(user, { fullName });
+
+        // Navbar ka naam update karne ke liye
+        setAuthLink(authLink, user);
+        setAuthLink(authLinkMobile, user);
+
+        showMessage("Account created successfully!", true);
+        setTimeout(goHome, 700);
+      }
+
+      /* ========== LOGIN ========== */
+
+      else {
+        const credential = await signInWithEmailAndPassword(auth, email, password);
+        await saveUserProfile(credential.user);
+        goHome();
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      showMessage(friendlyError(error.code));
+    } finally {
+      signupInProgress = false;
+      submitBtn.disabled = false;
+    }
+  });
 
 
   /* ================= GOOGLE LOGIN ================= */
 
-  googleBtn.addEventListener(
-    "click",
-    async () => {
-
+  if (googleBtn) {
+    googleBtn.addEventListener("click", async () => {
       googleBtn.disabled = true;
 
-
       try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
 
-        const provider =
-          new GoogleAuthProvider();
-
-
-        const result =
-          await signInWithPopup(
-            auth,
-            provider
-          );
-
-
-        await saveUserProfile(
-          result.user
-        );
-
-
+        await saveUserProfile(result.user);
         goHome();
-
-
       } catch (error) {
-
-        console.error(
-          "Google login error:",
-          error
-        );
-
-
-        showMessage(
-          friendlyError(
-            error.code
-          )
-        );
-
+        console.error("Google login error:", error);
+        showMessage(friendlyError(error.code));
       } finally {
-
-        googleBtn.disabled =
-          false;
-
+        googleBtn.disabled = false;
       }
-
-    }
-  );
+    });
+  }
 
 
   /* ================= FORGOT PASSWORD ================= */
 
-  forgotBtn.addEventListener(
-    "click",
-    async () => {
-
-      const email =
-        form.email.value.trim();
-
+  if (forgotBtn) {
+    forgotBtn.addEventListener("click", async () => {
+      const email = form.email.value.trim();
 
       if (!email) {
-
-        showMessage(
-          "Enter your email first."
-        );
-
+        showMessage("Enter your email first.");
         return;
-
       }
-
 
       try {
-
-        await sendPasswordResetEmail(
-          auth,
-          email
-        );
-
-
-        showMessage(
-          "Password reset link sent to your email.",
-          true
-        );
-
-
+        await sendPasswordResetEmail(auth, email);
+        showMessage("Password reset link sent to your email.", true);
       } catch (error) {
-
-        console.error(
-          "Password reset error:",
-          error
-        );
-
-
-        showMessage(
-          friendlyError(
-            error.code
-          )
-        );
-
+        console.error("Password reset error:", error);
+        showMessage(friendlyError(error.code));
       }
-
-    }
-  );
-
+    });
+  }
 }
 
 
 /* ================= PURCHASE LOGIN PROTECTION ================= */
 
-const PROTECTED =
-  ".add-cart-btn, .product-button, #checkoutBtn";
+const PROTECTED = ".add-cart-btn, .product-button, #checkoutBtn";
 
+let loginToastTimer = null;
+let loginRedirectTimer = null;
 
 function showLoginToast(message) {
-
-  const old =
-    document.getElementById(
-      "loginToast"
-    );
-
-
+  const old = document.getElementById("loginToast");
   if (old) old.remove();
 
+  clearTimeout(loginToastTimer);
 
-  const toast =
-    document.createElement(
-      "div"
-    );
-
-
-  toast.id =
-    "loginToast";
-
-
-  toast.textContent =
-    message;
-
+  const toast = document.createElement("div");
+  toast.id = "loginToast";
+  toast.textContent = message;
 
   toast.style.cssText =
     "position:fixed;" +
@@ -692,60 +367,38 @@ function showLoginToast(message) {
     "max-width:90%;" +
     "text-align:center;";
 
+  document.body.appendChild(toast);
 
-  document.body.appendChild(
-    toast
-  );
-
+  // Toast apne aap hat jaye
+  loginToastTimer = setTimeout(() => toast.remove(), 3000);
 }
-
 
 document.addEventListener(
   "click",
   (event) => {
-
-    const target =
-      event.target.closest(
-        PROTECTED
-      );
-
-
+    const target = event.target.closest(PROTECTED);
     if (!target) return;
 
-
-    if (
-      authReady &&
-      currentUser
-    ) {
-
-      return;
-
-    }
-
+    // Logged in hai to normal chalne do
+    if (authReady && currentUser) return;
 
     event.preventDefault();
-
     event.stopImmediatePropagation();
 
+    // Auth abhi load ho raha hai: pehle click bina message ke ignore hota tha
+    if (!authReady) {
+      showLoginToast("Please wait a moment and try again.");
+      return;
+    }
 
-    if (!authReady) return;
+    showLoginToast("Please login or create an account before purchasing.");
 
+    // Baar-baar click pe multiple redirect timers na bane
+    if (loginRedirectTimer) return;
 
-    showLoginToast(
-      "Please login or create an account before purchasing."
-    );
-
-
-    setTimeout(
-      () => {
-
-        window.location.href =
-          "login.html?mode=signup";
-
-      },
-      1200
-    );
-
+    loginRedirectTimer = setTimeout(() => {
+      window.location.href = "login.html?mode=signup";
+    }, 1200);
   },
   true
 );
@@ -754,106 +407,34 @@ document.addEventListener(
 /* ================= PRODUCT PAGE ================= */
 
 (function () {
+  const style = document.createElement("style");
+  style.textContent = ".product-card{cursor:pointer}";
+  document.head.appendChild(style);
 
-  const style =
-    document.createElement("style");
+  document.addEventListener("click", (event) => {
+    const card = event.target.closest(".product-card");
+    if (!card) return;
 
+    if (event.target.closest("button, a")) return;
 
-  style.textContent =
-    ".product-card{cursor:pointer}";
+    const btn = card.querySelector(".add-cart-btn");
+    if (!btn) return;
 
+    const getText = (selector) => {
+      const element = card.querySelector(selector);
+      return element ? element.textContent.trim() : "";
+    };
 
-  document.head.appendChild(
-    style
-  );
+    const params = new URLSearchParams({
+      id: btn.dataset.id || "",
+      name: btn.dataset.name || "",
+      price: btn.dataset.price || "",
+      img: btn.dataset.image || "",
+      cat: getText(".product-category"),
+      desc: getText(".product-description"),
+      ptxt: getText(".product-price")
+    });
 
-
-  document.addEventListener(
-    "click",
-    (event) => {
-
-      const card =
-        event.target.closest(
-          ".product-card"
-        );
-
-
-      if (!card) return;
-
-
-      if (
-        event.target.closest(
-          "button, a"
-        )
-      ) {
-
-        return;
-
-      }
-
-
-      const btn =
-        card.querySelector(
-          ".add-cart-btn"
-        );
-
-
-      if (!btn) return;
-
-
-      const getText =
-        (selector) => {
-
-          const element =
-            card.querySelector(
-              selector
-            );
-
-          return element
-            ? element.textContent.trim()
-            : "";
-
-        };
-
-
-      const params =
-        new URLSearchParams({
-
-          id:
-            btn.dataset.id || "",
-
-          name:
-            btn.dataset.name || "",
-
-          price:
-            btn.dataset.price || "",
-
-          img:
-            btn.dataset.image || "",
-
-          cat:
-            getText(
-              ".product-category"
-            ),
-
-          desc:
-            getText(
-              ".product-description"
-            ),
-
-          ptxt:
-            getText(
-              ".product-price"
-            )
-
-        });
-
-
-      window.location.href =
-        "product.html?" +
-        params.toString();
-
-    }
-  );
-
+    window.location.href = "product.html?" + params.toString();
+  });
 })();
