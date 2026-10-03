@@ -91,28 +91,45 @@ const authLink = document.getElementById("authLink");
 const authLinkMobile = document.getElementById("authLinkMobile");
 
 function setAuthLink(element, user) {
-  if (!element) return;
 
-  if (user) {
-    const name = (
-      user.displayName ||
-      user.email?.split("@")[0] ||
-      "Account"
-    ).split(" ")[0];
+    if (!element) return;
 
-    // Login hone par "My Account" dikhao (Logout account page par hai)
-    element.textContent = "My Account";
-    element.title = "Logged in as " + name;
-    element.href = "account.html";
-    element.onclick = null;
-  } else {
-    element.title = "";
-    element.textContent = "Login";
-    element.href = "login.html";
-    element.onclick = null;
-  }
+
+    if (user) {
+
+        const name =
+            (
+                user.displayName ||
+                user.email?.split("@")[0] ||
+                "Account"
+            ).split(" ")[0];
+
+
+        element.textContent =
+            "My Account";
+
+
+        element.href =
+            "account.html";
+
+
+        element.onclick =
+            null;
+
+    } else {
+
+        element.textContent =
+            "Login";
+
+        element.href =
+            "login.html";
+
+        element.onclick =
+            null;
+
+    }
+
 }
-
 
 /* ================= EXTRA LOGIN BUTTON (header ka pill button) ================= */
 
