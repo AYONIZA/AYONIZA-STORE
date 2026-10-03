@@ -32,6 +32,8 @@ const db = getFirestore(app);
 
 /* ================= AUTH STATE ================= */
 
+const DEBUG = true; // testing ke baad false kar dena
+
 let currentUser = null;
 let authReady = false;
 let signupInProgress = false; // signup ke time listener profile save na kare (race condition fix)
@@ -49,27 +51,36 @@ async function saveUserProfile(user, extra = {}) {
     const fullName = extra.fullName || user.displayName || "";
 
     if (!snap.exists()) {
-      // CREATE: rules me sirf ye 4 keys allowed hain:
-      // fullName, email, phone, createdAt
+      // CREATE: rules me allowed keys:
+      // uid, fullName, email, phone, createdAt, updatedAt
       await setDoc(userRef, {
+        uid: user.uid,
         fullName: fullName,
         email: user.email || "",
         phone: "",
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
     } else {
-      // UPDATE: rules me sirf fullName aur phone badal sakte hain.
-      // Isliye updatedAt / email / uid yahan nahi likhte.
+      // UPDATE: rules me sirf fullName, phone, updatedAt badal sakte hain.
       // Naam sirf tab bharte hain jab Firestore me khaali ho.
       const savedName = snap.data().fullName || "";
+      const update = { updatedAt: serverTimestamp() };
 
-      if (fullName && !savedName) {
-        await setDoc(userRef, { fullName: fullName }, { merge: true });
-      }
+      if (fullName && !savedName) update.fullName = fullName;
+
+      await setDoc(userRef, update, { merge: true });
     }
+
+    console.log("Firestore profile saved for uid:", user.uid);
   } catch (error) {
-    // Technical error sirf console me, customer ko nahi dikhana.
-    console.error("Firestore profile error:", error);
+    console.error("Firestore profile error:", error.code, error.message);
+
+    // Testing ke time DEBUG = true rakho, error screen pe dikhega.
+    // Sab theek hone ke baad DEBUG = false kar dena.
+    if (DEBUG) {
+      alert("Firestore error: " + (error.code || "") + "\n" + error.message);
+    }
   }
 }
 
@@ -259,7 +270,13 @@ if (form) {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         const user = credential.user;
 
-        await updateProfile(user, { displayName: fullName });
+        // updateProfile fail bhi ho to Firestore save zaroor chale
+        try {
+          await updateProfile(user, { displayName: fullName });
+        } catch (profileError) {
+          console.error("updateProfile error:", profileError);
+        }
+
         await saveUserProfile(user, { fullName });
 
         // Navbar ka naam update karne ke liye
