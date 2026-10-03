@@ -1,3 +1,48 @@
+import {
+  getApps,
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  collection,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  firebaseConfig
+} from "./firebase-config.js";
+
+
+const firebaseApp =
+  getApps().length > 0
+    ? getApps()[0]
+    : initializeApp(firebaseConfig);
+
+const firebaseAuth =
+  getAuth(firebaseApp);
+
+const firestore =
+  getFirestore(firebaseApp);
+
+let loggedInUser = null;
+
+onAuthStateChanged(
+  firebaseAuth,
+  (user) => {
+    loggedInUser = user;
+  }
+);
+
 document.addEventListener('DOMContentLoaded', () => {
   const WHATSAPP_NUMBER = '919203703177';
   const isCategoryPage = document.body.classList.contains('category-page');
