@@ -1,14 +1,10 @@
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getAuth,
     onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 
 import {
     getFirestore,
@@ -18,183 +14,147 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
 import {
     firebaseConfig
 } from "./firebase-config.js";
 
 
-
 /* ================= FIREBASE ================= */
 
-const app =
-    initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
+const auth = getAuth(app);
 
-const auth =
-    getAuth(app);
-
-
-const db =
-    getFirestore(app);
-
+const db = getFirestore(app);
 
 
 /* ================= ELEMENTS ================= */
 
-const form =
-    document.getElementById("accountForm");
+const form = document.getElementById("accountForm");
 
-const fullName =
-    document.getElementById("fullName");
+const fullName = document.getElementById("fullName");
+const email = document.getElementById("email");
+const phone = document.getElementById("phone");
+const address = document.getElementById("address");
+const landmark = document.getElementById("landmark");
+const city = document.getElementById("city");
+const state = document.getElementById("state");
+const pincode = document.getElementById("pincode");
+const country = document.getElementById("country");
 
-const email =
-    document.getElementById("email");
+const message = document.getElementById("accountMessage");
 
-const phone =
-    document.getElementById("phone");
-
-const address =
-    document.getElementById("address");
-
-const landmark =
-    document.getElementById("landmark");
-
-const city =
-    document.getElementById("city");
-
-const state =
-    document.getElementById("state");
-
-const pincode =
-    document.getElementById("pincode");
-
-const country =
-    document.getElementById("country");
-
-const message =
-    document.getElementById("accountMessage");
-
-const logoutBtn =
-    document.getElementById("logoutBtn");
-
+const logoutBtn = document.getElementById("logoutBtn");
 
 
 /* ================= MESSAGE ================= */
 
-function showMessage(
-    text,
-    success = false
-) {
+function showMessage(text, success = false) {
 
-    message.textContent =
-        text;
+    message.textContent = text;
 
     message.style.color =
         success
             ? "#1e7a46"
             : "#b3261e";
-
 }
 
 
+/* ================= AUTH CHECK ================= */
 
-/* ================= AUTH STATE ================= */
+onAuthStateChanged(auth, async (user) => {
 
-onAuthStateChanged(
-    auth,
-    async (user) => {
+    if (!user) {
 
-        if (!user) {
+        window.location.href =
+            "login.html?mode=signup";
 
-            window.location.href =
-                "login.html?mode=signup";
+        return;
+    }
 
-            return;
+
+    console.log("Logged-in UID:", user.uid);
+
+    console.log("Logged-in email:", user.email);
+
+
+    email.value =
+        user.email || "";
+
+
+    fullName.value =
+        user.displayName || "";
+
+
+    try {
+
+        const userRef =
+            doc(
+                db,
+                "users",
+                user.uid
+            );
+
+
+        const snapshot =
+            await getDoc(userRef);
+
+
+        if (snapshot.exists()) {
+
+            const data =
+                snapshot.data();
+
+
+            console.log(
+                "Existing Firestore profile:",
+                data
+            );
+
+
+            fullName.value =
+                data.fullName ||
+                user.displayName ||
+                "";
+
+            phone.value =
+                data.phone || "";
+
+            address.value =
+                data.address || "";
+
+            landmark.value =
+                data.landmark || "";
+
+            city.value =
+                data.city || "";
+
+            state.value =
+                data.state || "";
+
+            pincode.value =
+                data.pincode || "";
+
+            country.value =
+                data.country ||
+                "India";
 
         }
 
+    } catch (error) {
 
-        email.value =
-            user.email || "";
+        console.error(
+            "Profile load error:",
+            error
+        );
 
-
-        fullName.value =
-            user.displayName || "";
-
-
-        try {
-
-            const userRef =
-                doc(
-                    db,
-                    "users",
-                    user.uid
-                );
-
-
-            const snapshot =
-                await getDoc(userRef);
-
-
-            if (snapshot.exists()) {
-
-                const data =
-                    snapshot.data();
-
-
-                fullName.value =
-                    data.fullName ||
-                    user.displayName ||
-                    "";
-
-
-                phone.value =
-                    data.phone || "";
-
-
-                address.value =
-                    data.address || "";
-
-
-                landmark.value =
-                    data.landmark || "";
-
-
-                city.value =
-                    data.city || "";
-
-
-                state.value =
-                    data.state || "";
-
-
-                pincode.value =
-                    data.pincode || "";
-
-
-                country.value =
-                    data.country ||
-                    "India";
-
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Profile loading error:",
-                error
-            );
-
-            showMessage(
-                "Profile could not be loaded."
-            );
-
-        }
+        showMessage(
+            "Unable to load your profile. Please try again."
+        );
 
     }
-);
 
+});
 
 
 /* ================= SAVE PROFILE ================= */
@@ -212,8 +172,9 @@ form.addEventListener(
 
         if (!user) {
 
-            window.location.href =
-                "login.html";
+            showMessage(
+                "Please login again."
+            );
 
             return;
 
@@ -223,12 +184,11 @@ form.addEventListener(
         const mobile =
             phone.value.trim();
 
-
         const pin =
             pincode.value.trim();
 
 
-        /* MOBILE VALIDATION */
+        /* MOBILE */
 
         if (
             mobile &&
@@ -240,11 +200,10 @@ form.addEventListener(
             );
 
             return;
-
         }
 
 
-        /* PIN VALIDATION */
+        /* PIN */
 
         if (
             pin &&
@@ -256,7 +215,6 @@ form.addEventListener(
             );
 
             return;
-
         }
 
 
@@ -315,6 +273,11 @@ form.addEventListener(
             );
 
 
+            console.log(
+                "✅ PROFILE SAVED"
+            );
+
+
             showMessage(
                 "Profile saved successfully.",
                 true
@@ -324,11 +287,12 @@ form.addEventListener(
         } catch (error) {
 
             console.error(
-                "Profile save error:",
+                "❌ PROFILE SAVE ERROR",
                 error
             );
 
 
+            // Technical Firebase error customer ko nahi dikhana
             showMessage(
                 "Profile could not be saved. Please try again."
             );
@@ -337,7 +301,6 @@ form.addEventListener(
 
     }
 );
-
 
 
 /* ================= LOGOUT ================= */
