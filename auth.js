@@ -15,7 +15,6 @@ import {
 import {
   getFirestore,
   doc,
-  getDoc,
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -23,9 +22,7 @@ import {
 import { firebaseConfig } from "./firebase-config.js";
 
 
-// =====================================================
-// FIREBASE START
-// =====================================================
+/* ================= FIREBASE ================= */
 
 const app = initializeApp(firebaseConfig);
 
@@ -34,44 +31,29 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-// =====================================================
-// GLOBAL AUTH STATE
-// =====================================================
+/* ================= AUTH STATE ================= */
 
 let currentUser = null;
 let authReady = false;
 
 
-// =====================================================
-// FIRESTORE USER PROFILE
-// =====================================================
+/* ================= SAVE USER TO FIRESTORE ================= */
 
-async function saveUserToFirestore(user) {
+async function saveUserProfile(user) {
 
-  if (!user) {
-    throw new Error("Firebase user not found.");
-  }
-
-  const userRef = doc(
-    db,
-    "users",
-    user.uid
-  );
+  if (!user) return;
 
   try {
 
-    const existingUser =
-      await getDoc(userRef);
+    const userRef = doc(
+      db,
+      "users",
+      user.uid
+    );
 
-
-    // ---------------------------------------------
-    // NEW USER
-    // ---------------------------------------------
-
-    if (!existingUser.exists()) {
-
-      await setDoc(userRef, {
-
+    await setDoc(
+      userRef,
+      {
         uid: user.uid,
 
         fullName:
@@ -90,108 +72,55 @@ async function saveUserToFirestore(user) {
 
         pincode: "",
 
-        createdAt:
-          serverTimestamp(),
-
         updatedAt:
           serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
 
-      });
-
-      console.log(
-        "Firestore: NEW USER SAVED",
-        user.uid
-      );
-
-    }
-
-
-    // ---------------------------------------------
-    // EXISTING USER
-    // ---------------------------------------------
-
-    else {
-
-      await setDoc(
-        userRef,
-        {
-
-          uid: user.uid,
-
-          email:
-            user.email || "",
-
-          fullName:
-            user.displayName ||
-            existingUser.data().fullName ||
-            "",
-
-          updatedAt:
-            serverTimestamp()
-
-        },
-        {
-          merge: true
-        }
-      );
-
-      console.log(
-        "Firestore: USER UPDATED",
-        user.uid
-      );
-
-    }
+    console.log("Firestore profile saved.");
 
   } catch (error) {
 
+    // Technical error only in console.
+    // Customer ko nahi dikhana hai.
     console.error(
-      "Firestore save error:",
+      "Firestore profile error:",
       error
     );
 
-    throw error;
   }
+
 }
 
 
-// =====================================================
-// NAVBAR LOGIN / LOGOUT
-// =====================================================
+/* ================= NAVBAR ================= */
 
 const authLink =
   document.getElementById("authLink");
 
 const authLinkMobile =
-  document.getElementById(
-    "authLinkMobile"
-  );
+  document.getElementById("authLinkMobile");
 
 
-function setAuthLink(
-  element,
-  user
-) {
+function setAuthLink(element, user) {
 
   if (!element) return;
 
-
-  // USER LOGGED IN
   if (user) {
 
-    const firstName =
+    const name =
       (
         user.displayName ||
         user.email?.split("@")[0] ||
         "Account"
-      )
-      .split(" ")[0];
+      ).split(" ")[0];
 
 
     element.textContent =
-      "Logout (" +
-      firstName +
-      ")";
-
+      "Logout (" + name + ")";
 
     element.href = "#";
 
@@ -219,11 +148,7 @@ function setAuthLink(
 
       };
 
-  }
-
-
-  // USER NOT LOGGED IN
-  else {
+  } else {
 
     element.textContent =
       "Login";
@@ -231,113 +156,94 @@ function setAuthLink(
     element.href =
       "login.html";
 
-    element.onclick =
-      null;
+    element.onclick = null;
 
   }
+
 }
 
 
-// =====================================================
-// AUTH STATE LISTENER
-// =====================================================
+/* ================= AUTH LISTENER ================= */
 
 onAuthStateChanged(
   auth,
-  (user) => {
+  async (user) => {
 
     currentUser = user;
 
     authReady = true;
+
 
     setAuthLink(
       authLink,
       user
     );
 
+
     setAuthLink(
       authLinkMobile,
       user
     );
 
+
+    if (user) {
+
+      await saveUserProfile(user);
+
+    }
+
   }
 );
 
 
-// =====================================================
-// LOGIN PAGE
-// =====================================================
+/* ================= LOGIN PAGE ================= */
 
-const authForm =
-  document.getElementById(
-    "authForm"
-  );
+const form =
+  document.getElementById("authForm");
 
 
-if (authForm) {
+if (form) {
 
-  const authMsg =
-    document.getElementById(
-      "authMsg"
-    );
+  const msg =
+    document.getElementById("authMsg");
 
   const nameField =
-    document.getElementById(
-      "nameField"
-    );
+    document.getElementById("nameField");
 
   const submitBtn =
-    document.getElementById(
-      "submitBtn"
-    );
+    document.getElementById("submitBtn");
 
   const tabs =
-    document.querySelectorAll(
-      ".tab"
-    );
+    document.querySelectorAll(".tab");
 
   const googleBtn =
-    document.getElementById(
-      "googleBtn"
-    );
+    document.getElementById("googleBtn");
 
   const forgotBtn =
-    document.getElementById(
-      "forgotBtn"
-    );
+    document.getElementById("forgotBtn");
 
 
   let mode = "login";
 
-
-  // ---------------------------------------------
-  // MESSAGE
-  // ---------------------------------------------
 
   function showMessage(
     message,
     success = false
   ) {
 
-    if (!authMsg) return;
+    if (!msg) return;
 
-    authMsg.textContent =
+    msg.textContent =
       message;
 
-    authMsg.className =
-      success
-        ? "msg ok"
-        : "msg err";
+    msg.className =
+      "msg " +
+      (success ? "ok" : "err");
+
   }
 
 
-  // ---------------------------------------------
-  // FRIENDLY FIREBASE ERRORS
-  // ---------------------------------------------
-
-  function firebaseError(
-    code
-  ) {
+  function friendlyError(code) {
 
     const errors = {
 
@@ -351,7 +257,7 @@ if (authForm) {
         "Password must be at least 6 characters.",
 
       "auth/email-already-in-use":
-        "This email already has an account. Please login.",
+        "This email already has an account. Please log in.",
 
       "auth/invalid-credential":
         "Email or password is incorrect.",
@@ -363,39 +269,28 @@ if (authForm) {
         "Email or password is incorrect.",
 
       "auth/too-many-requests":
-        "Too many attempts. Please wait and try again.",
+        "Too many attempts. Please try again later.",
 
       "auth/popup-closed-by-user":
-        "Google login window was closed.",
+        "Google login was closed.",
 
       "auth/unauthorized-domain":
-        "This domain is not authorized in Firebase.",
+        "This website is not authorized in Firebase.",
 
       "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
-        "Firebase API key is invalid.",
-
-      "permission-denied":
-        "Firestore permission denied. Please check Firestore Rules.",
-
-      "failed-precondition":
-        "Firestore configuration is incomplete.",
-
-      "unavailable":
-        "Firebase service is temporarily unavailable."
+        "Firebase configuration needs to be checked."
 
     };
 
     return (
       errors[code] ||
-      "Something went wrong: " +
-      code
+      "Unable to complete this request. Please try again."
     );
+
   }
 
 
-  // ---------------------------------------------
-  // LOGIN / SIGNUP TAB
-  // ---------------------------------------------
+  /* ================= LOGIN/SIGNUP TABS ================= */
 
   tabs.forEach(
     (tab) => {
@@ -428,25 +323,15 @@ if (authForm) {
           }
 
 
-          if (submitBtn) {
-
-            submitBtn.textContent =
-              mode === "signup"
-                ? "Create account"
-                : "Log in";
-
-          }
+          submitBtn.textContent =
+            mode === "signup"
+              ? "Create account"
+              : "Log in";
 
 
-          if (authMsg) {
+          msg.textContent = "";
 
-            authMsg.textContent =
-              "";
-
-            authMsg.className =
-              "msg";
-
-          }
+          msg.className = "msg";
 
         }
       );
@@ -455,9 +340,7 @@ if (authForm) {
   );
 
 
-  // ---------------------------------------------
-  // OPEN SIGNUP MODE
-  // ---------------------------------------------
+  /* ================= OPEN SIGNUP ================= */
 
   const urlMode =
     new URLSearchParams(
@@ -470,8 +353,7 @@ if (authForm) {
     const signupTab =
       [...tabs].find(
         (tab) =>
-          tab.dataset.mode ===
-          "signup"
+          tab.dataset.mode === "signup"
       );
 
 
@@ -484,9 +366,7 @@ if (authForm) {
   }
 
 
-  // ---------------------------------------------
-  // HOME
-  // ---------------------------------------------
+  /* ================= GO HOME ================= */
 
   function goHome() {
 
@@ -496,11 +376,9 @@ if (authForm) {
   }
 
 
-  // =================================================
-  // EMAIL LOGIN / SIGNUP
-  // =================================================
+  /* ================= EMAIL LOGIN/SIGNUP ================= */
 
-  authForm.addEventListener(
+  form.addEventListener(
     "submit",
     async (event) => {
 
@@ -508,10 +386,10 @@ if (authForm) {
 
 
       const email =
-        authForm.email.value.trim();
+        form.email.value.trim();
 
       const password =
-        authForm.password.value;
+        form.password.value;
 
 
       if (!email) {
@@ -536,26 +414,18 @@ if (authForm) {
       }
 
 
-      if (submitBtn) {
-
-        submitBtn.disabled = true;
-
-      }
+      submitBtn.disabled = true;
 
 
       try {
 
 
-        // =========================================
-        // SIGN UP
-        // =========================================
+        /* ========== SIGNUP ========== */
 
         if (mode === "signup") {
 
           const fullName =
-            authForm.fullname
-              ? authForm.fullname.value.trim()
-              : "";
+            form.fullname.value.trim();
 
 
           if (!fullName) {
@@ -564,16 +434,12 @@ if (authForm) {
               "Please enter your full name."
             );
 
-            if (submitBtn) {
-              submitBtn.disabled = false;
-            }
+            submitBtn.disabled = false;
 
             return;
 
           }
 
-
-          // CREATE FIREBASE AUTH USER
 
           const credential =
             await createUserWithEmailAndPassword(
@@ -587,49 +453,21 @@ if (authForm) {
             credential.user;
 
 
-          // SAVE NAME IN FIREBASE AUTH
+          /* SAVE NAME */
 
           await updateProfile(
             user,
             {
-              displayName:
-                fullName
+              displayName: fullName
             }
           );
 
 
-          // SAVE USER IN FIRESTORE
+          /* FIRESTORE */
 
-          try {
-
-            await saveUserToFirestore(
-              user
-            );
-
-          } catch (firestoreError) {
-
-            console.error(
-              "Firestore ERROR:",
-              firestoreError
-            );
-
-
-            showMessage(
-              "Account created, but profile could not be saved. Error: " +
-              (
-                firestoreError.code ||
-                firestoreError.message
-              )
-            );
-
-
-            if (submitBtn) {
-              submitBtn.disabled = false;
-            }
-
-            return;
-
-          }
+          await saveUserProfile(
+            user
+          );
 
 
           showMessage(
@@ -640,15 +478,13 @@ if (authForm) {
 
           setTimeout(
             goHome,
-            800
+            700
           );
 
         }
 
 
-        // =========================================
-        // LOGIN
-        // =========================================
+        /* ========== LOGIN ========== */
 
         else {
 
@@ -664,43 +500,15 @@ if (authForm) {
             credential.user;
 
 
-          // MAKE SURE FIRESTORE PROFILE EXISTS
-
-          try {
-
-            await saveUserToFirestore(
-              user
-            );
-
-          } catch (firestoreError) {
-
-            console.error(
-              "Firestore login save error:",
-              firestoreError
-            );
-
-
-            showMessage(
-              "Login successful, but Firestore profile could not be saved. Error: " +
-              (
-                firestoreError.code ||
-                firestoreError.message
-              )
-            );
-
-
-            if (submitBtn) {
-              submitBtn.disabled = false;
-            }
-
-            return;
-
-          }
+          await saveUserProfile(
+            user
+          );
 
 
           goHome();
 
         }
+
 
       } catch (error) {
 
@@ -711,19 +519,15 @@ if (authForm) {
 
 
         showMessage(
-          firebaseError(
+          friendlyError(
             error.code
           )
         );
 
       } finally {
 
-        if (submitBtn) {
-
-          submitBtn.disabled =
-            false;
-
-        }
+        submitBtn.disabled =
+          false;
 
       }
 
@@ -731,179 +535,133 @@ if (authForm) {
   );
 
 
-  // =================================================
-  // GOOGLE LOGIN
-  // =================================================
+  /* ================= GOOGLE LOGIN ================= */
 
-  if (googleBtn) {
+  googleBtn.addEventListener(
+    "click",
+    async () => {
 
-    googleBtn.addEventListener(
-      "click",
-      async () => {
-
-        googleBtn.disabled = true;
+      googleBtn.disabled = true;
 
 
-        try {
+      try {
 
-          const provider =
-            new GoogleAuthProvider();
-
-
-          const result =
-            await signInWithPopup(
-              auth,
-              provider
-            );
+        const provider =
+          new GoogleAuthProvider();
 
 
-          // SAVE GOOGLE USER TO FIRESTORE
-
-          try {
-
-            await saveUserToFirestore(
-              result.user
-            );
-
-          } catch (firestoreError) {
-
-            console.error(
-              "Google Firestore error:",
-              firestoreError
-            );
-
-
-            showMessage(
-              "Google login successful, but profile could not be saved. Error: " +
-              (
-                firestoreError.code ||
-                firestoreError.message
-              )
-            );
-
-
-            googleBtn.disabled = false;
-
-            return;
-
-          }
-
-
-          goHome();
-
-        } catch (error) {
-
-          console.error(
-            "Google login error:",
-            error
-          );
-
-
-          showMessage(
-            firebaseError(
-              error.code
-            )
-          );
-
-        } finally {
-
-          googleBtn.disabled = false;
-
-        }
-
-      }
-    );
-
-  }
-
-
-  // =================================================
-  // FORGOT PASSWORD
-  // =================================================
-
-  if (forgotBtn) {
-
-    forgotBtn.addEventListener(
-      "click",
-      async () => {
-
-        const email =
-          authForm.email.value.trim();
-
-
-        if (!email) {
-
-          showMessage(
-            "Enter your email first."
-          );
-
-          return;
-
-        }
-
-
-        try {
-
-          await sendPasswordResetEmail(
+        const result =
+          await signInWithPopup(
             auth,
-            email
+            provider
           );
 
 
-          showMessage(
-            "Password reset link sent to " +
-            email +
-            ". Check your inbox and spam folder.",
-            true
-          );
-
-        } catch (error) {
-
-          console.error(
-            "Password reset error:",
-            error
-          );
+        await saveUserProfile(
+          result.user
+        );
 
 
-          showMessage(
-            firebaseError(
-              error.code
-            )
-          );
+        goHome();
 
-        }
+
+      } catch (error) {
+
+        console.error(
+          "Google login error:",
+          error
+        );
+
+
+        showMessage(
+          friendlyError(
+            error.code
+          )
+        );
+
+      } finally {
+
+        googleBtn.disabled =
+          false;
 
       }
-    );
 
-  }
+    }
+  );
+
+
+  /* ================= FORGOT PASSWORD ================= */
+
+  forgotBtn.addEventListener(
+    "click",
+    async () => {
+
+      const email =
+        form.email.value.trim();
+
+
+      if (!email) {
+
+        showMessage(
+          "Enter your email first."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        await sendPasswordResetEmail(
+          auth,
+          email
+        );
+
+
+        showMessage(
+          "Password reset link sent to your email.",
+          true
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Password reset error:",
+          error
+        );
+
+
+        showMessage(
+          friendlyError(
+            error.code
+          )
+        );
+
+      }
+
+    }
+  );
 
 }
 
 
-// =====================================================
-// LOGIN REQUIRED FOR PURCHASE
-// =====================================================
+/* ================= PURCHASE LOGIN PROTECTION ================= */
 
-const PROTECTED_SELECTOR =
+const PROTECTED =
   ".add-cart-btn, .product-button, #checkoutBtn";
 
 
-function showLoginToast(
-  message
-) {
+function showLoginToast(message) {
 
-  const oldToast =
+  const old =
     document.getElementById(
       "loginToast"
     );
 
 
-  if (oldToast) {
-
-    oldToast.remove();
-
-  }
+  if (old) old.remove();
 
 
   const toast =
@@ -926,7 +684,7 @@ function showLoginToast(
     "bottom:28px;" +
     "transform:translateX(-50%);" +
     "background:#3a2530;" +
-    "color:#fff;" +
+    "color:white;" +
     "padding:12px 20px;" +
     "border-radius:8px;" +
     "font-size:15px;" +
@@ -948,14 +706,13 @@ document.addEventListener(
 
     const target =
       event.target.closest(
-        PROTECTED_SELECTOR
+        PROTECTED
       );
 
 
     if (!target) return;
 
 
-    // User logged in
     if (
       authReady &&
       currentUser
@@ -966,18 +723,12 @@ document.addEventListener(
     }
 
 
-    // Prevent action
     event.preventDefault();
 
     event.stopImmediatePropagation();
 
 
-    // Auth still loading
-    if (!authReady) {
-
-      return;
-
-    }
+    if (!authReady) return;
 
 
     showLoginToast(
@@ -1000,16 +751,12 @@ document.addEventListener(
 );
 
 
-// =====================================================
-// PRODUCT CARD → PRODUCT PAGE
-// =====================================================
+/* ================= PRODUCT PAGE ================= */
 
 (function () {
 
   const style =
-    document.createElement(
-      "style"
-    );
+    document.createElement("style");
 
 
   style.textContent =
@@ -1034,8 +781,6 @@ document.addEventListener(
       if (!card) return;
 
 
-      // Buttons / links ko product page par mat bhejo
-
       if (
         event.target.closest(
           "button, a"
@@ -1047,17 +792,13 @@ document.addEventListener(
       }
 
 
-      const cartButton =
+      const btn =
         card.querySelector(
           ".add-cart-btn"
         );
 
 
-      if (!cartButton) {
-
-        return;
-
-      }
+      if (!btn) return;
 
 
       const getText =
@@ -1079,20 +820,16 @@ document.addEventListener(
         new URLSearchParams({
 
           id:
-            cartButton.dataset.id ||
-            "",
+            btn.dataset.id || "",
 
           name:
-            cartButton.dataset.name ||
-            "",
+            btn.dataset.name || "",
 
           price:
-            cartButton.dataset.price ||
-            "",
+            btn.dataset.price || "",
 
           img:
-            cartButton.dataset.image ||
-            "",
+            btn.dataset.image || "",
 
           cat:
             getText(
