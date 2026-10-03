@@ -48,29 +48,25 @@ async function saveUserProfile(user, extra = {}) {
 
     const fullName = extra.fullName || user.displayName || "";
 
-    // Jo fields hamesha update ho sakti hain
-    const data = {
-      uid: user.uid,
-      email: user.email || "",
-      updatedAt: serverTimestamp()
-    };
-
-    // Khaali naam se purana naam overwrite nahi hona chahiye
-    if (fullName) data.fullName = fullName;
-
-    // Sirf pehli baar defaults set karo.
-    // Pehle har login pe phone/address/city sab blank ho jata tha.
     if (!snap.exists()) {
-      data.fullName = fullName;
-      data.phone = "";
-      data.address = "";
-      data.city = "";
-      data.state = "";
-      data.pincode = "";
-      data.createdAt = serverTimestamp();
-    }
+      // CREATE: rules me sirf ye 4 keys allowed hain:
+      // fullName, email, phone, createdAt
+      await setDoc(userRef, {
+        fullName: fullName,
+        email: user.email || "",
+        phone: "",
+        createdAt: serverTimestamp()
+      });
+    } else {
+      // UPDATE: rules me sirf fullName aur phone badal sakte hain.
+      // Isliye updatedAt / email / uid yahan nahi likhte.
+      // Naam sirf tab bharte hain jab Firestore me khaali ho.
+      const savedName = snap.data().fullName || "";
 
-    await setDoc(userRef, data, { merge: true });
+      if (fullName && !savedName) {
+        await setDoc(userRef, { fullName: fullName }, { merge: true });
+      }
+    }
   } catch (error) {
     // Technical error sirf console me, customer ko nahi dikhana.
     console.error("Firestore profile error:", error);
