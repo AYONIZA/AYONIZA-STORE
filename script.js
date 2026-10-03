@@ -476,10 +476,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutModal?.scrollTo?.({ top: 0 });
   }
 
-  function openCheckout(items) {
+ async function openCheckout(items) {
     if (!items || items.length === 0 || !checkoutForm) return;
     checkoutItems = items;
-    prefillForm();
+    await prefillForm();
     goToStep(1);
     closeCart();
     checkoutOverlay.classList.add('active');
