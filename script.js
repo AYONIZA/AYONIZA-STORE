@@ -20,7 +20,6 @@ import {
 
 import { firebaseConfig } from "./firebase-config.js";
 
-
 // =====================================================
 // FIREBASE
 // =====================================================
@@ -35,7 +34,6 @@ const firestore = getFirestore(firebaseApp);
 
 let loggedInUser = null;
 
-
 // =====================================================
 // AUTH STATE
 // =====================================================
@@ -44,12 +42,11 @@ onAuthStateChanged(firebaseAuth, (user) => {
   loggedInUser = user;
 });
 
-
 // =====================================================
-// MAIN
+// MAIN APP INITIALIZATION FUNCTION
 // =====================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
 
   const isCategoryPage =
     document.body.classList.contains("category-page");
@@ -3028,4 +3025,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderCart();
 
-});
+} // <-- initApp() ka closing bracket yahan hai
+
+// =================================================
+// RUN APP LOGIC
+// =================================================
+
+if (document.readyState === "loading") {
+  // Agar document load ho raha hai, toh event ka wait karein
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  // Agar document pehle hi load ho chuka hai, toh sidha run karein
+  initApp();
+}
