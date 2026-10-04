@@ -44,8 +44,8 @@ const db =
 //
 
 const ADMIN_UIDS = [
-    "ADMIN_UID_1",
-    "ADMIN_UID_2"
+    "t8lcx1r7jdSXowv4EPgxJA8FXKn1",
+    "ZWCoYQo4EwN6T58bYcxbw27KN4D3"
 ];
 
 
