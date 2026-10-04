@@ -157,6 +157,7 @@ function initApp() {
 
   const CART_KEY = "ayonizaCart";
   const OPEN_CART_FLAG = "ayonizaOpenCart";
+  const BUY_NOW_KEY = "ayonizaBuyNow";
 
   function loadCart() {
 
@@ -476,12 +477,11 @@ function initApp() {
       };
 
       // Product page par checkout modal nahi hota:
-      // cart me daalo aur index.html par cart khol do
+      // item save karo aur index.html par seedha checkout khol do
+      // (item cart me nahi jaata)
       if (!checkoutForm) {
 
-        addToCart(item, false);
-
-        localStorage.setItem(OPEN_CART_FLAG, "1");
+        localStorage.setItem(BUY_NOW_KEY, JSON.stringify(item));
 
         window.location.href = "index.html";
 
@@ -1554,8 +1554,26 @@ function initApp() {
 
   renderCart();
 
-  // Product page ke "Buy Now" se aaye ho to cart khol do
-  if (localStorage.getItem(OPEN_CART_FLAG) === "1") {
+  // Product page ke "Buy Now" se aaye ho to seedha checkout kholo
+  let pendingBuyNow = null;
+
+  try {
+
+    pendingBuyNow = JSON.parse(localStorage.getItem(BUY_NOW_KEY) || "null");
+
+  } catch (error) {
+
+    pendingBuyNow = null;
+
+  }
+
+  localStorage.removeItem(BUY_NOW_KEY);
+
+  if (pendingBuyNow && pendingBuyNow.id && checkoutForm) {
+
+    openCheckout([pendingBuyNow], "buynow");
+
+  } else if (localStorage.getItem(OPEN_CART_FLAG) === "1") {
 
     localStorage.removeItem(OPEN_CART_FLAG);
 
