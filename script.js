@@ -2544,6 +2544,21 @@ function initApp() {
       wireProductCard
     );
 
+  // =================================================
+// PRODUCT PAGE BUTTONS
+// =================================================
+
+document
+  .querySelectorAll(".add-cart-btn")
+  .forEach(
+    wireAddButton
+  );
+
+document
+  .querySelectorAll(".buy-now-btn")
+  .forEach(
+    wireBuyButton
+  );
 
   // =================================================
   // CATEGORY PAGE
