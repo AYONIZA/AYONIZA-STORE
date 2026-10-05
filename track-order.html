@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Track Order | AYONIZA</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
+            color: #222;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .logo {
+            color: #6e213e;
+            font-size: 24px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .topbar a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .page {
+            width: min(900px, 94%);
+            margin: 35px auto 60px;
+        }
+
+        .tracking-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 5px 18px rgba(0,0,0,.08);
+        }
+
+        .small-title {
+            font-size: 13px;
+            letter-spacing: .14em;
+            color: #777;
+            margin: 0 0 8px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            color: #6e213e;
+        }
+
+        .order-id {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-box {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .summary-box strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 16px;
+        }
+
+        .timeline {
+            position: relative;
+            margin: 35px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            display: flex;
+            gap: 15px;
+            min-height: 70px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 22px;
+            bottom: -5px;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ddd;
+            flex: 0 0 22px;
+            position: relative;
+            z-index: 2;
+            margin-top: 2px;
+        }
+
+        .timeline-item.done .timeline-dot,
+        .timeline-item.active .timeline-dot {
+            background: #8c3b5a;
+        }
+
+        .timeline-item.active .timeline-dot {
+            box-shadow: 0 0 0 5px rgba(140,59,90,.12);
+        }
+
+        .timeline-content {
+            padding-bottom: 16px;
+        }
+
+        .timeline-content strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content span {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .shipping {
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .shipping p {
+            margin: 7px 0;
+        }
+
+        .tracking-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #8c3b5a;
+            color: #fff;
+        }
+
+        .message {
+            background: #f8f3f5;
+            border: 1px solid #eadde2;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .error,
+        .loading {
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        .error {
+            color: #b42318;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6e213e;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .tracking-card {
+                padding: 20px;
+            }
+
+            .topbar {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        AYONIZA
+    </a>
+
+    <a href="account.html">
+        My Account
+    </a>
+
+</header>
+
+
+<main class="page">
+
+    <div
+        id="loading"
+        class="tracking-card loading"
+    >
+        Loading order...
+    </div>
+
+
+    <div
+        id="error"
+        class="tracking-card error"
+        hidden
+    >
+        Order could not be loaded.
+    </div>
+
+
+    <div
+        id="trackingCard"
+        class="tracking-card"
+        hidden
+    >
+
+        <p class="small-title">
+            ORDER TRACKING
+        </p>
+
+        <h1>
+            Your Order
+        </h1>
+
+        <div
+            class="order-id"
+            id="orderId"
+        ></div>
+
+
+        <div class="summary">
+
+            <div class="summary-box">
+
+                Customer
+
+                <strong id="customerName">
+                    —
+                </strong>
+
+            </div>
+
+            <div class="summary-box">
+
+                Total
+
+                <strong id="orderTotal">
+                    ₹0
+                </strong>
+
+            </div>
+
+            <div class="summary-box">
+
+                Status
+
+                <strong id="orderStatus">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="timeline"
+            id="timeline"
+        ></div>
+
+
+        <div class="shipping">
+
+            <h3>
+                Shipping Details
+            </h3>
+
+            <p>
+                <strong>
+                    Courier:
+                </strong>
+
+                <span id="courier">
+                    —
+                </span>
+            </p>
+
+            <p>
+                <strong>
+                    Tracking ID:
+                </strong>
+
+                <span id="trackingNumber">
+                    —
+                </span>
+            </p>
+
+
+            <a
+                id="externalTrackingLink"
+                class="tracking-link"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                hidden
+            >
+                Track on Courier Website
+            </a>
+
+        </div>
+
+
+        <div
+            id="notificationBox"
+            class="message"
+            hidden
+        ></div>
+
+
+        <a
+            href="index.html"
+            class="back-btn"
+        >
+            ← Continue Shopping
+        </a>
+
+    </div>
+
+</main>
+
+
+<script type="module">
+
+import {
+    getApps,
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+    firebaseConfig
+} from "./firebase-config.js";
+
+
+/* =====================================================
+   FIREBASE
+===================================================== */
+
+const firebaseApp =
+    getApps().length > 0
+        ? getApps()[0]
+        : initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(firebaseApp);
+
+const db =
+    getFirestore(firebaseApp);
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const loading =
+    document.getElementById("loading");
+
+const errorBox =
+    document.getElementById("error");
+
+const trackingCard =
+    document.getElementById("trackingCard");
+
+const orderIdEl =
+    document.getElementById("orderId");
+
+const customerNameEl =
+    document.getElementById("customerName");
+
+const orderTotalEl =
+    document.getElementById("orderTotal");
+
+const orderStatusEl =
+    document.getElementById("orderStatus");
+
+const timelineEl =
+    document.getElementById("timeline");
+
+const courierEl =
+    document.getElementById("courier");
+
+const trackingNumberEl =
+    document.getElementById("trackingNumber");
+
+const externalTrackingLink =
+    document.getElementById(
+        "externalTrackingLink"
+    );
+
+const notificationBox =
+    document.getElementById(
+        "notificationBox"
+    );
+
+
+/* =====================================================
+   ORDER ID
+===================================================== */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const orderId =
+    params.get("orderId");
+
+
+/* =====================================================
+   STATUS FLOW
+===================================================== */
+
+const STATUS_FLOW = [
+    "NEW",
+    "ACCEPTED",
+    "READY_TO_PACK",
+    "PACKED",
+    "READY_TO_SHIP",
+    "SHIPPED",
+    "IN_TRANSIT",
+    "DELIVERED"
+];
+
+
+const STATUS_LABELS = {
+
+    NEW:
+        "Order Placed",
+
+    ACCEPTED:
+        "Order Confirmed",
+
+    READY_TO_PACK:
+        "Ready to Pack",
+
+    PACKED:
+        "Packed",
+
+    READY_TO_SHIP:
+        "Ready to Ship",
+
+    SHIPPED:
+        "Shipped",
+
+    IN_TRANSIT:
+        "In Transit",
+
+    DELIVERED:
+        "Delivered"
+
+};
+
+
+/* =====================================================
+   FORMAT PRICE
+===================================================== */
+
+function formatPrice(amount) {
+
+    return (
+        "₹" +
+        Number(amount || 0)
+            .toLocaleString("en-IN")
+    );
+
+}
+
+
+/* =====================================================
+   RENDER TIMELINE
+===================================================== */
+
+function renderTimeline(
+    currentStatus
+) {
+
+    timelineEl.innerHTML =
+        "";
+
+    const currentIndex =
+        STATUS_FLOW.indexOf(
+            currentStatus
+        );
+
+
+    STATUS_FLOW.forEach(
+        (
+            status,
+            index
+        ) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "timeline-item";
+
+
+            if (
+                index <=
+                currentIndex
+            ) {
+
+                item.classList.add(
+                    "done"
+                );
+
+            }
+
+
+            if (
+                index ===
+                currentIndex
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            item.innerHTML = `
+
+                <div
+                    class="timeline-dot"
+                ></div>
+
+                <div
+                    class="timeline-content"
+                >
+
+                    <strong>
+                        ${STATUS_LABELS[status]}
+                    </strong>
+
+                    <span>
+                        ${
+                            index <= currentIndex
+                                ? "Completed"
+                                : "Pending"
+                        }
+                    </span>
+
+                </div>
+
+            `;
+
+
+            timelineEl.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   LOAD ORDER
+===================================================== */
+
+async function loadOrder(
+    user
+) {
+
+    if (!orderId) {
+
+        loading.hidden =
+            true;
+
+        errorBox.hidden =
+            false;
+
+        errorBox.textContent =
+            "Order ID is missing.";
+
+        return;
+
+    }
+
+
+    try {
+
+        const orderRef =
+            doc(
+                db,
+                "orders",
+                orderId
+            );
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Your current orders are created
+         * using addDoc(), so Firestore's
+         * document ID is NOT the AYZ orderId.
+         *
+         * Therefore we cannot use doc(db,"orders",orderId)
+         * yet.
+         *
+         * We will fix this in the next step by
+         * saving orders with orderId as the document ID.
+         */
+
+
+        loading.hidden =
+            true;
+
+        errorBox.hidden =
+            false;
+
+        errorBox.textContent =
+            "Tracking setup is ready, but your current orders use a different Firestore document ID. We need to make one small order-ID change before tracking links work.";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        loading.hidden =
+            true;
+
+        errorBox.hidden =
+            false;
+
+        errorBox.textContent =
+            "Order could not be loaded.";
+
+    }
+
+}
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+onAuthStateChanged(
+    auth,
+    (user) => {
+
+        if (!user) {
+
+            loading.hidden =
+                true;
+
+            errorBox.hidden =
+                false;
+
+            errorBox.innerHTML =
+                `
+                    Please login to view
+                    your order tracking.
+
+                    <br><br>
+
+                    <a href="login.html">
+                        Login
+                    </a>
+                `;
+
+            return;
+
+        }
+
+
+        loadOrder(
+            user
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
