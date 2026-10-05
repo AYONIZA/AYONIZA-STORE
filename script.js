@@ -1230,7 +1230,17 @@ function initApp() {
 
       // ---------- CREATE FIRESTORE ORDER ----------
 
-      await addDoc(collection(firestore, "orders"), orderData);
+     await setDoc(
+
+    doc(
+        firestore,
+        "orders",
+        orderNumber
+    ),
+
+    orderData
+
+);
 
       // ---------- CLEAR CART ----------
       // Sirf cart se checkout kiya ho to cart khali karo.
