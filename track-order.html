@@ -33,6 +33,9 @@
             align-items: center;
             justify-content: space-between;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .logo {
@@ -40,6 +43,7 @@
             font-size: 24px;
             text-decoration: none;
             font-weight: bold;
+            letter-spacing: .04em;
         }
 
         .topbar a {
@@ -48,7 +52,7 @@
         }
 
         .page {
-            width: min(900px, 94%);
+            width: min(950px, 94%);
             margin: 35px auto 60px;
         }
 
@@ -57,6 +61,16 @@
             border-radius: 16px;
             padding: 28px;
             box-shadow: 0 5px 18px rgba(0,0,0,.08);
+        }
+
+        .loading,
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error {
+            color: #b42318;
         }
 
         .small-title {
@@ -74,6 +88,18 @@
         .order-id {
             color: #666;
             margin-bottom: 25px;
+            word-break: break-all;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 13px;
+            border-radius: 8px;
+            background: #f3e8ed;
+            color: #6e213e;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 24px;
         }
 
         .summary {
@@ -89,22 +115,36 @@
             padding: 15px;
         }
 
+        .summary-box span {
+            display: block;
+            color: #777;
+            font-size: 13px;
+        }
+
         .summary-box strong {
             display: block;
             margin-top: 6px;
             font-size: 16px;
         }
 
+        /* ================================
+           TIMELINE
+        ================================= */
+
+        .timeline-title {
+            margin: 0 0 18px;
+        }
+
         .timeline {
             position: relative;
-            margin: 35px 0;
+            margin: 10px 0 30px;
         }
 
         .timeline-item {
             position: relative;
             display: flex;
             gap: 15px;
-            min-height: 70px;
+            min-height: 72px;
         }
 
         .timeline-item::before {
@@ -155,49 +195,124 @@
             font-size: 13px;
         }
 
+        /* ================================
+           SHIPPING
+        ================================= */
+
         .shipping {
-            margin-top: 25px;
             border-top: 1px solid #eee;
-            padding-top: 20px;
+            padding-top: 22px;
+            margin-top: 20px;
+        }
+
+        .shipping h3,
+        .items-section h3 {
+            margin-top: 0;
         }
 
         .shipping p {
-            margin: 7px 0;
+            margin: 8px 0;
         }
 
-        .tracking-link {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 11px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            background: #8c3b5a;
-            color: #fff;
+        .tracking-id {
+            font-weight: 700;
         }
+
+        /* ================================
+           ITEMS
+        ================================= */
+
+        .items-section {
+            border-top: 1px solid #eee;
+            padding-top: 22px;
+            margin-top: 22px;
+        }
+
+        .items {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+        }
+
+        .item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 9px;
+            background: #f5f5f5;
+            flex: 0 0 70px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .item-meta {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .total-box {
+            margin-top: 15px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* ================================
+           MESSAGE
+        ================================= */
 
         .message {
+            margin-top: 22px;
             background: #f8f3f5;
             border: 1px solid #eadde2;
             padding: 15px;
             border-radius: 10px;
-            margin-top: 20px;
+            line-height: 1.6;
         }
 
-        .error,
-        .loading {
-            text-align: center;
-            padding: 35px 15px;
-        }
-
-        .error {
-            color: #b42318;
+        .cancelled {
+            background: #fff1f0;
+            border-color: #f0c7c2;
+            color: #9f1c14;
         }
 
         .back-btn {
             display: inline-block;
-            margin-top: 20px;
+            margin-top: 25px;
             color: #6e213e;
             text-decoration: none;
+        }
+
+        .login-box {
+            text-align: center;
+        }
+
+        .login-btn {
+            display: inline-block;
+            margin-top: 15px;
+            background: #8c3b5a;
+            color: white !important;
+            padding: 11px 18px;
+            border-radius: 8px;
         }
 
         @media (max-width: 700px) {
@@ -220,6 +335,7 @@
 
 </head>
 
+
 <body>
 
 
@@ -241,13 +357,17 @@
 
 <main class="page">
 
+    <!-- LOADING -->
+
     <div
         id="loading"
         class="tracking-card loading"
     >
-        Loading order...
+        Loading your order...
     </div>
 
+
+    <!-- ERROR -->
 
     <div
         id="error"
@@ -257,6 +377,34 @@
         Order could not be loaded.
     </div>
 
+
+    <!-- LOGIN -->
+
+    <div
+        id="loginBox"
+        class="tracking-card login-box"
+        hidden
+    >
+
+        <h2>
+            Login Required
+        </h2>
+
+        <p>
+            Please login to view your order tracking.
+        </p>
+
+        <a
+            href="login.html"
+            class="login-btn"
+        >
+            Login
+        </a>
+
+    </div>
+
+
+    <!-- TRACKING CARD -->
 
     <div
         id="trackingCard"
@@ -268,9 +416,11 @@
             ORDER TRACKING
         </p>
 
+
         <h1>
             Your Order
         </h1>
+
 
         <div
             class="order-id"
@@ -278,39 +428,70 @@
         ></div>
 
 
+        <div
+            class="status-badge"
+            id="statusBadge"
+        >
+            Order Placed
+        </div>
+
+
+        <!-- SUMMARY -->
+
         <div class="summary">
 
             <div class="summary-box">
 
-                Customer
+                <span>
+                    Customer
+                </span>
 
-                <strong id="customerName">
+                <strong
+                    id="customerName"
+                >
                     —
                 </strong>
 
             </div>
 
+
             <div class="summary-box">
 
-                Total
+                <span>
+                    Total
+                </span>
 
-                <strong id="orderTotal">
+                <strong
+                    id="orderTotal"
+                >
                     ₹0
                 </strong>
 
             </div>
 
+
             <div class="summary-box">
 
-                Status
+                <span>
+                    Payment
+                </span>
 
-                <strong id="orderStatus">
+                <strong
+                    id="paymentStatus"
+                >
                     —
                 </strong>
 
             </div>
 
         </div>
+
+
+        <!-- TIMELINE -->
+
+        <h3 class="timeline-title">
+            Order Status
+        </h3>
 
 
         <div
@@ -319,50 +500,88 @@
         ></div>
 
 
-        <div class="shipping">
+        <!-- SHIPPING -->
+
+        <div
+            class="shipping"
+            id="shippingSection"
+        >
 
             <h3>
                 Shipping Details
             </h3>
 
             <p>
+
                 <strong>
                     Courier:
                 </strong>
 
-                <span id="courier">
-                    —
+                <span
+                    id="courier"
+                >
+                    Not assigned
                 </span>
+
             </p>
 
+
             <p>
+
                 <strong>
                     Tracking ID:
                 </strong>
 
-                <span id="trackingNumber">
-                    —
+                <span
+                    id="trackingNumber"
+                    class="tracking-id"
+                >
+                    Not assigned
                 </span>
+
             </p>
-
-
-            <a
-                id="externalTrackingLink"
-                class="tracking-link"
-                href="#"
-                target="_blank"
-                rel="noopener"
-                hidden
-            >
-                Track on Courier Website
-            </a>
 
         </div>
 
 
+        <!-- ITEMS -->
+
+        <div class="items-section">
+
+            <h3>
+                Ordered Items
+            </h3>
+
+            <div
+                class="items"
+                id="items"
+            ></div>
+
+
+            <div
+                class="total-box"
+                id="itemsTotal"
+            >
+                Total: ₹0
+            </div>
+
+        </div>
+
+
+        <!-- ADMIN GENERATED MESSAGE -->
+
         <div
             id="notificationBox"
             class="message"
+            hidden
+        ></div>
+
+
+        <!-- CANCEL MESSAGE -->
+
+        <div
+            id="cancelBox"
+            class="message cancelled"
             hidden
         ></div>
 
@@ -382,80 +601,151 @@
 <script type="module">
 
 import {
+
     getApps,
+
     initializeApp
+
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+
 import {
+
     getAuth,
+
     onAuthStateChanged
+
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-import {
-    getFirestore,
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
+
+    getFirestore,
+
+    doc,
+
+    onSnapshot
+
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+import {
+
     firebaseConfig
+
 } from "./firebase-config.js";
 
 
-/* =====================================================
-   FIREBASE
-===================================================== */
+// =====================================================
+// FIREBASE
+// =====================================================
 
 const firebaseApp =
+
     getApps().length > 0
+
         ? getApps()[0]
-        : initializeApp(firebaseConfig);
+
+        : initializeApp(
+            firebaseConfig
+        );
+
 
 const auth =
     getAuth(firebaseApp);
+
 
 const db =
     getFirestore(firebaseApp);
 
 
-/* =====================================================
-   DOM
-===================================================== */
+// =====================================================
+// DOM
+// =====================================================
 
 const loading =
-    document.getElementById("loading");
+    document.getElementById(
+        "loading"
+    );
+
 
 const errorBox =
-    document.getElementById("error");
+    document.getElementById(
+        "error"
+    );
+
+
+const loginBox =
+    document.getElementById(
+        "loginBox"
+    );
+
 
 const trackingCard =
-    document.getElementById("trackingCard");
+    document.getElementById(
+        "trackingCard"
+    );
+
 
 const orderIdEl =
-    document.getElementById("orderId");
+    document.getElementById(
+        "orderId"
+    );
+
+
+const statusBadge =
+    document.getElementById(
+        "statusBadge"
+    );
+
 
 const customerNameEl =
-    document.getElementById("customerName");
+    document.getElementById(
+        "customerName"
+    );
+
 
 const orderTotalEl =
-    document.getElementById("orderTotal");
+    document.getElementById(
+        "orderTotal"
+    );
 
-const orderStatusEl =
-    document.getElementById("orderStatus");
+
+const paymentStatusEl =
+    document.getElementById(
+        "paymentStatus"
+    );
+
 
 const timelineEl =
-    document.getElementById("timeline");
+    document.getElementById(
+        "timeline"
+    );
+
 
 const courierEl =
-    document.getElementById("courier");
+    document.getElementById(
+        "courier"
+    );
+
 
 const trackingNumberEl =
-    document.getElementById("trackingNumber");
-
-const externalTrackingLink =
     document.getElementById(
-        "externalTrackingLink"
+        "trackingNumber"
     );
+
+
+const itemsEl =
+    document.getElementById(
+        "items"
+    );
+
+
+const itemsTotalEl =
+    document.getElementById(
+        "itemsTotal"
+    );
+
 
 const notificationBox =
     document.getElementById(
@@ -463,32 +753,50 @@ const notificationBox =
     );
 
 
-/* =====================================================
-   ORDER ID
-===================================================== */
+const cancelBox =
+    document.getElementById(
+        "cancelBox"
+    );
+
+
+// =====================================================
+// URL
+// =====================================================
 
 const params =
     new URLSearchParams(
         window.location.search
     );
 
+
 const orderId =
-    params.get("orderId");
+    params.get(
+        "orderId"
+    );
 
 
-/* =====================================================
-   STATUS FLOW
-===================================================== */
+// =====================================================
+// STATUS FLOW
+// =====================================================
 
 const STATUS_FLOW = [
+
     "NEW",
+
     "ACCEPTED",
+
     "READY_TO_PACK",
+
     "PACKED",
+
     "READY_TO_SHIP",
+
     "SHIPPED",
+
     "IN_TRANSIT",
+
     "DELIVERED"
+
 ];
 
 
@@ -521,24 +829,43 @@ const STATUS_LABELS = {
 };
 
 
-/* =====================================================
-   FORMAT PRICE
-===================================================== */
+// =====================================================
+// HELPERS
+// =====================================================
 
-function formatPrice(amount) {
+function formatPrice(
+    amount
+) {
 
     return (
+
         "₹" +
-        Number(amount || 0)
-            .toLocaleString("en-IN")
+
+        Number(
+            amount || 0
+        ).toLocaleString(
+            "en-IN"
+        )
+
     );
 
 }
 
 
-/* =====================================================
-   RENDER TIMELINE
-===================================================== */
+function safeText(
+    value
+) {
+
+    return value == null
+        ? ""
+        : String(value);
+
+}
+
+
+// =====================================================
+// TIMELINE
+// =====================================================
 
 function renderTimeline(
     currentStatus
@@ -547,10 +874,54 @@ function renderTimeline(
     timelineEl.innerHTML =
         "";
 
-    const currentIndex =
+
+    // Cancelled order
+    if (
+        currentStatus ===
+        "CANCELLED"
+    ) {
+
+        timelineEl.innerHTML = `
+
+            <div class="timeline-item active">
+
+                <div class="timeline-dot"></div>
+
+                <div class="timeline-content">
+
+                    <strong>
+                        Order Cancelled
+                    </strong>
+
+                    <span>
+                        This order has been cancelled.
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let currentIndex =
         STATUS_FLOW.indexOf(
             currentStatus
         );
+
+
+    if (
+        currentIndex < 0
+    ) {
+
+        currentIndex =
+            0;
+
+    }
 
 
     STATUS_FLOW.forEach(
@@ -563,6 +934,7 @@ function renderTimeline(
                 document.createElement(
                     "div"
                 );
+
 
             item.className =
                 "timeline-item";
@@ -598,6 +970,7 @@ function renderTimeline(
                     class="timeline-dot"
                 ></div>
 
+
                 <div
                     class="timeline-content"
                 >
@@ -606,12 +979,24 @@ function renderTimeline(
                         ${STATUS_LABELS[status]}
                     </strong>
 
+
                     <span>
+
                         ${
-                            index <= currentIndex
+                            index <
+                            currentIndex
+
                                 ? "Completed"
-                                : "Pending"
+
+                                : index ===
+                                  currentIndex
+
+                                    ? "Current Status"
+
+                                    : "Pending"
+
                         }
+
                     </span>
 
                 </div>
@@ -629,113 +1014,462 @@ function renderTimeline(
 }
 
 
-/* =====================================================
-   LOAD ORDER
-===================================================== */
+// =====================================================
+// ITEMS
+// =====================================================
 
-async function loadOrder(
-    user
+function renderItems(
+    items
 ) {
 
-    if (!orderId) {
+    itemsEl.innerHTML =
+        "";
 
-        loading.hidden =
-            true;
 
-        errorBox.hidden =
-            false;
+    if (
+        !Array.isArray(
+            items
+        ) ||
+        items.length === 0
+    ) {
 
-        errorBox.textContent =
-            "Order ID is missing.";
+        itemsEl.innerHTML =
+            `
+                <p>
+                    No item information available.
+                </p>
+            `;
+
+        itemsTotalEl.textContent =
+            "Total: ₹0";
 
         return;
 
     }
 
 
-    try {
+    let total =
+        0;
 
-        const orderRef =
-            doc(
-                db,
-                "orders",
-                orderId
+
+    items.forEach(
+        (item) => {
+
+            const quantity =
+                Number(
+                    item.quantity || 1
+                );
+
+
+            const price =
+                Number(
+                    item.price || 0
+                );
+
+
+            const lineTotal =
+                Number(
+                    item.lineTotal ||
+                    (
+                        price *
+                        quantity
+                    )
+                );
+
+
+            total +=
+                lineTotal;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "item";
+
+
+            const image =
+                safeText(
+                    item.image
+                );
+
+
+            const name =
+                safeText(
+                    item.productName ||
+                    "Product"
+                );
+
+
+            row.innerHTML = `
+
+                <img
+                    src="${image}"
+                    alt="${name}"
+                >
+
+
+                <div
+                    class="item-info"
+                >
+
+                    <div
+                        class="item-name"
+                    >
+                        ${name}
+                    </div>
+
+
+                    <div
+                        class="item-meta"
+                    >
+
+                        Qty:
+                        ${quantity}
+
+                        <br>
+
+                        Price:
+                        ${formatPrice(price)}
+
+                        <br>
+
+                        Item Total:
+                        ${formatPrice(lineTotal)}
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            itemsEl.appendChild(
+                row
             );
 
-
-        /*
-         * IMPORTANT:
-         *
-         * Your current orders are created
-         * using addDoc(), so Firestore's
-         * document ID is NOT the AYZ orderId.
-         *
-         * Therefore we cannot use doc(db,"orders",orderId)
-         * yet.
-         *
-         * We will fix this in the next step by
-         * saving orders with orderId as the document ID.
-         */
+        }
+    );
 
 
-        loading.hidden =
-            true;
-
-        errorBox.hidden =
-            false;
-
-        errorBox.textContent =
-            "Tracking setup is ready, but your current orders use a different Firestore document ID. We need to make one small order-ID change before tracking links work.";
-
-    }
-
-    catch (error) {
-
-        console.error(
-            error
+    itemsTotalEl.textContent =
+        "Total: " +
+        formatPrice(
+            total
         );
-
-        loading.hidden =
-            true;
-
-        errorBox.hidden =
-            false;
-
-        errorBox.textContent =
-            "Order could not be loaded.";
-
-    }
 
 }
 
 
-/* =====================================================
-   AUTH
-===================================================== */
+// =====================================================
+// SHOW ORDER
+// =====================================================
+
+function renderOrder(
+    order
+) {
+
+    const currentStatus =
+        order.orderStatus ||
+        "NEW";
+
+
+    orderIdEl.textContent =
+        "Order ID: " +
+        (
+            order.orderId ||
+            orderId
+        );
+
+
+    statusBadge.textContent =
+        STATUS_LABELS[
+            currentStatus
+        ] ||
+        currentStatus;
+
+
+    customerNameEl.textContent =
+        order.customerName ||
+        "Customer";
+
+
+    orderTotalEl.textContent =
+        formatPrice(
+            order.total
+        );
+
+
+    paymentStatusEl.textContent =
+        order.paymentStatus ||
+        "Unknown";
+
+
+    courierEl.textContent =
+        order.courier ||
+        "Not assigned";
+
+
+    trackingNumberEl.textContent =
+        order.trackingNumber ||
+        "Not assigned";
+
+
+    renderTimeline(
+        currentStatus
+    );
+
+
+    renderItems(
+        order.items
+    );
+
+
+    // Confirmation / admin message
+
+    if (
+        order.notificationMessage &&
+        order.notificationType ===
+            "ORDER_CONFIRMED"
+    ) {
+
+        notificationBox.innerHTML =
+            safeText(
+                order.notificationMessage
+            ).replace(
+                /\n/g,
+                "<br>"
+            );
+
+
+        notificationBox.hidden =
+            false;
+
+    } else {
+
+        notificationBox.hidden =
+            true;
+
+        notificationBox.innerHTML =
+            "";
+
+    }
+
+
+    // Cancel message
+
+    if (
+        currentStatus ===
+        "CANCELLED"
+    ) {
+
+        cancelBox.innerHTML =
+
+            "<strong>Order Cancelled</strong><br><br>" +
+
+            "Reason: " +
+
+            safeText(
+                order.cancelReason ||
+                "Not provided"
+            );
+
+
+        cancelBox.hidden =
+            false;
+
+    } else {
+
+        cancelBox.hidden =
+            true;
+
+        cancelBox.innerHTML =
+            "";
+
+    }
+
+
+    loading.hidden =
+        true;
+
+
+    errorBox.hidden =
+        true;
+
+
+    loginBox.hidden =
+        true;
+
+
+    trackingCard.hidden =
+        false;
+
+}
+
+
+// =====================================================
+// SHOW ERROR
+// =====================================================
+
+function showError(
+    message
+) {
+
+    loading.hidden =
+        true;
+
+
+    trackingCard.hidden =
+        true;
+
+
+    loginBox.hidden =
+        true;
+
+
+    errorBox.hidden =
+        false;
+
+
+    errorBox.textContent =
+        message;
+
+}
+
+
+// =====================================================
+// LOGIN REQUIRED
+// =====================================================
+
+function showLogin() {
+
+    loading.hidden =
+        true;
+
+
+    trackingCard.hidden =
+        true;
+
+
+    errorBox.hidden =
+        true;
+
+
+    loginBox.hidden =
+        false;
+
+}
+
+
+// =====================================================
+// LOAD REAL-TIME ORDER
+// =====================================================
+
+function loadOrder(
+    user
+) {
+
+    if (!orderId) {
+
+        showError(
+            "Order ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    const orderRef =
+        doc(
+            db,
+            "orders",
+            orderId
+        );
+
+
+    onSnapshot(
+
+        orderRef,
+
+        (snapshot) => {
+
+            if (
+                !snapshot.exists()
+            ) {
+
+                showError(
+                    "Order not found."
+                );
+
+                return;
+
+            }
+
+
+            const order =
+                snapshot.data();
+
+
+            // SECURITY:
+            // Customer can only see own order.
+
+            if (
+                order.userId !==
+                user.uid
+            ) {
+
+                showError(
+                    "You are not authorized to view this order."
+                );
+
+                return;
+
+            }
+
+
+            renderOrder(
+                order
+            );
+
+        },
+
+        (error) => {
+
+            console.error(
+                "Tracking error:",
+                error
+            );
+
+
+            showError(
+                "Unable to load order tracking. " +
+                error.message
+            );
+
+        }
+
+    );
+
+}
+
+
+// =====================================================
+// AUTH
+// =====================================================
 
 onAuthStateChanged(
+
     auth,
+
     (user) => {
 
         if (!user) {
 
-            loading.hidden =
-                true;
-
-            errorBox.hidden =
-                false;
-
-            errorBox.innerHTML =
-                `
-                    Please login to view
-                    your order tracking.
-
-                    <br><br>
-
-                    <a href="login.html">
-                        Login
-                    </a>
-                `;
+            showLogin();
 
             return;
 
@@ -747,9 +1481,12 @@ onAuthStateChanged(
         );
 
     }
+
 );
 
 </script>
 
+
 </body>
+
 </html>
