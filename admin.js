@@ -14,10 +14,13 @@ import {
     collection,
     getDocs,
     updateDoc,
-    doc
+    doc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { firebaseConfig } from "./firebase-config.js";
+import {
+    firebaseConfig
+} from "./firebase-config.js";
 
 
 // =====================================================
@@ -39,9 +42,6 @@ const db =
 // =====================================================
 // ADMIN UID
 // =====================================================
-//
-// YAHAN APNE DONO ADMIN UID PASTE KARO
-//
 
 const ADMIN_UIDS = [
     "t8lcx1r7jdSXowv4EPgxJA8FXKn1",
@@ -61,6 +61,23 @@ function isAdmin(user) {
     );
 
 }
+
+
+// =====================================================
+// CONSTANTS
+// =====================================================
+
+const TRACK_BASE_URL =
+    "https://ayoniza.shop/track-order.html?orderId=";
+
+const NEXT_STATUSES = [
+    "READY_TO_PACK",
+    "PACKED",
+    "READY_TO_SHIP",
+    "SHIPPED",
+    "IN_TRANSIT",
+    "DELIVERED"
+];
 
 
 // =====================================================
@@ -104,32 +121,75 @@ const logoutBtn =
 
 
 // =====================================================
-// STATUS OPTIONS
+// ACCEPT MODAL
 // =====================================================
 
-const ORDER_STATUSES = [
+const acceptModal =
+    document.getElementById(
+        "acceptModal"
+    );
 
-    "NEW",
+const acceptOrderLabel =
+    document.getElementById(
+        "acceptOrderLabel"
+    );
 
-    "ACCEPTED",
+const acceptCourier =
+    document.getElementById(
+        "acceptCourier"
+    );
 
-    "READY_TO_PACK",
+const acceptTracking =
+    document.getElementById(
+        "acceptTracking"
+    );
 
-    "PACKED",
+const acceptCloseBtn =
+    document.getElementById(
+        "acceptCloseBtn"
+    );
 
-    "READY_TO_SHIP",
-
-    "SHIPPED",
-
-    "IN_TRANSIT",
-
-    "DELIVERED"
-
-];
+const acceptConfirmBtn =
+    document.getElementById(
+        "acceptConfirmBtn"
+    );
 
 
 // =====================================================
-// FORMAT DATE
+// CANCEL MODAL
+// =====================================================
+
+const cancelModal =
+    document.getElementById(
+        "cancelModal"
+    );
+
+const cancelOrderLabel =
+    document.getElementById(
+        "cancelOrderLabel"
+    );
+
+const cancelReason =
+    document.getElementById(
+        "cancelReason"
+    );
+
+const cancelCloseBtn =
+    document.getElementById(
+        "cancelCloseBtn"
+    );
+
+const cancelConfirmBtn =
+    document.getElementById(
+        "cancelConfirmBtn"
+    );
+
+
+let selectedOrder = null;
+
+
+// =====================================================
+// HELPERS
 // =====================================================
 
 function formatDate(timestamp) {
@@ -140,25 +200,19 @@ function formatDate(timestamp) {
 
     try {
 
-        const date =
-            timestamp.toDate();
-
-        return date.toLocaleString(
-            "en-IN"
-        );
+        return timestamp
+            .toDate()
+            .toLocaleString(
+                "en-IN"
+            );
 
     } catch {
 
         return "—";
 
     }
-
 }
 
-
-// =====================================================
-// FORMAT PRICE
-// =====================================================
 
 function formatPrice(amount) {
 
@@ -171,22 +225,151 @@ function formatPrice(amount) {
 }
 
 
+function escapeHTML(value) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value == null
+            ? ""
+            : String(value);
+
+    return div.innerHTML;
+
+}
+
+
+function getPaymentClass(
+    status
+) {
+
+    return status === "VERIFIED"
+        ? "payment-status verified"
+        : "payment-status pending";
+
+}
+
+
 // =====================================================
-// PAYMENT STATUS CLASS
+// MODALS
 // =====================================================
 
-function getPaymentClass(status) {
+function openAcceptModal(order) {
 
-    if (
-        status ===
-        "VERIFIED"
-    ) {
+    selectedOrder =
+        order;
 
-        return "payment-status verified";
+    acceptOrderLabel.textContent =
+        `Order: ${order.orderId}`;
 
-    }
+    acceptCourier.value =
+        order.courier || "";
 
-    return "payment-status pending";
+    acceptTracking.value =
+        order.trackingNumber || "";
+
+    acceptModal.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeAcceptModal() {
+
+    selectedOrder =
+        null;
+
+    acceptModal.classList.remove(
+        "show"
+    );
+
+}
+
+
+function openCancelModal(order) {
+
+    selectedOrder =
+        order;
+
+    cancelOrderLabel.textContent =
+        `Order: ${order.orderId}`;
+
+    cancelReason.value =
+        "";
+
+    cancelModal.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeCancelModal() {
+
+    selectedOrder =
+        null;
+
+    cancelModal.classList.remove(
+        "show"
+    );
+
+}
+
+
+// =====================================================
+// CUSTOMER CONFIRMATION MESSAGE
+// =====================================================
+
+function makeConfirmationMessage(
+    order,
+    trackingUrl
+) {
+
+    return (
+
+        `AYONIZA Order Confirmed ✅\n\n` +
+
+        `Hi ${order.customerName || "Customer"},\n\n` +
+
+        `Your order ${order.orderId} has been confirmed.\n\n` +
+
+        `Amount: ${formatPrice(order.total)}\n` +
+
+        `Tracking ID: ${order.trackingNumber}\n` +
+
+        `Courier: ${order.courier}\n\n` +
+
+        `Track your order:\n` +
+
+        trackingUrl +
+
+        `\n\nThank you for shopping with AYONIZA.`
+    );
+
+}
+
+
+function makeCancellationMessage(
+    order,
+    reason
+) {
+
+    return (
+
+        `AYONIZA Order Update\n\n` +
+
+        `Hi ${order.customerName || "Customer"},\n\n` +
+
+        `Your order ${order.orderId} has been cancelled.\n\n` +
+
+        `Reason: ${reason}\n\n` +
+
+        `For help, please contact AYONIZA support.`
+    );
 
 }
 
@@ -228,17 +411,14 @@ async function loadOrders() {
             );
 
 
-        // Sort latest first
         orders.sort(
             (a, b) => {
 
                 const aTime =
-                    a.createdAt?.toMillis?.() ||
-                    0;
+                    a.createdAt?.toMillis?.() || 0;
 
                 const bTime =
-                    b.createdAt?.toMillis?.() ||
-                    0;
+                    b.createdAt?.toMillis?.() || 0;
 
                 return bTime - aTime;
 
@@ -253,7 +433,6 @@ async function loadOrders() {
         totalOrders.textContent =
             orders.length;
 
-
         newOrders.textContent =
             orders.filter(
                 (order) =>
@@ -261,14 +440,12 @@ async function loadOrders() {
                     "NEW"
             ).length;
 
-
         shippedOrders.textContent =
             orders.filter(
                 (order) =>
                     order.orderStatus ===
                     "SHIPPED"
             ).length;
-
 
         deliveredOrders.textContent =
             orders.filter(
@@ -286,11 +463,12 @@ async function loadOrders() {
             orders.length === 0
         ) {
 
-            ordersContainer.innerHTML = `
-                <div class="empty">
-                    No orders found.
-                </div>
-            `;
+            ordersContainer.innerHTML =
+                `
+                    <div class="empty">
+                        No orders found.
+                    </div>
+                `;
 
             return;
 
@@ -322,14 +500,20 @@ async function loadOrders() {
             error
         );
 
+        ordersContainer.innerHTML =
+            `
+                <div class="empty">
+                    <strong>
+                        Orders load nahi ho paaye.
+                    </strong>
 
-        ordersContainer.innerHTML = `
-            <div class="empty">
-                <strong>Orders load nahi ho paaye.</strong>
-                <br><br>
-                ${error.message}
-            </div>
-        `;
+                    <br><br>
+
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </div>
+            `;
 
     }
 
@@ -356,13 +540,12 @@ function createOrderCard(
             "article"
         );
 
-
     card.className =
         "order-card";
 
 
     // =================================================
-    // ITEMS HTML
+    // ITEMS
     // =================================================
 
     const itemsHTML =
@@ -374,59 +557,50 @@ function createOrderCard(
                     <div class="item">
 
                         <img
-                            src="${item.image || ""}"
-                            alt="${item.productName || "Product"}"
+                            src="${escapeHTML(
+                                item.image || ""
+                            )}"
+                            alt="${escapeHTML(
+                                item.productName ||
+                                "Product"
+                            )}"
                         >
 
                         <div class="item-info">
 
                             <div class="item-name">
-                                ${item.productName || "Product"}
+                                ${escapeHTML(
+                                    item.productName ||
+                                    "Product"
+                                )}
                             </div>
 
                             <div class="item-meta">
-                                Qty: ${item.quantity || 1}
+                                Qty:
+                                ${Number(
+                                    item.quantity || 1
+                                )}
                                 |
                                 Price:
-                                ${formatPrice(item.price)}
+                                ${formatPrice(
+                                    item.price
+                                )}
                             </div>
 
                             <div class="item-meta">
                                 Total:
-                                ${formatPrice(item.lineTotal)}
+                                ${formatPrice(
+                                    item.lineTotal
+                                )}
                             </div>
 
                         </div>
 
                     </div>
-
                 `
             ).join("")
 
             : "";
-
-
-    // =================================================
-    // STATUS OPTIONS
-    // =================================================
-
-    const statusOptions =
-        ORDER_STATUSES.map(
-            (status) => `
-
-                <option
-                    value="${status}"
-                    ${
-                        order.orderStatus === status
-                            ? "selected"
-                            : ""
-                    }
-                >
-                    ${status}
-                </option>
-
-            `
-        ).join("");
 
 
     const paymentClass =
@@ -435,9 +609,215 @@ function createOrderCard(
         );
 
 
+    let actionHTML =
+        "";
+
+
     // =================================================
-    // CARD HTML
+    // NEW ORDER
     // =================================================
+
+    if (
+        order.orderStatus ===
+        "NEW"
+    ) {
+
+        actionHTML = `
+
+            <div class="admin-actions">
+
+                <button
+                    type="button"
+                    class="accept-btn"
+                    data-action="accept"
+                >
+                    Accept Order
+                </button>
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    data-action="cancel"
+                >
+                    Cancel Order
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // =================================================
+    // ACCEPTED / SHIPPING STATUS
+    // =================================================
+
+    else if (
+        ![
+            "CANCELLED",
+            "DELIVERED"
+        ].includes(
+            order.orderStatus
+        )
+    ) {
+
+        const options =
+            NEXT_STATUSES
+                .map(
+                    (status) => `
+
+                        <option
+                            value="${status}"
+                            ${
+                                order.orderStatus === status
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${status}
+                        </option>
+
+                    `
+                )
+                .join("");
+
+
+        actionHTML = `
+
+            <div class="shipping-box">
+
+                <select
+                    class="status-select"
+                    data-field="status"
+                >
+
+                    <option
+                        value="${escapeHTML(
+                            order.orderStatus
+                        )}"
+                        selected
+                    >
+                        ${escapeHTML(
+                            order.orderStatus
+                        )}
+                    </option>
+
+                    ${options}
+
+                </select>
+
+
+                <input
+                    type="text"
+                    class="courier-input"
+                    placeholder="Courier name"
+                    value="${escapeHTML(
+                        order.courier || ""
+                    )}"
+                >
+
+
+                <input
+                    type="text"
+                    class="tracking-input"
+                    placeholder="Tracking number"
+                    value="${escapeHTML(
+                        order.trackingNumber || ""
+                    )}"
+                >
+
+
+                <button
+                    type="button"
+                    class="save-btn"
+                    data-action="save"
+                >
+                    Save Order Update
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // =================================================
+    // TRACKING LINK
+    // =================================================
+
+    let trackingHTML =
+        "";
+
+
+    if (
+        order.trackingUrl
+    ) {
+
+        trackingHTML = `
+
+            <div class="notification-box">
+
+                <strong>
+                    Tracking Link
+                </strong>
+
+                <a
+                    class="tracking-link"
+                    href="${escapeHTML(
+                        order.trackingUrl
+                    )}"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    ${escapeHTML(
+                        order.trackingUrl
+                    )}
+                </a>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // =================================================
+    // LAST NOTIFICATION
+    // =================================================
+
+    let notificationHTML =
+        "";
+
+
+    if (
+        order.notificationMessage
+    ) {
+
+        notificationHTML = `
+
+            <div class="notification-box">
+
+                <strong>
+                    Customer Message
+                </strong>
+
+                <div>
+                    ${escapeHTML(
+                        order.notificationMessage
+                    ).replace(
+                        /\n/g,
+                        "<br>"
+                    )}
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
 
     card.innerHTML = `
 
@@ -446,27 +826,26 @@ function createOrderCard(
             <div>
 
                 <div class="order-id">
-                    ${order.orderId || "No Order ID"}
+                    ${escapeHTML(
+                        order.orderId ||
+                        "No Order ID"
+                    )}
                 </div>
 
                 <div class="order-date">
-                    ${formatDate(order.createdAt)}
+                    ${formatDate(
+                        order.createdAt
+                    )}
                 </div>
 
             </div>
 
 
-            <div>
-
-                <select
-                    class="status-select"
-                    data-field="status"
-                >
-
-                    ${statusOptions}
-
-                </select>
-
+            <div class="order-status">
+                ${escapeHTML(
+                    order.orderStatus ||
+                    "UNKNOWN"
+                )}
             </div>
 
         </div>
@@ -474,43 +853,87 @@ function createOrderCard(
 
         <div class="order-grid">
 
+
             <!-- CUSTOMER -->
 
             <section class="section">
 
-                <h3>Customer</h3>
+                <h3>
+                    Customer
+                </h3>
 
                 <p>
                     <strong>Name:</strong>
-                    ${order.customerName || "—"}
+                    ${escapeHTML(
+                        order.customerName ||
+                        "—"
+                    )}
                 </p>
 
                 <p>
                     <strong>Email:</strong>
-                    ${order.email || "—"}
+                    ${escapeHTML(
+                        order.email ||
+                        "—"
+                    )}
                 </p>
 
                 <p>
                     <strong>Phone:</strong>
-                    ${order.phone || "—"}
+                    ${escapeHTML(
+                        order.phone ||
+                        "—"
+                    )}
                 </p>
 
-                <h3>Delivery Address</h3>
+
+                <h3>
+                    Delivery Address
+                </h3>
 
                 <p>
-                    ${order.address || "—"}
-                    ${order.landmark
-                        ? "<br>" + order.landmark
-                        : ""
+                    ${escapeHTML(
+                        order.address ||
+                        "—"
+                    )}
+
+                    ${
+                        order.landmark
+                            ? "<br>" +
+                              escapeHTML(
+                                  order.landmark
+                              )
+                            : ""
                     }
+
                     <br>
-                    ${order.city || ""}
+
+                    ${escapeHTML(
+                        order.city ||
+                        ""
+                    )}
+
                     ,
-                    ${order.state || ""}
+
+                    ${escapeHTML(
+                        order.state ||
+                        ""
+                    )}
+
                     -
-                    ${order.pincode || ""}
+
+                    ${escapeHTML(
+                        order.pincode ||
+                        ""
+                    )}
+
                     <br>
-                    ${order.country || "India"}
+
+                    ${escapeHTML(
+                        order.country ||
+                        "India"
+                    )}
+
                 </p>
 
             </section>
@@ -520,7 +943,9 @@ function createOrderCard(
 
             <section class="section">
 
-                <h3>Order</h3>
+                <h3>
+                    Order
+                </h3>
 
                 <div class="items">
                     ${itemsHTML}
@@ -529,9 +954,12 @@ function createOrderCard(
                 <div class="amount-box">
 
                     Total:
-                    ${formatPrice(order.total)}
+                    ${formatPrice(
+                        order.total
+                    )}
 
                 </div>
+
 
                 <p>
 
@@ -542,13 +970,14 @@ function createOrderCard(
                     <span
                         class="${paymentClass}"
                     >
-                        ${
+                        ${escapeHTML(
                             order.paymentStatus ||
                             "UNKNOWN"
-                        }
+                        )}
                     </span>
 
                 </p>
+
 
                 <p>
 
@@ -556,50 +985,45 @@ function createOrderCard(
                         Method:
                     </strong>
 
-                    ${
+                    ${escapeHTML(
                         order.paymentMethod ||
                         "—"
-                    }
+                    )}
 
                 </p>
+
+
+                ${
+                    order.trackingNumber
+                        ? `
+                            <p>
+                                <strong>
+                                    Tracking ID:
+                                </strong>
+                                ${escapeHTML(
+                                    order.trackingNumber
+                                )}
+                            </p>
+                        `
+                        : ""
+                }
 
             </section>
 
 
-            <!-- SHIPPING -->
+            <!-- ACTIONS -->
 
             <section class="section">
 
-                <h3>Shipping</h3>
+                <h3>
+                    Order Action
+                </h3>
 
-                <div class="shipping-box">
+                ${actionHTML}
 
-                    <input
-                        type="text"
-                        class="courier-input"
-                        placeholder="Courier name"
-                        value="${
-                            order.courier || ""
-                        }"
-                    >
+                ${trackingHTML}
 
-                    <input
-                        type="text"
-                        class="tracking-input"
-                        placeholder="Tracking number"
-                        value="${
-                            order.trackingNumber || ""
-                        }"
-                    >
-
-                    <button
-                        class="save-btn"
-                        data-action="save"
-                    >
-                        Save Order Update
-                    </button>
-
-                </div>
+                ${notificationHTML}
 
             </section>
 
@@ -609,111 +1033,505 @@ function createOrderCard(
 
 
     // =================================================
-    // SAVE UPDATE
+    // ACCEPT
     // =================================================
 
-    const saveBtn =
+    const acceptButton =
         card.querySelector(
-            '[data-action="save"]'
-        );
-
-    const statusSelect =
-        card.querySelector(
-            '[data-field="status"]'
-        );
-
-    const courierInput =
-        card.querySelector(
-            ".courier-input"
-        );
-
-    const trackingInput =
-        card.querySelector(
-            ".tracking-input"
+            '[data-action="accept"]'
         );
 
 
-    saveBtn.addEventListener(
+    acceptButton?.addEventListener(
         "click",
-        async () => {
+        () => {
 
-            try {
-
-                saveBtn.disabled =
-                    true;
-
-                saveBtn.textContent =
-                    "Saving...";
-
-
-                await updateDoc(
-
-                    doc(
-                        db,
-                        "orders",
-                        order.firebaseId
-                    ),
-
-                    {
-
-                        orderStatus:
-                            statusSelect.value,
-
-                        courier:
-                            courierInput.value.trim(),
-
-                        trackingNumber:
-                            trackingInput.value.trim(),
-
-                        updatedAt:
-                            new Date()
-
-                    }
-
-                );
-
-
-                alert(
-                    "Order updated successfully."
-                );
-
-
-                await loadOrders();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Order update error:",
-                    error
-                );
-
-
-                alert(
-                    "Order update failed:\n" +
-                    error.message
-                );
-
-            }
-
-            finally {
-
-                saveBtn.disabled =
-                    false;
-
-                saveBtn.textContent =
-                    "Save Order Update";
-
-            }
+            openAcceptModal(
+                order
+            );
 
         }
     );
 
 
+    // =================================================
+    // CANCEL
+    // =================================================
+
+    const cancelButton =
+        card.querySelector(
+            '[data-action="cancel"]'
+        );
+
+
+    cancelButton?.addEventListener(
+        "click",
+        () => {
+
+            openCancelModal(
+                order
+            );
+
+        }
+    );
+
+
+    // =================================================
+    // SAVE SHIPPING UPDATE
+    // =================================================
+
+    const saveButton =
+        card.querySelector(
+            '[data-action="save"]'
+        );
+
+
+    if (
+        saveButton
+    ) {
+
+        const statusSelect =
+            card.querySelector(
+                '[data-field="status"]'
+            );
+
+        const courierInput =
+            card.querySelector(
+                ".courier-input"
+            );
+
+        const trackingInput =
+            card.querySelector(
+                ".tracking-input"
+            );
+
+
+        saveButton.addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    saveButton.disabled =
+                        true;
+
+                    saveButton.textContent =
+                        "Saving...";
+
+
+                    await updateDoc(
+
+                        doc(
+                            db,
+                            "orders",
+                            order.firebaseId
+                        ),
+
+                        {
+
+                            orderStatus:
+                                statusSelect.value,
+
+                            courier:
+                                courierInput.value.trim(),
+
+                            trackingNumber:
+                                trackingInput.value.trim(),
+
+                            updatedAt:
+                                serverTimestamp()
+
+                        }
+
+                    );
+
+
+                    alert(
+                        "Order updated successfully."
+                    );
+
+
+                    await loadOrders();
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Update error:",
+                        error
+                    );
+
+                    alert(
+                        "Order update failed:\n" +
+                        error.message
+                    );
+
+                }
+
+                finally {
+
+                    saveButton.disabled =
+                        false;
+
+                    saveButton.textContent =
+                        "Save Order Update";
+
+                }
+
+            }
+        );
+
+    }
+
+
     return card;
 
 }
+
+
+// =====================================================
+// ACCEPT ORDER
+// =====================================================
+
+acceptConfirmBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!selectedOrder) {
+            return;
+        }
+
+
+        const courier =
+            acceptCourier.value.trim();
+
+        const trackingNumber =
+            acceptTracking.value.trim();
+
+
+        if (!courier) {
+
+            alert(
+                "Courier name enter karo."
+            );
+
+            acceptCourier.focus();
+
+            return;
+
+        }
+
+
+        if (!trackingNumber) {
+
+            alert(
+                "Tracking ID enter karo."
+            );
+
+            acceptTracking.focus();
+
+            return;
+
+        }
+
+
+        try {
+
+            acceptConfirmBtn.disabled =
+                true;
+
+            acceptConfirmBtn.textContent =
+                "Confirming...";
+
+
+            const trackingUrl =
+                TRACK_BASE_URL +
+                encodeURIComponent(
+                    selectedOrder.orderId
+                );
+
+
+            const orderForMessage = {
+
+                ...selectedOrder,
+
+                courier:
+                    courier,
+
+                trackingNumber:
+                    trackingNumber
+
+            };
+
+
+            const message =
+                makeConfirmationMessage(
+                    orderForMessage,
+                    trackingUrl
+                );
+
+
+            await updateDoc(
+
+                doc(
+                    db,
+                    "orders",
+                    selectedOrder.firebaseId
+                ),
+
+                {
+
+                    orderStatus:
+                        "ACCEPTED",
+
+                    courier:
+                        courier,
+
+                    trackingNumber:
+                        trackingNumber,
+
+                    trackingUrl:
+                        trackingUrl,
+
+                    notificationType:
+                        "ORDER_CONFIRMED",
+
+                    notificationTitle:
+                        "Order Confirmed",
+
+                    notificationMessage:
+                        message,
+
+                    notificationCreatedAt:
+                        serverTimestamp(),
+
+                    notificationSent:
+                        false,
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            closeAcceptModal();
+
+
+            alert(
+                "Order confirmed successfully."
+            );
+
+
+            await loadOrders();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Accept order error:",
+                error
+            );
+
+            alert(
+                "Order accept nahi ho paya:\n" +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            acceptConfirmBtn.disabled =
+                false;
+
+            acceptConfirmBtn.textContent =
+                "Confirm Order";
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// CANCEL ORDER
+// =====================================================
+
+cancelConfirmBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!selectedOrder) {
+            return;
+        }
+
+
+        const reason =
+            cancelReason.value.trim();
+
+
+        if (!reason) {
+
+            alert(
+                "Cancellation reason enter karo."
+            );
+
+            cancelReason.focus();
+
+            return;
+
+        }
+
+
+        try {
+
+            cancelConfirmBtn.disabled =
+                true;
+
+            cancelConfirmBtn.textContent =
+                "Cancelling...";
+
+
+            const message =
+                makeCancellationMessage(
+                    selectedOrder,
+                    reason
+                );
+
+
+            await updateDoc(
+
+                doc(
+                    db,
+                    "orders",
+                    selectedOrder.firebaseId
+                ),
+
+                {
+
+                    orderStatus:
+                        "CANCELLED",
+
+                    cancelReason:
+                        reason,
+
+                    cancelledAt:
+                        serverTimestamp(),
+
+                    notificationType:
+                        "ORDER_CANCELLED",
+
+                    notificationTitle:
+                        "Order Cancelled",
+
+                    notificationMessage:
+                        message,
+
+                    notificationCreatedAt:
+                        serverTimestamp(),
+
+                    notificationSent:
+                        false,
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            closeCancelModal();
+
+
+            alert(
+                "Order cancelled successfully."
+            );
+
+
+            await loadOrders();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Cancel order error:",
+                error
+            );
+
+            alert(
+                "Order cancel nahi ho paya:\n" +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            cancelConfirmBtn.disabled =
+                false;
+
+            cancelConfirmBtn.textContent =
+                "Cancel Order";
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// MODAL CLOSE BUTTONS
+// =====================================================
+
+acceptCloseBtn.addEventListener(
+    "click",
+    closeAcceptModal
+);
+
+cancelCloseBtn.addEventListener(
+    "click",
+    closeCancelModal
+);
+
+
+acceptModal.addEventListener(
+    "click",
+    (e) => {
+
+        if (
+            e.target ===
+            acceptModal
+        ) {
+
+            closeAcceptModal();
+
+        }
+
+    }
+);
+
+
+cancelModal.addEventListener(
+    "click",
+    (e) => {
+
+        if (
+            e.target ===
+            cancelModal
+        ) {
+
+            closeCancelModal();
+
+        }
+
+    }
+);
 
 
 // =====================================================
@@ -730,28 +1548,22 @@ onAuthStateChanged(
                 "Please login as admin."
             );
 
-
             window.location.href =
                 "login.html";
-
 
             return;
 
         }
 
 
-        if (
-            !isAdmin(user)
-        ) {
+        if (!isAdmin(user)) {
 
             alert(
                 "Access denied. Admin account required."
             );
 
-
             window.location.href =
                 "index.html";
-
 
             return;
 
@@ -778,7 +1590,6 @@ logoutBtn.addEventListener(
                 auth
             );
 
-
             window.location.href =
                 "login.html";
 
@@ -787,6 +1598,7 @@ logoutBtn.addEventListener(
         catch (error) {
 
             console.error(
+                "Logout error:",
                 error
             );
 
