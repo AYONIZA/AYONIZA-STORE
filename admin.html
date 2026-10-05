@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -25,7 +26,7 @@
 
         .topbar {
             background: #111;
-            color: white;
+            color: #fff;
             padding: 18px 25px;
             display: flex;
             align-items: center;
@@ -33,7 +34,7 @@
             gap: 15px;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 20;
         }
 
         .topbar h1 {
@@ -50,7 +51,7 @@
 
         .container {
             width: min(1400px, 95%);
-            margin: 25px auto;
+            margin: 25px auto 60px;
         }
 
         .stats {
@@ -61,10 +62,10 @@
         }
 
         .stat-card {
-            background: white;
+            background: #fff;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
         }
 
         .stat-card h3 {
@@ -83,10 +84,10 @@
         }
 
         .order-card {
-            background: white;
+            background: #fff;
             border-radius: 14px;
             padding: 20px;
-            box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
         }
 
         .order-header {
@@ -111,11 +112,13 @@
             margin-top: 5px;
         }
 
-        .status-select {
-            padding: 9px 12px;
-            border: 1px solid #ccc;
+        .order-status {
+            display: inline-block;
+            padding: 8px 12px;
             border-radius: 7px;
-            background: white;
+            background: #f2f2f2;
+            font-size: 13px;
+            font-weight: bold;
         }
 
         .order-grid {
@@ -131,7 +134,7 @@
         }
 
         .section h3 {
-            margin-top: 0;
+            margin: 0 0 12px;
             font-size: 16px;
         }
 
@@ -208,38 +211,154 @@
             gap: 10px;
         }
 
-        .shipping-box input {
+        .shipping-box input,
+        .status-select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 7px;
+            background: #fff;
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .accept-btn,
+        .cancel-btn,
+        .save-btn {
+            border: 0;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .accept-btn {
+            background: #1f7a3d;
+            color: #fff;
+        }
+
+        .cancel-btn {
+            background: #b42318;
+            color: #fff;
         }
 
         .save-btn {
-            margin-top: 10px;
-            border: 0;
             background: #111;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 7px;
-            cursor: pointer;
+            color: #fff;
         }
 
+        .accept-btn:disabled,
+        .cancel-btn:disabled,
         .save-btn:disabled {
-            opacity: 0.6;
+            opacity: .6;
             cursor: not-allowed;
         }
 
-        .empty {
-            background: white;
+        .tracking-link {
+            display: inline-block;
+            margin-top: 8px;
+            word-break: break-all;
+            color: #7d2f4e;
+        }
+
+        .notification-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f3f5;
+            border-radius: 8px;
+            border: 1px solid #eadde2;
+        }
+
+        .notification-box strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .empty,
+        .loading {
+            background: #fff;
             padding: 30px;
             border-radius: 12px;
             text-align: center;
         }
 
-        .loading {
-            text-align: center;
-            padding: 30px;
+        /* MODAL */
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(500px, 100%);
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.2);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+        }
+
+        .modal label {
+            display: block;
+            margin-top: 14px;
+            font-weight: 600;
+        }
+
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            margin-top: 7px;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        .modal textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .modal-close,
+        .modal-confirm {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .modal-close {
+            background: #eee;
+        }
+
+        .modal-confirm {
+            background: #111;
+            color: #fff;
         }
 
         @media (max-width: 850px) {
@@ -251,7 +370,6 @@
             .order-grid {
                 grid-template-columns: 1fr;
             }
-
         }
 
         @media (max-width: 550px) {
@@ -264,66 +382,191 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
         }
 
     </style>
+
 </head>
 
 <body>
 
-    <header class="topbar">
+<header class="topbar">
 
-        <h1>AYONIZA Admin Orders</h1>
+    <h1>
+        AYONIZA Admin Orders
+    </h1>
 
-        <button id="logoutBtn">
-            Logout
-        </button>
+    <button id="logoutBtn">
+        Logout
+    </button>
 
-    </header>
+</header>
 
 
-    <main class="container">
+<main class="container">
 
-        <div class="stats">
+    <div class="stats">
 
-            <div class="stat-card">
-                <h3>Total Orders</h3>
-                <strong id="totalOrders">0</strong>
-            </div>
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <strong id="totalOrders">0</strong>
+        </div>
 
-            <div class="stat-card">
-                <h3>New Orders</h3>
-                <strong id="newOrders">0</strong>
-            </div>
+        <div class="stat-card">
+            <h3>New Orders</h3>
+            <strong id="newOrders">0</strong>
+        </div>
 
-            <div class="stat-card">
-                <h3>Shipped</h3>
-                <strong id="shippedOrders">0</strong>
-            </div>
+        <div class="stat-card">
+            <h3>Shipped</h3>
+            <strong id="shippedOrders">0</strong>
+        </div>
 
-            <div class="stat-card">
-                <h3>Delivered</h3>
-                <strong id="deliveredOrders">0</strong>
-            </div>
+        <div class="stat-card">
+            <h3>Delivered</h3>
+            <strong id="deliveredOrders">0</strong>
+        </div>
+
+    </div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading orders...
+    </div>
+
+
+    <div
+        id="ordersContainer"
+        class="orders-wrapper"
+    ></div>
+
+</main>
+
+
+<!-- =====================================================
+     ACCEPT ORDER MODAL
+====================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="acceptModal"
+>
+
+    <div class="modal">
+
+        <h2>
+            Accept Order
+        </h2>
+
+        <p id="acceptOrderLabel"></p>
+
+        <label>
+            Courier Name
+
+            <input
+                type="text"
+                id="acceptCourier"
+                placeholder="e.g. Shiprocket"
+            >
+        </label>
+
+
+        <label>
+            Tracking ID
+
+            <input
+                type="text"
+                id="acceptTracking"
+                placeholder="Enter tracking ID"
+            >
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="acceptCloseBtn"
+            >
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="modal-confirm"
+                id="acceptConfirmBtn"
+            >
+                Confirm Order
+            </button>
 
         </div>
 
+    </div>
 
-        <div id="loading" class="loading">
-            Loading orders...
+</div>
+
+
+<!-- =====================================================
+     CANCEL ORDER MODAL
+====================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="cancelModal"
+>
+
+    <div class="modal">
+
+        <h2>
+            Cancel Order
+        </h2>
+
+        <p id="cancelOrderLabel"></p>
+
+        <label>
+            Cancellation Reason
+
+            <textarea
+                id="cancelReason"
+                placeholder="Enter cancellation reason"
+            ></textarea>
+
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="cancelCloseBtn"
+            >
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="modal-confirm"
+                id="cancelConfirmBtn"
+            >
+                Cancel Order
+            </button>
+
         </div>
 
+    </div>
 
-        <div
-            id="ordersContainer"
-            class="orders-wrapper"
-        ></div>
-
-    </main>
+</div>
 
 
-    <script type="module" src="admin.js"></script>
+<script
+    type="module"
+    src="admin.js"
+></script>
 
 </body>
 </html>
