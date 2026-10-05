@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Orders | AYONIZA</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
+            color: #222;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            color: #6e213e;
+            font-size: 24px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .topbar-actions a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .page {
+            width: min(1050px, 94%);
+            margin: 30px auto 60px;
+        }
+
+        .page-header {
+            margin-bottom: 22px;
+        }
+
+        .small-title {
+            margin: 0 0 7px;
+            font-size: 13px;
+            letter-spacing: .14em;
+            color: #777;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: #6e213e;
+        }
+
+        .loading,
+        .message {
+            background: #fff;
+            border-radius: 14px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+        }
+
+        .orders-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.07);
+            overflow: hidden;
+        }
+
+        .order-head {
+            padding: 18px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .order-id {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 8px;
+            background: #f3e8ed;
+            color: #6e213e;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .items {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 9px;
+            background: #f5f5f5;
+            flex: 0 0 70px;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .item-meta {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .order-footer {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .amount {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .payment {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .payment strong {
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #8c3b5a;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #8c3b5a;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #8c3b5a;
+        }
+
+        .unavailable {
+            color: #888;
+            font-size: 13px;
+            padding: 10px 0;
+        }
+
+        .message a {
+            color: #6e213e;
+        }
+
+        @media (max-width: 650px) {
+
+            .topbar {
+                padding: 15px;
+            }
+
+            .topbar-actions {
+                gap: 9px;
+            }
+
+            .topbar-actions a {
+                font-size: 14px;
+            }
+
+            .order-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            .actions .btn {
+                flex: 1;
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        AYONIZA
+    </a>
+
+
+    <div class="topbar-actions">
+
+        <a href="account.html">
+            My Account
+        </a>
+
+        <a href="index.html">
+            Shop
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="page">
+
+
+    <div class="page-header">
+
+        <p class="small-title">
+            AYONIZA ACCOUNT
+        </p>
+
+        <h1>
+            My Orders
+        </h1>
+
+    </div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading your orders...
+    </div>
+
+
+    <div
+        id="loginMessage"
+        class="message"
+        hidden
+    >
+
+        <h2>
+            Login Required
+        </h2>
+
+        <p>
+            Please login to view your orders.
+        </p>
+
+        <a
+            href="login.html"
+            class="btn btn-primary"
+        >
+            Login
+        </a>
+
+    </div>
+
+
+    <div
+        id="emptyMessage"
+        class="message"
+        hidden
+    >
+
+        <h2>
+            No Orders Yet
+        </h2>
+
+        <p>
+            You haven't placed any orders yet.
+        </p>
+
+        <a
+            href="index.html#shop"
+            class="btn btn-primary"
+        >
+            Start Shopping
+        </a>
+
+    </div>
+
+
+    <div
+        id="errorMessage"
+        class="message"
+        hidden
+    >
+
+        <h2>
+            Orders Could Not Be Loaded
+        </h2>
+
+        <p id="errorText"></p>
+
+    </div>
+
+
+    <div
+        id="ordersList"
+        class="orders-list"
+        hidden
+    ></div>
+
+
+</main>
+
+
+<script
+    type="module"
+    src="my-orders.js"
+></script>
+
+
+</body>
+
+</html>
