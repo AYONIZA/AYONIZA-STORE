@@ -296,16 +296,115 @@ function initApp() {
   // GET PRODUCT STOCK
   // =================================================
 
-  async function getProductStock(
-    productId,
-    sourceButton = null
-  ) {
-    const normalizedId =
-      String(productId || "");
+async function getProductStock(
+  productId,
+  sourceButton = null
+) {
+  const normalizedId =
+    String(productId || "");
 
-    if (!normalizedId) {
-      return null;
+  if (!normalizedId) {
+    return null;
+  }
+
+  // =================================================
+  // 1. FIRESTORE = MAIN STOCK SOURCE
+  // =================================================
+
+  try {
+    const productRef = doc(
+      firestore,
+      "products",
+      normalizedId
+    );
+
+    const snapshot =
+      await getDoc(productRef);
+
+    if (snapshot.exists()) {
+      const data =
+        snapshot.data();
+
+      const stock =
+        Number(data.stock);
+
+      if (Number.isFinite(stock)) {
+
+        // Cache bhi latest value se update karo
+        stockCache.set(
+          normalizedId,
+          stock
+        );
+
+        return stock;
+      }
     }
+  }
+
+  catch (error) {
+    console.error(
+      "Firestore stock read error:",
+      error
+    );
+  }
+
+
+  // =================================================
+  // 2. AGAR FIRESTORE PRODUCT NA MILE
+  //    TAB HTML data-stock FALLBACK HOGA
+  // =================================================
+
+  const currentCard =
+    sourceButton?.closest(
+      ".product-card"
+    ) ||
+    findProductCardById(
+      normalizedId
+    );
+
+  if (
+    currentCard &&
+    currentCard.dataset.stock !==
+      undefined
+  ) {
+
+    const stock =
+      Number(
+        currentCard.dataset.stock
+      );
+
+    if (
+      Number.isFinite(stock)
+    ) {
+
+      stockCache.set(
+        normalizedId,
+        stock
+      );
+
+      return stock;
+    }
+  }
+
+
+  // =================================================
+  // 3. LAST FALLBACK = CACHE
+  // =================================================
+
+  if (
+    stockCache.has(
+      normalizedId
+    )
+  ) {
+
+    return stockCache.get(
+      normalizedId
+    );
+  }
+
+
+  return null;
+}
 
     // -----------------------------------------------
     // 1. Current card se stock
