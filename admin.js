@@ -119,6 +119,633 @@ const logoutBtn =
         "logoutBtn"
     );
 
+// =====================================================
+// STOCK MANAGEMENT DOM
+// =====================================================
+
+const stockProductsContainer =
+    document.getElementById(
+        "stockProductsContainer"
+    );
+
+const syncProductsBtn =
+    document.getElementById(
+        "syncProductsBtn"
+    );
+
+const stockMessage =
+    document.getElementById(
+        "stockMessage"
+    );
+
+
+// =====================================================
+// STOCK MESSAGE
+// =====================================================
+
+function showStockMessage(message) {
+
+    if (!stockMessage) {
+        return;
+    }
+
+    stockMessage.textContent =
+        message;
+
+    stockMessage.hidden =
+        false;
+
+    setTimeout(() => {
+
+        stockMessage.hidden =
+            true;
+
+    }, 3000);
+
+}
+
+
+// =====================================================
+// FORMAT STOCK STATUS
+// =====================================================
+
+function getStockStatus(stock) {
+
+    stock =
+        Number(stock || 0);
+
+    if (stock <= 0) {
+
+        return {
+            text: "Out of Stock",
+            className: "out"
+        };
+
+    }
+
+    if (stock <= 5) {
+
+        return {
+            text:
+                `Only ${stock} piece${
+                    stock === 1
+                        ? ""
+                        : "s"
+                } remaining`,
+            className: "low"
+        };
+
+    }
+
+    return {
+        text:
+            `${stock} pieces available`,
+        className: "available"
+    };
+}
+
+
+// =====================================================
+// LOAD PRODUCTS
+// =====================================================
+
+async function loadProducts() {
+
+    if (!stockProductsContainer) {
+        return;
+    }
+
+    stockProductsContainer.innerHTML =
+        `
+        <div class="empty">
+            Loading products...
+        </div>
+        `;
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "products"
+                )
+            );
+
+        const products =
+            snapshot.docs.map(
+                (item) => ({
+
+                    firebaseId:
+                        item.id,
+
+                    ...item.data()
+
+                })
+            );
+
+        products.sort(
+            (a, b) =>
+                String(
+                    a.name || ""
+                ).localeCompare(
+                    String(
+                        b.name || ""
+                    )
+                )
+        );
+
+        if (
+            products.length === 0
+        ) {
+
+            stockProductsContainer.innerHTML =
+                `
+                <div class="empty">
+                    No products found.
+                    Click "Sync Products" first.
+                </div>
+                `;
+
+            return;
+        }
+
+        stockProductsContainer.innerHTML =
+            "";
+
+        products.forEach(
+            (product) => {
+
+                stockProductsContainer.appendChild(
+                    createStockCard(
+                        product
+                    )
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+        stockProductsContainer.innerHTML =
+            `
+            <div class="empty">
+                Products load nahi ho paaye.
+                <br><br>
+                ${error.message}
+            </div>
+            `;
+
+    }
+}
+
+
+// =====================================================
+// CREATE STOCK CARD
+// =====================================================
+
+function createStockCard(
+    product
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "stock-product-card";
+
+    const stock =
+        Number(
+            product.stock ?? 0
+        );
+
+    const status =
+        getStockStatus(
+            stock
+        );
+
+    card.innerHTML = `
+
+        <div class="stock-product-top">
+
+            <img
+                class="stock-product-image"
+                src="${product.image || ""}"
+                alt="${product.name || ""}"
+            >
+
+            <div>
+
+                <h3 class="stock-product-name">
+                    ${product.name || "Unnamed Product"}
+                </h3>
+
+                <p class="stock-product-price">
+                    ₹${Number(
+                        product.price || 0
+                    ).toLocaleString("en-IN")}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stock-product-stock-row">
+
+            <label>
+                Stock
+            </label>
+
+            <input
+                type="number"
+                min="0"
+                step="1"
+                value="${stock}"
+                class="stock-input"
+                data-product-id="${product.firebaseId}"
+            >
+
+            <button
+                type="button"
+                class="stock-save-btn"
+                data-product-id="${product.firebaseId}"
+            >
+                Save
+            </button>
+
+        </div>
+
+
+        <div
+            class="stock-current ${status.className}"
+        >
+            ${status.text}
+        </div>
+
+    `;
+
+
+    // =================================================
+    // SAVE STOCK
+    // =================================================
+
+    const saveButton =
+        card.querySelector(
+            ".stock-save-btn"
+        );
+
+    const input =
+        card.querySelector(
+            ".stock-input"
+        );
+
+    const currentStatus =
+        card.querySelector(
+            ".stock-current"
+        );
+
+
+    saveButton.addEventListener(
+        "click",
+        async () => {
+
+            const newStock =
+                Number(
+                    input.value
+                );
+
+            if (
+                !Number.isInteger(
+                    newStock
+                ) ||
+                newStock < 0
+            ) {
+
+                alert(
+                    "Stock must be a whole number 0 or greater."
+                );
+
+                return;
+            }
+
+            const productId =
+                saveButton.dataset.productId;
+
+            saveButton.disabled =
+                true;
+
+            saveButton.textContent =
+                "Saving...";
+
+
+            try {
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "products",
+                        productId
+                    ),
+
+                    {
+                        stock:
+                            newStock,
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+
+                );
+
+
+                stockCacheForAdmin.set(
+                    productId,
+                    newStock
+                );
+
+
+                const newStatus =
+                    getStockStatus(
+                        newStock
+                    );
+
+                currentStatus.textContent =
+                    newStatus.text;
+
+                currentStatus.className =
+                    `stock-current ${newStatus.className}`;
+
+
+                showStockMessage(
+                    `${product.name} stock updated to ${newStock}.`
+                );
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Stock update error:",
+                    error
+                );
+
+                alert(
+                    "Stock update failed:\n" +
+                    error.message
+                );
+
+            }
+
+            finally {
+
+                saveButton.disabled =
+                    false;
+
+                saveButton.textContent =
+                    "Save";
+
+            }
+
+        }
+    );
+
+
+    return card;
+}
+
+
+// =====================================================
+// ADMIN STOCK CACHE
+// =====================================================
+
+const stockCacheForAdmin =
+    new Map();
+
+
+// =====================================================
+// SYNC PRODUCTS FROM INDEX.HTML
+// =====================================================
+
+async function syncProductsFromWebsite() {
+
+    if (!syncProductsBtn) {
+        return;
+    }
+
+    syncProductsBtn.disabled =
+        true;
+
+    syncProductsBtn.textContent =
+        "Syncing...";
+
+    try {
+
+        const response =
+            await fetch(
+                "index.html",
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "index.html load nahi hua."
+            );
+
+        }
+
+        const html =
+            await response.text();
+
+        const parsedDoc =
+            new DOMParser()
+                .parseFromString(
+                    html,
+                    "text/html"
+                );
+
+        const cards =
+            Array.from(
+                parsedDoc.querySelectorAll(
+                    ".product-card"
+                )
+            );
+
+        if (
+            cards.length === 0
+        ) {
+
+            throw new Error(
+                "index.html me products nahi mile."
+            );
+
+        }
+
+        let synced =
+            0;
+
+        for (
+            const card of cards
+        ) {
+
+            const addButton =
+                card.querySelector(
+                    ".add-cart-btn"
+                );
+
+            const productId =
+                addButton?.dataset.id;
+
+            if (!productId) {
+                continue;
+            }
+
+            const productName =
+                addButton.dataset.name ||
+                card.querySelector("h3")
+                    ?.textContent
+                    ?.trim() ||
+                "";
+
+            const price =
+                Number(
+                    addButton.dataset.price
+                ) || 0;
+
+            const image =
+                addButton.dataset.image ||
+                card.querySelector("img")
+                    ?.getAttribute("src") ||
+                "";
+
+            const category =
+                card.dataset.category ||
+                "";
+
+            const discount =
+                Number(
+                    card.dataset.discount
+                ) || 0;
+
+            const existingStock =
+                Number(
+                    card.dataset.stock
+                );
+
+            const safeStock =
+                Number.isInteger(
+                    existingStock
+                ) &&
+                existingStock >= 0
+                    ? existingStock
+                    : 0;
+
+
+            await setDoc(
+
+                doc(
+                    db,
+                    "products",
+                    productId
+                ),
+
+                {
+
+                    productId:
+                        productId,
+
+                    name:
+                        productName,
+
+                    price:
+                        price,
+
+                    image:
+                        image,
+
+                    category:
+                        category,
+
+                    discount:
+                        discount,
+
+                    stock:
+                        safeStock,
+
+                    updatedAt:
+                        serverTimestamp()
+
+                },
+
+                {
+                    merge:
+                        true
+                }
+
+            );
+
+            synced++;
+        }
+
+
+        showStockMessage(
+            `${synced} products synced successfully.`
+        );
+
+
+        await loadProducts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Product sync error:",
+            error
+        );
+
+        alert(
+            "Product sync failed:\n" +
+            error.message
+        );
+
+    }
+
+    finally {
+
+        syncProductsBtn.disabled =
+            false;
+
+        syncProductsBtn.textContent =
+            "Sync Products";
+
+    }
+}
+
+
+// =====================================================
+// SYNC BUTTON
+// =====================================================
+
+syncProductsBtn?.addEventListener(
+    "click",
+    syncProductsFromWebsite
+);
 
 // =====================================================
 // ACCEPT MODAL
