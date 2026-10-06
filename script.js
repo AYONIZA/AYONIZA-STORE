@@ -19,6 +19,7 @@ import {
 
 import { firebaseConfig } from "./firebase-config.js";
 
+
 // =====================================================
 // FIREBASE
 // =====================================================
@@ -28,194 +29,420 @@ const firebaseApp =
     ? getApps()[0]
     : initializeApp(firebaseConfig);
 
-const firebaseAuth = getAuth(firebaseApp);
-const firestore = getFirestore(firebaseApp);
+const firebaseAuth =
+  getAuth(firebaseApp);
+
+const firestore =
+  getFirestore(firebaseApp);
 
 let loggedInUser = null;
 
-const authReady = new Promise((resolve) => {
-  onAuthStateChanged(firebaseAuth, (user) => {
-    loggedInUser = user;
-    resolve(user);
-  });
-});
-
-async function getUser() {
-  await Promise.race([
-    authReady,
-    new Promise((resolve) => setTimeout(resolve, 4000))
-  ]);
-
-  return loggedInUser || firebaseAuth.currentUser;
-}
 
 // =====================================================
-// APP
+// AUTH READY
+// =====================================================
+
+const authReady = new Promise((resolve) => {
+
+  onAuthStateChanged(
+    firebaseAuth,
+    (user) => {
+
+      loggedInUser = user;
+
+      resolve(user);
+
+    }
+  );
+
+});
+
+
+async function getUser() {
+
+  await Promise.race([
+
+    authReady,
+
+    new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        4000
+      )
+    )
+
+  ]);
+
+  return (
+    loggedInUser ||
+    firebaseAuth.currentUser
+  );
+}
+
+
+// =====================================================
+// MAIN APP
 // =====================================================
 
 function initApp() {
+
   const isCategoryPage =
-    document.body.classList.contains("category-page");
+    document.body.classList.contains(
+      "category-page"
+    );
+
 
   // =================================================
   // CATEGORY LABELS
   // =================================================
 
   const CATEGORY_LABELS = {
-    all: "All Jewellery",
-    earrings: "Earrings",
-    bracelets: "Bracelets",
-    sets: "Jewellery Sets",
-    kamarbandh: "Kamarbandh",
-    necklaces: "Necklaces",
-    hathphool: "Hathphool",
-    "hair-accessories": "Hair Accessories",
-    anklets: "Anklets",
-    rings: "Rings"
+
+    all:
+      "All Jewellery",
+
+    earrings:
+      "Earrings",
+
+    bracelets:
+      "Bracelets",
+
+    sets:
+      "Jewellery Sets",
+
+    kamarbandh:
+      "Kamarbandh",
+
+    necklaces:
+      "Necklaces",
+
+    hathphool:
+      "Hathphool",
+
+    "hair-accessories":
+      "Hair Accessories",
+
+    anklets:
+      "Anklets",
+
+    rings:
+      "Rings"
+
   };
+
 
   // =================================================
   // HELPERS
   // =================================================
 
-  function formatRupees(amount) {
-    return "₹" + Number(amount || 0).toLocaleString("en-IN");
+  function formatRupees(
+    amount
+  ) {
+
+    return (
+      "₹" +
+      Number(
+        amount || 0
+      ).toLocaleString(
+        "en-IN"
+      )
+    );
+
   }
 
-  function esc(value) {
-    return String(value == null ? "" : value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+
+  function esc(
+    value
+  ) {
+
+    return String(
+      value == null
+        ? ""
+        : value
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#39;"
+      );
+
   }
+
 
   // =================================================
   // DISCOUNT BADGE
   // =================================================
 
-  function applyDiscountBadge(card) {
-    if (!card || card.dataset.badgeDone === "1") {
+  function applyDiscountBadge(
+    card
+  ) {
+
+    if (
+      !card ||
+      card.dataset.badgeDone ===
+        "1"
+    ) {
+
       return;
     }
 
-    card.dataset.badgeDone = "1";
+    card.dataset.badgeDone =
+      "1";
 
-    const discount = Number(card.dataset.discount || 0);
+    const discount =
+      Number(
+        card.dataset.discount ||
+        0
+      );
 
     if (!discount) {
       return;
     }
 
-    const priceEl = card.querySelector(".product-price");
-    const imageEl = card.querySelector(".product-image");
+    const priceEl =
+      card.querySelector(
+        ".product-price"
+      );
 
-    if (!priceEl || !imageEl) {
+    const imageEl =
+      card.querySelector(
+        ".product-image"
+      );
+
+    if (
+      !priceEl ||
+      !imageEl
+    ) {
+
       return;
     }
 
-    const currentPrice = Number(
-      priceEl.dataset.price ||
-      priceEl.textContent.replace(/[^\d.]/g, "")
-    );
+    const currentPrice =
+      Number(
+
+        priceEl.dataset.price ||
+
+        priceEl.textContent.replace(
+          /[^\d.]/g,
+          ""
+        )
+
+      );
 
     if (!currentPrice) {
       return;
     }
 
-    const originalPrice = Math.round(
-      currentPrice / (1 - discount / 100)
+    const originalPrice =
+      Math.round(
+
+        currentPrice /
+        (
+          1 -
+          discount / 100
+        )
+
+      );
+
+
+    const badge =
+      document.createElement(
+        "span"
+      );
+
+    badge.className =
+      "discount-badge";
+
+    badge.textContent =
+      `${discount}% OFF`;
+
+    imageEl.appendChild(
+      badge
     );
 
-    const badge = document.createElement("span");
 
-    badge.className = "discount-badge";
-    badge.textContent = `${discount}% OFF`;
+    const group =
+      document.createElement(
+        "span"
+      );
 
-    imageEl.appendChild(badge);
+    group.className =
+      "price-group";
 
-    const group = document.createElement("span");
 
-    group.className = "price-group";
+    const originalSpan =
+      document.createElement(
+        "span"
+      );
 
-    const originalSpan = document.createElement("span");
-
-    originalSpan.className = "price-original";
+    originalSpan.className =
+      "price-original";
 
     originalSpan.textContent =
-      formatRupees(originalPrice);
+      formatRupees(
+        originalPrice
+      );
 
-    priceEl.replaceWith(group);
 
-    group.appendChild(originalSpan);
-    group.appendChild(priceEl);
+    priceEl.replaceWith(
+      group
+    );
+
+    group.appendChild(
+      originalSpan
+    );
+
+    group.appendChild(
+      priceEl
+    );
+
   }
+
 
   // =================================================
   // LOW STOCK BADGE
   // =================================================
 
-  function applyLowStockBadge(card) {
+  function applyLowStockBadge(
+    card
+  ) {
+
     if (!card) {
       return;
     }
 
-    if (card.dataset.stockBadgeDone === "1") {
+    const stock =
+      Number(
+        card.dataset.stock
+      );
+
+    if (
+      !Number.isFinite(
+        stock
+      )
+    ) {
+
       return;
     }
 
-    card.dataset.stockBadgeDone = "1";
 
-    const stock = Number(card.dataset.stock);
+    // Remove old badge
+    card
+      .querySelectorAll(
+        ".low-stock-badge"
+      )
+      .forEach(
+        (badge) =>
+          badge.remove()
+      );
 
-    if (!Number.isFinite(stock)) {
-      return;
-    }
 
-    // 5 se zyada stock ho to kuch show nahi karna
-    if (stock > 5) {
-      return;
-    }
+    // Reset out of stock state
+    card.classList.remove(
+      "out-of-stock"
+    );
+
+    card
+      .querySelectorAll(
+        ".add-cart-btn, .buy-now-btn"
+      )
+      .forEach(
+        (button) => {
+
+          button.disabled =
+            false;
+
+        }
+      );
+
 
     const productInfo =
-      card.querySelector(".product-info");
+      card.querySelector(
+        ".product-info"
+      );
 
     if (!productInfo) {
       return;
     }
 
-    const oldBadge =
-      productInfo.querySelector(".low-stock-badge");
 
-    oldBadge?.remove();
+    // =================================================
+    // MORE THAN 5
+    // =================================================
+
+    if (
+      stock > 5
+    ) {
+
+      card.dataset.stockBadgeDone =
+        "1";
+
+      return;
+    }
+
+
+    // =================================================
+    // CREATE BADGE
+    // =================================================
 
     const badge =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    badge.className = "low-stock-badge";
+    badge.className =
+      "low-stock-badge";
+
 
     // =================================================
     // OUT OF STOCK
     // =================================================
 
-    if (stock <= 0) {
-      badge.classList.add("out-of-stock");
+    if (
+      stock <= 0
+    ) {
+
+      badge.classList.add(
+        "out-of-stock"
+      );
 
       badge.textContent =
         "Out of Stock";
+
 
       card.classList.add(
         "out-of-stock"
       );
 
+
       card
         .querySelectorAll(
           ".add-cart-btn, .buy-now-btn"
         )
-        .forEach((button) => {
-          button.disabled = true;
-        });
+        .forEach(
+          (button) => {
+
+            button.disabled =
+              true;
+
+          }
+        );
+
     }
 
     // =================================================
@@ -223,14 +450,20 @@ function initApp() {
     // =================================================
 
     else {
+
       badge.textContent =
+
         stock === 1
+
           ? "Only 1 piece remaining"
+
           : `Only ${stock} pieces remaining`;
+
     }
 
+
     // =================================================
-    // BADGE POSITION
+    // PUT BADGE
     // =================================================
 
     const description =
@@ -238,23 +471,38 @@ function initApp() {
         ".product-description"
       );
 
+
     if (description) {
+
       description.insertAdjacentElement(
         "afterend",
         badge
       );
-    } else {
+
+    }
+
+    else {
+
       productInfo.prepend(
         badge
       );
+
     }
+
+
+    card.dataset.stockBadgeDone =
+      "1";
+
   }
+
 
   // =================================================
   // STOCK CACHE
   // =================================================
 
-  const stockCache = new Map();
+  const stockCache =
+    new Map();
+
 
   // =================================================
   // FIND PRODUCT CARD
@@ -264,288 +512,209 @@ function initApp() {
     productId,
     root = document
   ) {
+
     if (!productId) {
       return null;
     }
+
 
     const cards =
       root.querySelectorAll(
         ".product-card"
       );
 
-    for (const card of cards) {
+
+    for (
+      const card of cards
+    ) {
+
       const buttons =
         card.querySelectorAll(
           "[data-id]"
         );
 
-      for (const button of buttons) {
+
+      for (
+        const button of buttons
+      ) {
+
         if (
           button.dataset.id ===
-          String(productId)
+          String(
+            productId
+          )
         ) {
+
           return card;
+
         }
+
       }
+
     }
 
+
     return null;
+
   }
+
 
   // =================================================
   // GET PRODUCT STOCK
+  // FIRESTORE IS MAIN SOURCE
   // =================================================
 
-async function getProductStock(
-  productId,
-  sourceButton = null
-) {
-  const normalizedId =
-    String(productId || "");
-
-  if (!normalizedId) {
-    return null;
-  }
-
-  // =================================================
-  // 1. FIRESTORE = MAIN STOCK SOURCE
-  // =================================================
-
-  try {
-    const productRef = doc(
-      firestore,
-      "products",
-      normalizedId
-    );
-
-    const snapshot =
-      await getDoc(productRef);
-
-    if (snapshot.exists()) {
-      const data =
-        snapshot.data();
-
-      const stock =
-        Number(data.stock);
-
-      if (Number.isFinite(stock)) {
-
-        // Cache bhi latest value se update karo
-        stockCache.set(
-          normalizedId,
-          stock
-        );
-
-        return stock;
-      }
-    }
-  }
-
-  catch (error) {
-    console.error(
-      "Firestore stock read error:",
-      error
-    );
-  }
-
-
-  // =================================================
-  // 2. AGAR FIRESTORE PRODUCT NA MILE
-  //    TAB HTML data-stock FALLBACK HOGA
-  // =================================================
-
-  const currentCard =
-    sourceButton?.closest(
-      ".product-card"
-    ) ||
-    findProductCardById(
-      normalizedId
-    );
-
-  if (
-    currentCard &&
-    currentCard.dataset.stock !==
-      undefined
+  async function getProductStock(
+    productId,
+    sourceButton = null
   ) {
 
-    const stock =
-      Number(
-        currentCard.dataset.stock
+    const normalizedId =
+      String(
+        productId || ""
       );
 
-    if (
-      Number.isFinite(stock)
-    ) {
 
-      stockCache.set(
-        normalizedId,
-        stock
-      );
+    if (!normalizedId) {
 
-      return stock;
+      return null;
+
     }
-  }
 
 
-  // =================================================
-  // 3. LAST FALLBACK = CACHE
-  // =================================================
+    // =================================================
+    // 1. FIRESTORE
+    // =================================================
 
-  if (
-    stockCache.has(
-      normalizedId
-    )
-  ) {
+    try {
 
-    return stockCache.get(
-      normalizedId
-    );
-  }
-
-
-  return null;
-}
-
-    // -----------------------------------------------
-    // 1. Current card se stock
-    // -----------------------------------------------
-
-    const currentCard =
-      sourceButton?.closest(
-        ".product-card"
-      ) ||
-      findProductCardById(
-        normalizedId
-      );
-
-    if (
-      currentCard &&
-      currentCard.dataset.stock !==
-        undefined
-    ) {
-      const stock =
-        Number(
-          currentCard.dataset.stock
+      const productRef =
+        doc(
+          firestore,
+          "products",
+          normalizedId
         );
+
+
+      const snapshot =
+        await getDoc(
+          productRef
+        );
+
 
       if (
-        Number.isFinite(stock)
+        snapshot.exists()
       ) {
-        stockCache.set(
-          normalizedId,
-          stock
-        );
 
-        return stock;
+        const data =
+          snapshot.data();
+
+
+        const stock =
+          Number(
+            data.stock
+          );
+
+
+        if (
+          Number.isFinite(
+            stock
+          )
+        ) {
+
+          stockCache.set(
+            normalizedId,
+            stock
+          );
+
+
+          return stock;
+
+        }
+
       }
+
     }
 
-    // -----------------------------------------------
-    // 2. Button ke data-stock se
-    // -----------------------------------------------
+    catch (error) {
 
-    if (
-      sourceButton?.dataset.stock !==
-      undefined
-    ) {
-      const stock =
-        Number(
-          sourceButton.dataset.stock
-        );
+      console.error(
+        "Firestore stock read error:",
+        error
+      );
 
-      if (
-        Number.isFinite(stock)
-      ) {
-        stockCache.set(
-          normalizedId,
-          stock
-        );
-
-        return stock;
-      }
     }
 
-    // -----------------------------------------------
-    // 3. Cached stock
-    // -----------------------------------------------
+
+    // =================================================
+    // 2. CACHE
+    // =================================================
 
     if (
       stockCache.has(
         normalizedId
       )
     ) {
+
       return stockCache.get(
         normalizedId
       );
+
     }
 
-    // -----------------------------------------------
-    // 4. Product page par index.html se stock
-    // -----------------------------------------------
 
-    try {
-      const response =
-        await fetch(
-          "index.html",
-          {
-            cache: "no-store"
-          }
-        );
+    // =================================================
+    // 3. HTML FALLBACK
+    // =================================================
 
-      if (!response.ok) {
-        throw new Error(
-          "Could not load index.html for stock check"
-        );
-      }
+    const currentCard =
 
-      const html =
-        await response.text();
+      sourceButton?.closest(
+        ".product-card"
+      )
 
-      const parsedDoc =
-        new DOMParser()
-          .parseFromString(
-            html,
-            "text/html"
-          );
+      ||
 
-      const card =
-        findProductCardById(
-          normalizedId,
-          parsedDoc
-        );
+      findProductCardById(
+        normalizedId
+      );
 
-      if (!card) {
-        return null;
-      }
+
+    if (
+      currentCard &&
+      currentCard.dataset.stock !==
+        undefined
+    ) {
 
       const stock =
         Number(
-          card.dataset.stock
+          currentCard.dataset.stock
         );
 
+
       if (
-        !Number.isFinite(stock)
+        Number.isFinite(
+          stock
+        )
       ) {
-        return null;
+
+        stockCache.set(
+          normalizedId,
+          stock
+        );
+
+
+        return stock;
+
       }
 
-      stockCache.set(
-        normalizedId,
-        stock
-      );
-
-      return stock;
     }
 
-    catch (error) {
-      console.error(
-        "Stock check error:",
-        error
-      );
 
-      return null;
-    }
+    return null;
+
   }
+
 
   // =================================================
   // VALIDATE CHECKOUT STOCK
@@ -554,50 +723,83 @@ async function getProductStock(
   async function validateCheckoutStock(
     items
   ) {
-    for (const item of items) {
+
+    for (
+      const item of items
+    ) {
+
       const stock =
         await getProductStock(
           item.id
         );
 
-      // Stock configured nahi hai
-      // to old behavior continue karo
+
       if (
-        !Number.isFinite(stock)
+        !Number.isFinite(
+          stock
+        )
       ) {
+
         continue;
+
       }
+
 
       const qty =
-        Number(item.qty) || 1;
+        Number(
+          item.qty
+        ) || 1;
 
-      // OUT OF STOCK
-      if (stock <= 0) {
+
+      if (
+        stock <= 0
+      ) {
+
         return {
-          ok: false,
+
+          ok:
+            false,
+
           message:
             `${item.name} is out of stock.`
+
         };
+
       }
 
-      // REQUIRED QTY > STOCK
-      if (qty > stock) {
+
+      if (
+        qty > stock
+      ) {
+
         return {
-          ok: false,
+
+          ok:
+            false,
+
           message:
             `Only ${stock} piece${
-              stock === 1 ? "" : "s"
+              stock === 1
+                ? ""
+                : "s"
             } of ${
               item.name
             } available.`
+
         };
+
       }
+
     }
 
+
     return {
-      ok: true
+      ok:
+        true
     };
+
   }
+
 
   // =================================================
   // CART
@@ -612,96 +814,138 @@ async function getProductStock(
   const BUY_NOW_KEY =
     "ayonizaBuyNow";
 
+
   // =================================================
   // LOAD CART
   // =================================================
 
   function loadCart() {
+
     try {
+
       const raw =
         localStorage.getItem(
           CART_KEY
         );
 
+
       const parsed =
         raw
-          ? JSON.parse(raw)
+          ? JSON.parse(
+              raw
+            )
           : [];
 
+
       if (
-        !Array.isArray(parsed)
+        !Array.isArray(
+          parsed
+        )
       ) {
+
         return [];
+
       }
 
+
       return parsed
+
         .filter(
           (item) =>
+
             item &&
             item.id &&
             item.name &&
-            Number(item.price) >= 0 &&
-            Number(item.qty) > 0
+            Number(
+              item.price
+            ) >= 0 &&
+            Number(
+              item.qty
+            ) > 0
         )
+
         .map(
           (item) => ({
-            id: String(
-              item.id
-            ),
 
-            name: String(
-              item.name
-            ),
+            id:
+              String(
+                item.id
+              ),
 
-            price: Number(
-              item.price
-            ),
+            name:
+              String(
+                item.name
+              ),
 
-            image: String(
-              item.image || ""
-            ),
+            price:
+              Number(
+                item.price
+              ),
 
-            qty: Math.floor(
-              Number(item.qty)
-            )
+            image:
+              String(
+                item.image ||
+                ""
+              ),
+
+            qty:
+              Math.floor(
+                Number(
+                  item.qty
+                )
+              )
+
           })
         );
+
     }
 
     catch (error) {
+
       console.error(
         "Cart load error:",
         error
       );
 
       return [];
+
     }
+
   }
+
 
   // =================================================
   // SAVE CART
   // =================================================
 
   function saveCart() {
+
     try {
+
       localStorage.setItem(
         CART_KEY,
         JSON.stringify(
           cart
         )
       );
+
     }
 
     catch (error) {
+
       console.error(
         "Cart save error:",
         error
       );
+
     }
+
   }
+
 
   let cart =
     loadCart();
+
 
   // =================================================
   // CART ELEMENTS
@@ -757,11 +1001,13 @@ async function getProductStock(
       "checkoutBtn"
     );
 
+
   // =================================================
   // OPEN CART
   // =================================================
 
   function openCart() {
+
     cartDrawer?.classList.add(
       "open"
     );
@@ -774,13 +1020,16 @@ async function getProductStock(
       "aria-hidden",
       "false"
     );
+
   }
+
 
   // =================================================
   // CLOSE CART
   // =================================================
 
   function closeCart() {
+
     cartDrawer?.classList.remove(
       "open"
     );
@@ -793,141 +1042,231 @@ async function getProductStock(
       "aria-hidden",
       "true"
     );
+
   }
+
 
   // =================================================
   // RENDER CART
   // =================================================
 
   function renderCart() {
+
     saveCart();
+
 
     const totalQty =
       cart.reduce(
-        (sum, item) =>
-          sum + item.qty,
+        (
+          sum,
+          item
+        ) =>
+          sum +
+          item.qty,
         0
       );
+
 
     const totalPrice =
       cart.reduce(
-        (sum, item) =>
+        (
+          sum,
+          item
+        ) =>
           sum +
-          item.qty *
-            item.price,
+          (
+            item.qty *
+            item.price
+          ),
         0
       );
 
-    if (cartCountEl) {
+
+    if (
+      cartCountEl
+    ) {
+
       cartCountEl.textContent =
         totalQty;
+
     }
 
-    if (cartTotalEl) {
+
+    if (
+      cartTotalEl
+    ) {
+
       cartTotalEl.textContent =
         formatRupees(
           totalPrice
         );
+
     }
 
-    if (checkoutBtn) {
+
+    if (
+      checkoutBtn
+    ) {
+
       checkoutBtn.disabled =
         cart.length === 0;
+
     }
 
-    if (!cartItemsEl) {
+
+    if (
+      !cartItemsEl
+    ) {
+
       return;
+
     }
+
 
     cartItemsEl
       .querySelectorAll(
         ".cart-item"
       )
       .forEach(
-        (element) =>
+        (
+          element
+        ) =>
           element.remove()
       );
+
 
     if (
       cart.length === 0
     ) {
-      if (cartEmptyEl) {
+
+      if (
+        cartEmptyEl
+      ) {
+
         cartEmptyEl.hidden =
           false;
+
       }
 
       return;
+
     }
 
-    if (cartEmptyEl) {
+
+    if (
+      cartEmptyEl
+    ) {
+
       cartEmptyEl.hidden =
         true;
+
     }
+
 
     cart.forEach(
       (item) => {
+
         const row =
           document.createElement(
             "div"
           );
 
+
         row.className =
           "cart-item";
 
+
         row.innerHTML = `
+
           <img
-            src="${esc(item.image)}"
-            alt="${esc(item.name)}"
+            src="${esc(
+              item.image
+            )}"
+            alt="${esc(
+              item.name
+            )}"
           >
 
+
           <div>
-            <p class="cart-item-name">
-              ${esc(item.name)}
+
+            <p
+              class="cart-item-name"
+            >
+              ${esc(
+                item.name
+              )}
             </p>
 
-            <p class="cart-item-price">
-              ${formatRupees(item.price)}
+
+            <p
+              class="cart-item-price"
+            >
+              ${formatRupees(
+                item.price
+              )}
             </p>
 
-            <div class="cart-item-qty">
+
+            <div
+              class="cart-item-qty"
+            >
 
               <button
                 class="qty-btn"
                 data-action="decrease"
-                data-id="${esc(item.id)}"
-                aria-label="Decrease quantity">
+                data-id="${esc(
+                  item.id
+                )}"
+                aria-label="Decrease quantity"
+              >
                 −
               </button>
+
 
               <span>
                 ${item.qty}
               </span>
 
+
               <button
                 class="qty-btn"
                 data-action="increase"
-                data-id="${esc(item.id)}"
-                aria-label="Increase quantity">
+                data-id="${esc(
+                  item.id
+                )}"
+                aria-label="Increase quantity"
+              >
                 +
               </button>
 
             </div>
+
           </div>
+
 
           <button
             class="remove-item"
             data-action="remove"
-            data-id="${esc(item.id)}">
+            data-id="${esc(
+              item.id
+            )}"
+          >
             Remove
           </button>
+
         `;
+
 
         cartItemsEl.appendChild(
           row
         );
+
       }
     );
+
   }
+
 
   // =================================================
   // ADD TO CART
@@ -942,22 +1281,36 @@ async function getProductStock(
     },
     shouldOpen = true
   ) {
+
     const normalizedId =
-      String(id || "");
+      String(
+        id || ""
+      );
+
 
     const existing =
       cart.find(
-        (item) =>
+        (
+          item
+        ) =>
           item.id ===
           normalizedId
       );
 
-    if (existing) {
-      existing.qty += 1;
+
+    if (
+      existing
+    ) {
+
+      existing.qty +=
+        1;
+
     }
 
     else {
+
       cart.push({
+
         id:
           normalizedId,
 
@@ -967,23 +1320,36 @@ async function getProductStock(
           ),
 
         price:
-          Number(price) || 0,
+          Number(
+            price
+          ) || 0,
 
         image:
           String(
             image || ""
           ),
 
-        qty: 1
+        qty:
+          1
+
       });
+
     }
+
 
     renderCart();
 
-    if (shouldOpen) {
+
+    if (
+      shouldOpen
+    ) {
+
       openCart();
+
     }
+
   }
+
 
   // =================================================
   // CHANGE QUANTITY
@@ -993,48 +1359,70 @@ async function getProductStock(
     id,
     delta
   ) {
+
     const item =
       cart.find(
-        (entry) =>
-          entry.id === id
+        (
+          entry
+        ) =>
+          entry.id ===
+          id
       );
+
 
     if (!item) {
       return;
     }
 
-    // + button
-    if (delta > 0) {
+
+    // Increase
+    if (
+      delta > 0
+    ) {
+
       const stock =
         await getProductStock(
           id
         );
 
+
       if (
         Number.isFinite(
           stock
         )
-      ) {
-        if (stock <= 0) {
+      {
+
+        if (
+          stock <= 0
+        ) {
+
           alert(
             `${item.name} is out of stock.`
           );
 
+
           cart =
             cart.filter(
-              (entry) =>
+              (
+                entry
+              ) =>
                 entry.id !==
                 id
             );
 
+
           renderCart();
 
           return;
+
         }
 
+
         if (
-          item.qty >= stock
+          item.qty >=
+          stock
         ) {
+
           alert(
             `Only ${stock} piece${
               stock === 1
@@ -1043,40 +1431,63 @@ async function getProductStock(
             } available for ${item.name}.`
           );
 
+
           return;
+
         }
+
       }
+
     }
 
-    item.qty += delta;
+
+    item.qty +=
+      delta;
+
 
     if (
       item.qty <= 0
     ) {
+
       cart =
         cart.filter(
-          (entry) =>
+          (
+            entry
+          ) =>
             entry.id !==
             id
         );
+
     }
 
+
     renderCart();
+
   }
+
 
   // =================================================
   // REMOVE ITEM
   // =================================================
 
-  function removeItem(id) {
+  function removeItem(
+    id
+  ) {
+
     cart =
       cart.filter(
-        (item) =>
-          item.id !== id
+        (
+          item
+        ) =>
+          item.id !==
+          id
       );
 
+
     renderCart();
+
   }
+
 
   // =================================================
   // CHECKOUT ELEMENTS
@@ -1084,6 +1495,7 @@ async function getProductStock(
 
   const STORAGE_KEY =
     "ayonizaCustomerInfo";
+
 
   const checkoutOverlay =
     document.getElementById(
@@ -1185,56 +1597,83 @@ async function getProductStock(
       "#checkoutSteps .step-item"
     );
 
-  let checkoutItems = [];
+
+  let checkoutItems =
+    [];
 
   let checkoutSource =
     "cart";
 
-  let currentStep = 1;
+  let currentStep =
+    1;
+
 
   // =================================================
   // LOAD SAVED INFO
   // =================================================
 
   function loadSavedInfo() {
+
     try {
+
       const raw =
         localStorage.getItem(
           STORAGE_KEY
         );
 
+
       return raw
-        ? JSON.parse(raw)
+        ? JSON.parse(
+            raw
+          )
         : null;
+
     }
 
     catch (error) {
+
       console.error(
         "Saved info load error:",
         error
       );
 
+
       return null;
+
     }
+
   }
 
+
   // =================================================
-  // PREFILL CHECKOUT FORM
+  // PREFILL FORM
   // =================================================
 
   async function prefillForm() {
-    if (!checkoutForm) {
+
+    if (
+      !checkoutForm
+    ) {
+
       return;
+
     }
+
 
     let saved =
       loadSavedInfo();
 
+
     const user =
       await getUser();
 
-    if (user) {
+
+    if (
+      user
+    ) {
+
       try {
+
         const snapshot =
           await getDoc(
             doc(
@@ -1244,13 +1683,17 @@ async function getProductStock(
             )
           );
 
+
         if (
           snapshot.exists()
         ) {
+
           const data =
             snapshot.data();
 
+
           saved = {
+
             name:
               data.fullName ||
               saved?.name ||
@@ -1291,86 +1734,128 @@ async function getProductStock(
               data.country ||
               saved?.country ||
               "India"
+
           };
+
         }
+
       }
 
-      catch (error) {
+      catch (
+        error
+      ) {
+
         console.error(
           "Could not load customer profile:",
           error
         );
+
       }
+
     }
 
-    if (!saved) {
+
+    if (
+      !saved
+    ) {
+
       return;
+
     }
+
 
     if (
       checkoutForm.custName
     ) {
+
       checkoutForm.custName.value =
         saved.name || "";
+
     }
+
 
     if (
       checkoutForm.custMobile
     ) {
+
       checkoutForm.custMobile.value =
         saved.mobile || "";
+
     }
+
 
     if (
       checkoutForm.custAddress
     ) {
+
       checkoutForm.custAddress.value =
         saved.address || "";
+
     }
+
 
     if (
       checkoutForm.custLandmark
     ) {
+
       checkoutForm.custLandmark.value =
         saved.landmark || "";
+
     }
+
 
     if (
       checkoutForm.custCity
     ) {
+
       checkoutForm.custCity.value =
         saved.city || "";
+
     }
+
 
     if (
       checkoutForm.custState
     ) {
+
       checkoutForm.custState.value =
         saved.state || "";
+
     }
+
 
     if (
       checkoutForm.custPin
     ) {
+
       checkoutForm.custPin.value =
         saved.pin || "";
+
     }
+
 
     if (
       checkoutForm.custCountry
     ) {
+
       checkoutForm.custCountry.value =
         saved.country ||
         "India";
+
     }
+
 
     if (
       saveInfoCheckbox
     ) {
+
       saveInfoCheckbox.checked =
         true;
+
     }
+
   }
+
 
   // =================================================
   // PRODUCT BUTTONS
@@ -1379,15 +1864,21 @@ async function getProductStock(
   async function wireAddButton(
     btn
   ) {
+
     if (
       !btn ||
-      btn.dataset.wired === "1"
+      btn.dataset.wired ===
+        "1"
     ) {
+
       return;
+
     }
+
 
     btn.dataset.wired =
       "1";
+
 
     btn.addEventListener(
       "click",
@@ -1396,23 +1887,33 @@ async function getProductStock(
         const user =
           await getUser();
 
-        if (!user) {
+
+        if (
+          !user
+        ) {
+
           alert(
             "Please login before adding products to cart."
           );
 
+
           window.location.href =
             "login.html";
 
+
           return;
+
         }
+
 
         const productId =
           btn.dataset.id;
 
+
         const productName =
           btn.dataset.name ||
           "This product";
+
 
         const stock =
           await getProductStock(
@@ -1420,26 +1921,36 @@ async function getProductStock(
             btn
           );
 
+
         if (
           Number.isFinite(
             stock
           )
         ) {
 
-          if (stock <= 0) {
+          if (
+            stock <= 0
+          ) {
+
             alert(
               `${productName} is out of stock.`
             );
 
+
             return;
+
           }
+
 
           const existing =
             cart.find(
-              (item) =>
+              (
+                item
+              ) =>
                 item.id ===
                 productId
             );
+
 
           const currentQty =
             existing
@@ -1448,10 +1959,12 @@ async function getProductStock(
                 ) || 0
               : 0;
 
+
           if (
             currentQty >=
             stock
           ) {
+
             alert(
               `Only ${stock} piece${
                 stock === 1
@@ -1460,11 +1973,16 @@ async function getProductStock(
               } available for ${productName}.`
             );
 
+
             return;
+
           }
+
         }
 
+
         addToCart({
+
           id:
             productId,
 
@@ -1476,27 +1994,37 @@ async function getProductStock(
 
           image:
             btn.dataset.image
+
         });
+
       }
     );
+
   }
 
+
   // =================================================
-  // BUY NOW BUTTON
+  // BUY NOW
   // =================================================
 
   async function wireBuyButton(
     btn
   ) {
+
     if (
       !btn ||
-      btn.dataset.wired === "1"
+      btn.dataset.wired ===
+        "1"
     ) {
+
       return;
+
     }
+
 
     btn.dataset.wired =
       "1";
+
 
     btn.addEventListener(
       "click",
@@ -1505,23 +2033,33 @@ async function getProductStock(
         const user =
           await getUser();
 
-        if (!user) {
+
+        if (
+          !user
+        ) {
+
           alert(
             "Please login before buying."
           );
 
+
           window.location.href =
             "login.html";
 
+
           return;
+
         }
+
 
         const productId =
           btn.dataset.id;
 
+
         const productName =
           btn.dataset.name ||
           "This product";
+
 
         const stock =
           await getProductStock(
@@ -1529,20 +2067,26 @@ async function getProductStock(
             btn
           );
 
+
         if (
           Number.isFinite(
             stock
           ) &&
           stock <= 0
         ) {
+
           alert(
             `${productName} is out of stock.`
           );
 
+
           return;
+
         }
 
+
         const item = {
+
           id:
             productId,
 
@@ -1558,11 +2102,15 @@ async function getProductStock(
             btn.dataset.image ||
             "",
 
-          qty: 1
+          qty:
+            1
+
         };
 
-        // Product detail page par checkout modal nahi hota
-        if (!checkoutForm) {
+
+        if (
+          !checkoutForm
+        ) {
 
           localStorage.setItem(
             BUY_NOW_KEY,
@@ -1571,19 +2119,26 @@ async function getProductStock(
             )
           );
 
+
           window.location.href =
             "index.html";
 
+
           return;
+
         }
+
 
         await openCheckout(
           [item],
           "buynow"
         );
+
       }
     );
+
   }
+
 
   // =================================================
   // PRODUCT CARD
@@ -1592,32 +2147,40 @@ async function getProductStock(
   function wireProductCard(
     card
   ) {
+
     applyDiscountBadge(
       card
     );
 
+
     applyLowStockBadge(
       card
     );
+
 
     const addBtn =
       card.querySelector(
         ".add-cart-btn"
       );
 
+
     const buyBtn =
       card.querySelector(
         ".buy-now-btn"
       );
 
+
     void wireAddButton(
       addBtn
     );
 
+
     void wireBuyButton(
       buyBtn
     );
+
   }
+
 
   // =================================================
   // MOBILE NAV
@@ -1628,10 +2191,12 @@ async function getProductStock(
       "menuToggle"
     );
 
+
   const primaryNav =
     document.getElementById(
       "primaryNav"
     );
+
 
   if (
     menuToggle &&
@@ -1647,19 +2212,26 @@ async function getProductStock(
             "open"
           );
 
+
         menuToggle.setAttribute(
           "aria-expanded",
-          String(isOpen)
+          String(
+            isOpen
+          )
         );
+
       }
     );
+
 
     primaryNav
       .querySelectorAll(
         "a"
       )
       .forEach(
-        (link) => {
+        (
+          link
+        ) => {
 
           link.addEventListener(
             "click",
@@ -1669,15 +2241,20 @@ async function getProductStock(
                 "open"
               );
 
+
               menuToggle.setAttribute(
                 "aria-expanded",
                 "false"
               );
+
             }
           );
+
         }
       );
+
   }
+
 
   // =================================================
   // CATEGORY TILES
@@ -1688,21 +2265,53 @@ async function getProductStock(
       ".category-tile[data-category]"
     )
     .forEach(
-      (tile) => {
+      (
+        tile
+      ) => {
 
         tile.addEventListener(
           "click",
-          () => {
+          (event) => {
+
+            // Anchor hai to browser ka href use hone do
+            if (
+              tile.tagName.toLowerCase() ===
+                "a"
+            ) {
+
+              return;
+
+            }
+
+
+            event.preventDefault();
+
+
+            const category =
+              tile.dataset.category;
+
+
+            if (
+              !category
+            ) {
+
+              return;
+
+            }
+
 
             window.location.href =
               "category.html?cat=" +
               encodeURIComponent(
-                tile.dataset.category
+                category
               );
+
           }
         );
+
       }
     );
+
 
   // =================================================
   // CART EVENTS
@@ -1717,9 +2326,15 @@ async function getProductStock(
           "button[data-action]"
         );
 
-      if (!target) {
+
+      if (
+        !target
+      ) {
+
         return;
+
       }
+
 
       const {
         action,
@@ -1727,34 +2342,47 @@ async function getProductStock(
       } =
         target.dataset;
 
+
       if (
         action ===
         "increase"
       ) {
+
         void changeQty(
           id,
           1
         );
+
       }
+
 
       if (
         action ===
         "decrease"
       ) {
+
         void changeQty(
           id,
           -1
         );
+
       }
+
 
       if (
         action ===
         "remove"
       ) {
-        removeItem(id);
+
+        removeItem(
+          id
+        );
+
       }
+
     }
   );
+
 
   // =================================================
   // CART SYNC
@@ -1772,24 +2400,36 @@ async function getProductStock(
         cart =
           loadCart();
 
+
         renderCart();
+
       }
+
     }
   );
+
 
   window.addEventListener(
     "pageshow",
     (event) => {
 
-      if (event.persisted) {
+      if (
+        event.persisted
+      ) {
 
         cart =
           loadCart();
 
+
         renderCart();
+
+        void refreshStockBadges();
+
       }
+
     }
   );
+
 
   // =================================================
   // CART BUTTONS
@@ -1800,109 +2440,153 @@ async function getProductStock(
     openCart
   );
 
+
   closeCartBtn?.addEventListener(
     "click",
     closeCart
   );
+
 
   continueShoppingBtn?.addEventListener(
     "click",
     closeCart
   );
 
+
   cartOverlay?.addEventListener(
     "click",
     closeCart
   );
 
+
   // =================================================
-  // CHECKOUT STEPS
+  // CHECKOUT ELEMENTS
   // =================================================
 
   const STEP_TITLES = {
-    1: "Address",
-    2: "Confirm Details",
-    3: "Payment"
+
+    1:
+      "Address",
+
+    2:
+      "Confirm Details",
+
+    3:
+      "Payment"
+
   };
+
 
   function goToStep(
     stepNumber
   ) {
+
     currentStep =
       stepNumber;
 
-    if (checkoutForm) {
+
+    if (
+      checkoutForm
+    ) {
+
       checkoutForm.hidden =
         stepNumber !== 1;
+
     }
+
 
     if (
       checkoutConfirmStep
     ) {
+
       checkoutConfirmStep.hidden =
         stepNumber !== 2;
+
     }
+
 
     if (
       checkoutPaymentStep
     ) {
+
       checkoutPaymentStep.hidden =
         stepNumber !== 3;
+
     }
+
 
     if (
       checkoutBack
     ) {
+
       checkoutBack.hidden =
         stepNumber === 1;
+
     }
+
 
     if (
       checkoutTitle
     ) {
+
       checkoutTitle.textContent =
         STEP_TITLES[
           stepNumber
         ] || "";
+
     }
 
+
     stepItems.forEach(
-      (item) => {
+      (
+        item
+      ) => {
 
         const number =
           Number(
             item.dataset.step
           );
 
+
         item.classList.remove(
           "active",
           "done"
         );
 
+
         if (
           number <
           stepNumber
         ) {
+
           item.classList.add(
             "done"
           );
+
         }
 
         else if (
           number ===
           stepNumber
         ) {
+
           item.classList.add(
             "active"
           );
+
         }
+
       }
     );
 
+
     checkoutModal?.scrollTo?.({
-      top: 0
+      top:
+        0
     });
+
   }
+
 
   // =================================================
   // OPEN CHECKOUT
@@ -1910,41 +2594,59 @@ async function getProductStock(
 
   async function openCheckout(
     items,
-    source = "cart"
+    source =
+      "cart"
   ) {
+
     if (
       !items ||
       items.length === 0 ||
       !checkoutForm
     ) {
+
       return;
+
     }
+
 
     const user =
       await getUser();
 
-    if (!user) {
+
+    if (
+      !user
+    ) {
+
       alert(
         "Please login before checkout."
       );
 
+
       window.location.href =
         "login.html";
 
+
       return;
+
     }
+
 
     const normalizedItems =
       items.map(
-        (item) => ({
+        (
+          item
+        ) => ({
+
           id:
             String(
-              item.id || ""
+              item.id ||
+              ""
             ),
 
           name:
             String(
-              item.name || ""
+              item.name ||
+              ""
             ),
 
           price:
@@ -1953,20 +2655,23 @@ async function getProductStock(
             ) || 0,
 
           image:
-            item.image || "",
+            item.image ||
+            "",
 
           qty:
             Number(
               item.qty
             ) || 1
+
         })
       );
 
-    // Stock check
+
     const stockValidation =
       await validateCheckoutStock(
         normalizedItems
       );
+
 
     if (
       !stockValidation.ok
@@ -1976,53 +2681,72 @@ async function getProductStock(
         stockValidation.message
       );
 
+
       return;
+
     }
+
 
     checkoutSource =
       source;
 
+
     checkoutItems =
       normalizedItems;
 
+
     await prefillForm();
 
-    goToStep(1);
+
+    goToStep(
+      1
+    );
+
 
     closeCart();
+
 
     checkoutOverlay?.classList.add(
       "active"
     );
 
+
     checkoutModal?.classList.add(
       "open"
     );
+
 
     checkoutModal?.setAttribute(
       "aria-hidden",
       "false"
     );
+
   }
+
 
   // =================================================
   // CLOSE CHECKOUT
   // =================================================
 
   function closeCheckout() {
+
     checkoutOverlay?.classList.remove(
       "active"
     );
+
 
     checkoutModal?.classList.remove(
       "open"
     );
 
+
     checkoutModal?.setAttribute(
       "aria-hidden",
       "true"
     );
+
   }
+
 
   // =================================================
   // ESC KEY
@@ -2030,7 +2754,9 @@ async function getProductStock(
 
   document.addEventListener(
     "keydown",
-    (event) => {
+    (
+      event
+    ) => {
 
       if (
         event.key ===
@@ -2038,10 +2764,14 @@ async function getProductStock(
       ) {
 
         closeCart();
+
         closeCheckout();
+
       }
+
     }
   );
+
 
   // =================================================
   // UPI
@@ -2050,15 +2780,18 @@ async function getProductStock(
   const UPI_ID =
     "9589790094-2@ybl";
 
+
   const upiCopyBtn =
     document.getElementById(
       "upiCopyBtn"
     );
 
+
   const upiPayLink =
     document.getElementById(
       "upiPayLink"
     );
+
 
   upiCopyBtn?.addEventListener(
     "click",
@@ -2072,43 +2805,55 @@ async function getProductStock(
 
       }
 
-      catch (error) {
+      catch (
+        error
+      ) {
 
         const temp =
           document.createElement(
             "textarea"
           );
 
+
         temp.value =
           UPI_ID;
+
 
         document.body.appendChild(
           temp
         );
 
+
         temp.select();
+
 
         document.execCommand(
           "copy"
         );
 
+
         document.body.removeChild(
           temp
         );
+
       }
+
 
       upiCopyBtn.textContent =
         "Copied!";
 
+
       upiCopyBtn.classList.add(
         "copied"
       );
+
 
       setTimeout(
         () => {
 
           upiCopyBtn.textContent =
             "Copy";
+
 
           upiCopyBtn.classList.remove(
             "copied"
@@ -2117,8 +2862,10 @@ async function getProductStock(
         },
         1800
       );
+
     }
   );
+
 
   // =================================================
   // ORDER SUMMARY
@@ -2128,17 +2875,28 @@ async function getProductStock(
     container,
     totalEl
   ) {
-    if (!container) {
+
+    if (
+      !container
+    ) {
+
       return 0;
+
     }
+
 
     container.innerHTML =
       "";
 
-    let total = 0;
+
+    let total =
+      0;
+
 
     checkoutItems.forEach(
-      (item) => {
+      (
+        item
+      ) => {
 
         const lineTotal =
           Number(
@@ -2148,46 +2906,67 @@ async function getProductStock(
             item.qty
           );
 
+
         total +=
           lineTotal;
+
 
         const row =
           document.createElement(
             "div"
           );
 
+
         row.className =
           "order-summary-row";
 
+
         row.innerHTML = `
+
           <span>
-            ${esc(item.name)}
+            ${esc(
+              item.name
+            )}
             x${item.qty}
           </span>
 
+
           <span>
-            ${formatRupees(lineTotal)}
+            ${formatRupees(
+              lineTotal
+            )}
           </span>
+
         `;
+
 
         container.appendChild(
           row
         );
+
       }
     );
 
-    if (totalEl) {
+
+    if (
+      totalEl
+    ) {
+
       totalEl.textContent =
         formatRupees(
           total
         );
+
     }
 
+
     return total;
+
   }
 
+
   // =================================================
-  // RENDER UPI ORDER SUMMARY
+  // ORDER SUMMARY + UPI
   // =================================================
 
   function renderOrderSummary() {
@@ -2198,10 +2977,14 @@ async function getProductStock(
         orderTotalEl
       );
 
-    if (upiPayLink) {
+
+    if (
+      upiPayLink
+    ) {
 
       const upiParams =
         new URLSearchParams({
+
           pa:
             UPI_ID,
 
@@ -2209,21 +2992,29 @@ async function getProductStock(
             "AYONIZA",
 
           am:
-            String(total),
+            String(
+              total
+            ),
 
           cu:
             "INR",
 
           tn:
             "AYONIZA order"
+
         });
+
 
       upiPayLink.href =
         `upi://pay?${upiParams.toString()}`;
+
     }
 
+
     return total;
+
   }
+
 
   // =================================================
   // STEP 1 -> STEP 2
@@ -2231,9 +3022,12 @@ async function getProductStock(
 
   checkoutForm?.addEventListener(
     "submit",
-    (event) => {
+    (
+      event
+    ) => {
 
       event.preventDefault();
+
 
       if (
         !checkoutForm.checkValidity()
@@ -2242,60 +3036,51 @@ async function getProductStock(
         checkoutForm.reportValidity();
 
         return;
+
       }
+
 
       const info = {
 
         name:
-          checkoutForm.custName
-            .value
-            .trim(),
+          checkoutForm.custName.value.trim(),
 
         mobile:
-          checkoutForm.custMobile
-            .value
-            .trim(),
+          checkoutForm.custMobile.value.trim(),
 
         address:
-          checkoutForm.custAddress
-            .value
-            .trim(),
+          checkoutForm.custAddress.value.trim(),
 
         landmark:
-          checkoutForm.custLandmark
-            .value
-            .trim(),
+          checkoutForm.custLandmark.value.trim(),
 
         city:
-          checkoutForm.custCity
-            .value
-            .trim(),
+          checkoutForm.custCity.value.trim(),
 
         state:
-          checkoutForm.custState
-            .value
-            .trim(),
+          checkoutForm.custState.value.trim(),
 
         pin:
-          checkoutForm.custPin
-            .value
-            .trim(),
+          checkoutForm.custPin.value.trim(),
 
         country:
-          checkoutForm.custCountry
-            .value
-            .trim()
+          checkoutForm.custCountry.value.trim()
+
       };
+
 
       if (
         saveInfoCheckbox?.checked
       ) {
 
         localStorage.setItem(
+
           STORAGE_KEY,
+
           JSON.stringify(
             info
           )
+
         );
 
       }
@@ -2305,12 +3090,15 @@ async function getProductStock(
         localStorage.removeItem(
           STORAGE_KEY
         );
+
       }
+
 
       checkoutForm.dataset.pendingInfo =
         JSON.stringify(
           info
         );
+
 
       if (
         confirmNameEl
@@ -2318,28 +3106,42 @@ async function getProductStock(
 
         confirmNameEl.textContent =
           info.name;
+
       }
+
 
       if (
         confirmAddressLineEl
       ) {
 
         confirmAddressLineEl.textContent =
+
           info.address +
+
           (
             info.landmark
               ? ` (${info.landmark})`
               : ""
           ) +
+
           ", " +
+
           info.city +
+
           ", " +
+
           info.state +
+
           " - " +
+
           info.pin +
+
           ", " +
+
           info.country;
+
       }
+
 
       if (
         confirmPhoneLineEl
@@ -2347,16 +3149,23 @@ async function getProductStock(
 
         confirmPhoneLineEl.textContent =
           info.mobile;
+
       }
+
 
       renderSummaryInto(
         confirmOrderSummaryEl,
         confirmOrderTotalEl
       );
 
-      goToStep(2);
+
+      goToStep(
+        2
+      );
+
     }
   );
+
 
   // =================================================
   // CHANGE ADDRESS
@@ -2365,9 +3174,14 @@ async function getProductStock(
   changeAddressBtn?.addEventListener(
     "click",
     () => {
-      goToStep(1);
+
+      goToStep(
+        1
+      );
+
     }
   );
+
 
   // =================================================
   // STEP 2 -> STEP 3
@@ -2379,9 +3193,13 @@ async function getProductStock(
 
       renderOrderSummary();
 
-      goToStep(3);
+      goToStep(
+        3
+      );
+
     }
   );
+
 
   // =================================================
   // BACK
@@ -2392,22 +3210,30 @@ async function getProductStock(
     () => {
 
       if (
-        currentStep === 3
+        currentStep ===
+        3
       ) {
 
-        goToStep(2);
+        goToStep(
+          2
+        );
 
       }
 
       else if (
-        currentStep === 2
+        currentStep ===
+        2
       ) {
 
-        goToStep(1);
+        goToStep(
+          1
+        );
 
       }
+
     }
   );
+
 
   // =================================================
   // CLOSE
@@ -2418,9 +3244,12 @@ async function getProductStock(
     closeCheckout
   );
 
+
   checkoutOverlay?.addEventListener(
     "click",
-    (event) => {
+    (
+      event
+    ) => {
 
       if (
         event.target ===
@@ -2428,9 +3257,12 @@ async function getProductStock(
       ) {
 
         closeCheckout();
+
       }
+
     }
   );
+
 
   // =================================================
   // PLACE ORDER
@@ -2443,17 +3275,24 @@ async function getProductStock(
       const user =
         await getUser();
 
-      if (!user) {
+
+      if (
+        !user
+      ) {
 
         alert(
           "Please login before placing your order."
         );
 
+
         window.location.href =
           "login.html";
 
+
         return;
+
       }
+
 
       if (
         !checkoutItems.length
@@ -2463,52 +3302,77 @@ async function getProductStock(
           "Your cart is empty."
         );
 
+
         return;
+
       }
 
-      let info = {};
+
+      let info =
+        {};
+
 
       try {
 
         info =
           JSON.parse(
+
             checkoutForm?.dataset.pendingInfo ||
             "{}"
+
           );
 
       }
 
-      catch (error) {
+      catch (
+        error
+      ) {
 
         console.error(
           "Customer info parse error:",
           error
         );
+
       }
 
+
       if (
+
         !info.name ||
+
         !info.mobile ||
+
         !info.address ||
+
         !info.city ||
+
         !info.state ||
+
         !info.pin
+
       ) {
 
         alert(
           "Please complete your delivery address first."
         );
 
-        goToStep(1);
+
+        goToStep(
+          1
+        );
+
 
         return;
+
       }
 
-      // Last moment stock check
+
+      // Final stock check
       const stockValidation =
         await validateCheckoutStock(
           checkoutItems
         );
+
 
       if (
         !stockValidation.ok
@@ -2518,37 +3382,52 @@ async function getProductStock(
           stockValidation.message
         );
 
+
         await refreshStockBadges();
 
+
         return;
+
       }
+
 
       const total =
         checkoutItems.reduce(
+
           (
             sum,
             item
           ) =>
+
             sum +
-            Number(
-              item.price
-            ) *
-            Number(
-              item.qty
+
+            (
+              Number(
+                item.price
+              ) *
+
+              Number(
+                item.qty
+              )
             ),
+
           0
+
         );
+
 
       placeOrderBtn.disabled =
         true;
 
+
       placeOrderBtn.textContent =
         "Placing Order...";
+
 
       try {
 
         // =================================================
-        // SAVE CUSTOMER PROFILE
+        // SAVE PROFILE
         // =================================================
 
         if (
@@ -2558,11 +3437,13 @@ async function getProductStock(
           try {
 
             await setDoc(
+
               doc(
                 firestore,
                 "users",
                 user.uid
               ),
+
               {
 
                 uid:
@@ -2598,10 +3479,14 @@ async function getProductStock(
 
                 updatedAt:
                   serverTimestamp()
+
               },
+
               {
-                merge: true
+                merge:
+                  true
               }
+
             );
 
           }
@@ -2614,8 +3499,11 @@ async function getProductStock(
               "Profile update error:",
               profileError
             );
+
           }
+
         }
+
 
         // =================================================
         // ORDER NUMBER
@@ -2623,6 +3511,7 @@ async function getProductStock(
 
         const now =
           new Date();
+
 
         const datePart =
           now
@@ -2636,6 +3525,7 @@ async function getProductStock(
               ""
             );
 
+
         const randomPart =
           Math.floor(
             1000 +
@@ -2643,8 +3533,10 @@ async function getProductStock(
               9000
           );
 
+
         const orderNumber =
           `AYZ${datePart}${randomPart}`;
+
 
         // =================================================
         // ORDER ITEMS
@@ -2652,13 +3544,17 @@ async function getProductStock(
 
         const orderItems =
           checkoutItems.map(
-            (item) => ({
+            (
+              item
+            ) => ({
 
               productId:
-                item.id || "",
+                item.id ||
+                "",
 
               productName:
-                item.name || "",
+                item.name ||
+                "",
 
               price:
                 Number(
@@ -2671,21 +3567,27 @@ async function getProductStock(
                 ) || 1,
 
               image:
-                item.image || "",
+                item.image ||
+                "",
 
               lineTotal:
+
                 (
                   Number(
                     item.price
                   ) || 0
+
                 ) *
+
                 (
                   Number(
                     item.qty
                   ) || 1
                 )
+
             })
           );
+
 
         // =================================================
         // ORDER DATA
@@ -2700,28 +3602,36 @@ async function getProductStock(
             user.uid,
 
           customerName:
-            info.name || "",
+            info.name ||
+            "",
 
           email:
-            user.email || "",
+            user.email ||
+            "",
 
           phone:
-            info.mobile || "",
+            info.mobile ||
+            "",
 
           address:
-            info.address || "",
+            info.address ||
+            "",
 
           landmark:
-            info.landmark || "",
+            info.landmark ||
+            "",
 
           city:
-            info.city || "",
+            info.city ||
+            "",
 
           state:
-            info.state || "",
+            info.state ||
+            "",
 
           pincode:
-            info.pin || "",
+            info.pin ||
+            "",
 
           country:
             info.country ||
@@ -2759,20 +3669,26 @@ async function getProductStock(
 
           updatedAt:
             serverTimestamp()
+
         };
 
+
         // =================================================
-        // CREATE ORDER
+        // SAVE ORDER
         // =================================================
 
         await setDoc(
+
           doc(
             firestore,
             "orders",
             orderNumber
           ),
+
           orderData
+
         );
+
 
         // =================================================
         // CLEAR CART
@@ -2783,57 +3699,78 @@ async function getProductStock(
           "cart"
         ) {
 
-          cart = [];
+          cart =
+            [];
 
           renderCart();
+
         }
+
 
         localStorage.setItem(
           "ayonizaLastOrderId",
           orderNumber
         );
 
+
         // =================================================
         // SUCCESS
         // =================================================
 
         alert(
+
           `Order placed successfully!\n\n` +
+
           `Order ID: ${orderNumber}\n\n` +
+
           `Payment status: Pending verification`
+
         );
+
 
         closeCheckout();
 
       }
 
-      catch (error) {
+
+      catch (
+        error
+      ) {
 
         console.error(
           "Order creation error:",
           error
         );
 
+
         alert(
+
           "We could not place your order right now. Please try again.\n\n" +
+
           (
             error?.message ||
             "Unknown error"
           )
+
         );
 
       }
+
 
       finally {
 
         placeOrderBtn.disabled =
           false;
 
+
         placeOrderBtn.textContent =
           "Place Order";
+
       }
+
     }
   );
+
 
   // =================================================
   // CART -> CHECKOUT
@@ -2844,39 +3781,57 @@ async function getProductStock(
     async () => {
 
       if (
-        cart.length === 0
+        cart.length ===
+        0
       ) {
+
         return;
+
       }
+
 
       const user =
         await getUser();
 
-      if (!user) {
+
+      if (
+        !user
+      ) {
 
         alert(
           "Please login before checkout."
         );
 
+
         window.location.href =
           "login.html";
 
+
         return;
+
       }
 
+
       await openCheckout(
+
         cart.map(
-          (item) => ({
+          (
+            item
+          ) => ({
             ...item
           })
         ),
+
         "cart"
+
       );
+
     }
   );
 
+
   // =================================================
-  // PRODUCT BUTTONS OUTSIDE CARDS
+  // PRODUCT BUTTONS
   // =================================================
 
   document
@@ -2887,27 +3842,34 @@ async function getProductStock(
       wireProductCard
     );
 
+
   document
     .querySelectorAll(
       ".add-cart-btn"
     )
     .forEach(
-      (button) =>
+      (
+        button
+      ) =>
         void wireAddButton(
           button
         )
     );
+
 
   document
     .querySelectorAll(
       ".buy-now-btn"
     )
     .forEach(
-      (button) =>
+      (
+        button
+      ) =>
         void wireBuyButton(
           button
         )
     );
+
 
   // =================================================
   // CATEGORY PAGE
@@ -2922,60 +3884,92 @@ async function getProductStock(
         "productsGrid"
       );
 
+
     const noResults =
       document.getElementById(
         "noResults"
       );
+
 
     const titleEl =
       document.getElementById(
         "selectedCategoryTitle"
       );
 
+
     const params =
       new URLSearchParams(
         window.location.search
       );
 
-    const cat =
-      params.get("cat") ||
-      "all";
 
-    let allCards = [];
+    const cat =
+      params.get(
+        "cat"
+      ) || "all";
+
+
+    let allCards =
+      [];
+
 
     let currentSearch =
       (
-        params.get("q") ||
-        ""
+        params.get(
+          "q"
+        ) || ""
       ).toLowerCase();
 
-    if (titleEl) {
+
+    if (
+      titleEl
+    ) {
+
       titleEl.textContent =
         CATEGORY_LABELS[
           cat
         ] || cat;
+
     }
+
 
     function renderList() {
 
-      if (!grid) {
+      if (
+        !grid
+      ) {
+
         return;
+
       }
+
 
       grid.innerHTML =
         "";
 
-      let shown = 0;
+
+      let shown =
+        0;
+
 
       allCards.forEach(
-        (original) => {
+        (
+          original
+        ) => {
 
           const categoryMatch =
-            cat === "all" ||
+
+            cat ===
+            "all"
+
+            ||
+
             original.dataset.category ===
-              cat;
+            cat;
+
 
           const name =
+
             (
               original
                 .querySelector(
@@ -2985,7 +3979,9 @@ async function getProductStock(
               ""
             ).toLowerCase();
 
+
           const desc =
+
             (
               original
                 .querySelector(
@@ -2995,14 +3991,19 @@ async function getProductStock(
               ""
             ).toLowerCase();
 
+
           const searchMatch =
+
             !currentSearch ||
+
             name.includes(
               currentSearch
             ) ||
+
             desc.includes(
               currentSearch
             );
+
 
           if (
             categoryMatch &&
@@ -3014,59 +4015,84 @@ async function getProductStock(
                 true
               );
 
-            // old flags remove karo
+
             clone.removeAttribute(
               "data-badge-done"
             );
 
+
             clone.removeAttribute(
               "data-stock-badge-done"
             );
+
 
             clone
               .querySelectorAll(
                 "[data-wired]"
               )
               .forEach(
-                (element) => {
+                (
+                  element
+                ) => {
+
                   element.removeAttribute(
                     "data-wired"
                   );
+
                 }
               );
 
-            // old badges remove karo
+
             clone
               .querySelectorAll(
                 ".discount-badge, .low-stock-badge"
               )
               .forEach(
-                (badge) =>
+                (
+                  badge
+                ) =>
                   badge.remove()
               );
+
 
             clone.classList.remove(
               "out-of-stock"
             );
 
+
             grid.appendChild(
               clone
             );
+
 
             wireProductCard(
               clone
             );
 
+
             shown++;
+
           }
+
         }
       );
 
-      if (noResults) {
+
+      if (
+        noResults
+      ) {
+
         noResults.hidden =
           shown !== 0;
+
       }
+
+
+      // Firestore stock load
+      void refreshStockBadges();
+
     }
+
 
     fetch(
       "index.html",
@@ -3077,20 +4103,31 @@ async function getProductStock(
     )
 
       .then(
-        (response) => {
+        (
+          response
+        ) => {
 
-          if (!response.ok) {
+          if (
+            !response.ok
+          ) {
+
             throw new Error(
               "Could not load index.html"
             );
+
           }
 
+
           return response.text();
+
         }
       )
 
+
       .then(
-        (html) => {
+        (
+          html
+        ) => {
 
           const parsedDoc =
             new DOMParser()
@@ -3099,6 +4136,7 @@ async function getProductStock(
                 "text/html"
               );
 
+
           allCards =
             Array.from(
               parsedDoc.querySelectorAll(
@@ -3106,41 +4144,59 @@ async function getProductStock(
               )
             );
 
+
           renderList();
+
         }
       )
 
+
       .catch(
-        (error) => {
+        (
+          error
+        ) => {
 
           console.error(
             "Category product load error:",
             error
           );
 
-          if (grid) {
+
+          if (
+            grid
+          ) {
 
             grid.innerHTML =
+
               '<p class="no-results">' +
+
               'Products load nahi ho paaye. ' +
+
               'Page refresh karke dekhein.' +
+
               '</p>';
+
           }
+
         }
       );
+
 
     const searchInputCP =
       document.getElementById(
         "searchInput"
       );
 
+
     if (
       searchInputCP
     ) {
 
       searchInputCP.value =
-        params.get("q") ||
-        "";
+        params.get(
+          "q"
+        ) || "";
+
 
       searchInputCP.addEventListener(
         "input",
@@ -3152,11 +4208,16 @@ async function getProductStock(
               .trim()
               .toLowerCase();
 
+
           renderList();
+
         }
       );
+
     }
+
   }
+
 
   // =================================================
   // SEARCH
@@ -3167,15 +4228,18 @@ async function getProductStock(
       "openSearchBtn"
     );
 
+
   const searchBar =
     document.getElementById(
       "searchBar"
     );
 
+
   const searchInput =
     document.getElementById(
       "searchInput"
     );
+
 
   openSearchBtn?.addEventListener(
     "click",
@@ -3185,6 +4249,7 @@ async function getProductStock(
         "open"
       );
 
+
       if (
         searchBar?.classList.contains(
           "open"
@@ -3192,9 +4257,12 @@ async function getProductStock(
       ) {
 
         searchInput?.focus();
+
       }
+
     }
   );
+
 
   if (
     !isCategoryPage
@@ -3202,42 +4270,61 @@ async function getProductStock(
 
     searchInput?.addEventListener(
       "keydown",
-      (event) => {
+      (
+        event
+      ) => {
 
         if (
+
           event.key ===
-            "Enter" &&
+          "Enter" &&
+
           searchInput.value.trim()
+
         ) {
 
           window.location.href =
+
             "category.html?cat=all&q=" +
+
             encodeURIComponent(
               searchInput.value.trim()
             );
+
         }
+
       }
     );
+
   }
+
 
   document.addEventListener(
     "keydown",
-    (event) => {
+    (
+      event
+    ) => {
 
       if (
+
         event.key ===
-          "Escape" &&
+        "Escape" &&
+
         searchBar?.classList.contains(
           "open"
         )
+
       ) {
 
         searchBar.classList.remove(
           "open"
         );
+
       }
+
     }
   );
+
 
   // =================================================
   // HERO SLIDER
@@ -3248,27 +4335,37 @@ async function getProductStock(
       "heroBannerSlider"
     );
 
-  if (heroSlider) {
+
+  if (
+    heroSlider
+  ) {
 
     const heroSlides =
       heroSlider.querySelectorAll(
         ".hero-banner-slide"
       );
 
+
     if (
       heroSlides.length > 1
     ) {
 
-      let heroCurrent = 0;
+      let heroCurrent =
+        0;
+
 
       let heroTimer =
         null;
 
+
       const HERO_INTERVAL_MS =
         4000;
 
+
       const showHeroSlide =
-        (number) => {
+        (
+          number
+        ) => {
 
           heroSlides[
             heroCurrent
@@ -3276,19 +4373,25 @@ async function getProductStock(
             "active"
           );
 
+
           heroCurrent =
+
             (
               number +
               heroSlides.length
             ) %
+
             heroSlides.length;
+
 
           heroSlides[
             heroCurrent
           ]?.classList.add(
             "active"
           );
+
         };
+
 
       const startHero =
         () => {
@@ -3296,21 +4399,27 @@ async function getProductStock(
           if (
             heroTimer
           ) {
+
             return;
+
           }
+
 
           heroTimer =
             setInterval(
               () => {
 
                 showHeroSlide(
-                  heroCurrent + 1
+                  heroCurrent +
+                  1
                 );
 
               },
               HERO_INTERVAL_MS
             );
+
         };
+
 
       const stopHero =
         () => {
@@ -3319,11 +4428,15 @@ async function getProductStock(
             heroTimer
           );
 
+
           heroTimer =
             null;
+
         };
 
+
       startHero();
+
 
       document.addEventListener(
         "visibilitychange",
@@ -3335,14 +4448,21 @@ async function getProductStock(
 
             stopHero();
 
-          } else {
+          }
+
+          else {
 
             startHero();
+
           }
+
         }
       );
+
     }
+
   }
+
 
   // =================================================
   // REFRESH STOCK BADGES
@@ -3355,6 +4475,7 @@ async function getProductStock(
         ".product-card"
       );
 
+
     for (
       const card of cards
     ) {
@@ -3364,16 +4485,28 @@ async function getProductStock(
           ".add-cart-btn, .buy-now-btn"
         );
 
-      if (!button) {
+
+      if (
+        !button
+      ) {
+
         continue;
+
       }
+
 
       const productId =
         button.dataset.id;
 
-      if (!productId) {
+
+      if (
+        !productId
+      ) {
+
         continue;
+
       }
+
 
       const stock =
         await getProductStock(
@@ -3381,49 +4514,36 @@ async function getProductStock(
           button
         );
 
+
       if (
         !Number.isFinite(
           stock
         )
       ) {
+
         continue;
+
       }
 
+
       card.dataset.stock =
-        String(stock);
+        String(
+          stock
+        );
+
 
       card.dataset.stockBadgeDone =
         "0";
 
-      card.classList.remove(
-        "out-of-stock"
-      );
-
-      card
-        .querySelectorAll(
-          ".low-stock-badge"
-        )
-        .forEach(
-          (badge) =>
-            badge.remove()
-        );
-
-      card
-        .querySelectorAll(
-          ".add-cart-btn, .buy-now-btn"
-        )
-        .forEach(
-          (control) => {
-            control.disabled =
-              false;
-          }
-        );
 
       applyLowStockBadge(
         card
       );
+
     }
+
   }
+
 
   // =================================================
   // INITIAL CART
@@ -3431,7 +4551,10 @@ async function getProductStock(
 
   renderCart();
 
+
+  // Load latest Firestore stock
   void refreshStockBadges();
+
 
   // =================================================
   // PENDING BUY NOW
@@ -3440,67 +4563,89 @@ async function getProductStock(
   let pendingBuyNow =
     null;
 
+
   try {
 
     pendingBuyNow =
       JSON.parse(
+
         localStorage.getItem(
           BUY_NOW_KEY
-        ) || "null"
+        ) ||
+        "null"
+
       );
 
   }
 
-  catch (error) {
+  catch (
+    error
+  ) {
 
     console.error(
       "Buy Now restore error:",
       error
     );
+
   }
+
 
   localStorage.removeItem(
     BUY_NOW_KEY
   );
+
 
   // =================================================
   // OPEN PENDING BUY NOW
   // =================================================
 
   if (
+
     pendingBuyNow &&
+
     pendingBuyNow.id &&
+
     checkoutForm
+
   ) {
 
     void openCheckout(
       [pendingBuyNow],
       "buynow"
     );
+
   }
+
 
   // =================================================
   // OPEN CART FROM PRODUCT PAGE
   // =================================================
 
   else if (
+
     localStorage.getItem(
       OPEN_CART_FLAG
     ) === "1"
+
   ) {
 
     localStorage.removeItem(
       OPEN_CART_FLAG
     );
 
+
     if (
       cart.length > 0
     ) {
 
       openCart();
+
     }
+
   }
+
 }
+
 
 // =====================================================
 // RUN APP
@@ -3521,4 +4666,5 @@ if (
 else {
 
   initApp();
+
 }
