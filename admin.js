@@ -13,7 +13,9 @@ import {
     getFirestore,
     collection,
     getDocs,
+    getDoc,
     updateDoc,
+    setDoc,
     doc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -50,7 +52,7 @@ const ADMIN_UIDS = [
 
 
 // =====================================================
-// CHECK ADMIN
+// ADMIN CHECK
 // =====================================================
 
 function isAdmin(user) {
@@ -119,8 +121,9 @@ const logoutBtn =
         "logoutBtn"
     );
 
+
 // =====================================================
-// STOCK MANAGEMENT DOM
+// STOCK DOM
 // =====================================================
 
 const stockProductsContainer =
@@ -140,10 +143,84 @@ const stockMessage =
 
 
 // =====================================================
+// ACCEPT MODAL DOM
+// =====================================================
+
+const acceptModal =
+    document.getElementById(
+        "acceptModal"
+    );
+
+const acceptOrderLabel =
+    document.getElementById(
+        "acceptOrderLabel"
+    );
+
+const acceptCourier =
+    document.getElementById(
+        "acceptCourier"
+    );
+
+const acceptTracking =
+    document.getElementById(
+        "acceptTracking"
+    );
+
+const acceptCloseBtn =
+    document.getElementById(
+        "acceptCloseBtn"
+    );
+
+const acceptConfirmBtn =
+    document.getElementById(
+        "acceptConfirmBtn"
+    );
+
+
+// =====================================================
+// CANCEL MODAL DOM
+// =====================================================
+
+const cancelModal =
+    document.getElementById(
+        "cancelModal"
+    );
+
+const cancelOrderLabel =
+    document.getElementById(
+        "cancelOrderLabel"
+    );
+
+const cancelReason =
+    document.getElementById(
+        "cancelReason"
+    );
+
+const cancelCloseBtn =
+    document.getElementById(
+        "cancelCloseBtn"
+    );
+
+const cancelConfirmBtn =
+    document.getElementById(
+        "cancelConfirmBtn"
+    );
+
+
+// =====================================================
+// SELECTED ORDER
+// =====================================================
+
+let selectedOrder = null;
+
+
+// =====================================================
 // STOCK MESSAGE
 // =====================================================
 
-function showStockMessage(message) {
+function showStockMessage(
+    message
+) {
 
     if (!stockMessage) {
         return;
@@ -155,52 +232,64 @@ function showStockMessage(message) {
     stockMessage.hidden =
         false;
 
-    setTimeout(() => {
+    clearTimeout(
+        window.ayonizaStockMessageTimer
+    );
 
-        stockMessage.hidden =
-            true;
-
-    }, 3000);
-
+    window.ayonizaStockMessageTimer =
+        setTimeout(
+            () => {
+                stockMessage.hidden =
+                    true;
+            },
+            3000
+        );
 }
 
 
 // =====================================================
-// FORMAT STOCK STATUS
+// STOCK STATUS
 // =====================================================
 
-function getStockStatus(stock) {
+function getStockStatus(
+    stock
+) {
 
-    stock =
+    const value =
         Number(stock || 0);
 
-    if (stock <= 0) {
-
-        return {
-            text: "Out of Stock",
-            className: "out"
-        };
-
-    }
-
-    if (stock <= 5) {
+    if (value <= 0) {
 
         return {
             text:
-                `Only ${stock} piece${
-                    stock === 1
+                "Out of Stock",
+
+            className:
+                "out"
+        };
+    }
+
+    if (value <= 5) {
+
+        return {
+            text:
+                `Only ${value} piece${
+                    value === 1
                         ? ""
                         : "s"
                 } remaining`,
-            className: "low"
-        };
 
+            className:
+                "low"
+        };
     }
 
     return {
         text:
-            `${stock} pieces available`,
-        className: "available"
+            `${value} pieces available`,
+
+        className:
+            "available"
     };
 }
 
@@ -215,12 +304,11 @@ async function loadProducts() {
         return;
     }
 
-    stockProductsContainer.innerHTML =
-        `
+    stockProductsContainer.innerHTML = `
         <div class="empty">
             Loading products...
         </div>
-        `;
+    `;
 
     try {
 
@@ -235,12 +323,10 @@ async function loadProducts() {
         const products =
             snapshot.docs.map(
                 (item) => ({
-
                     firebaseId:
                         item.id,
 
                     ...item.data()
-
                 })
             );
 
@@ -259,13 +345,13 @@ async function loadProducts() {
             products.length === 0
         ) {
 
-            stockProductsContainer.innerHTML =
-                `
+            stockProductsContainer.innerHTML = `
                 <div class="empty">
                     No products found.
+                    <br><br>
                     Click "Sync Products" first.
                 </div>
-                `;
+            `;
 
             return;
         }
@@ -281,7 +367,6 @@ async function loadProducts() {
                         product
                     )
                 );
-
             }
         );
 
@@ -294,15 +379,15 @@ async function loadProducts() {
             error
         );
 
-        stockProductsContainer.innerHTML =
-            `
+        stockProductsContainer.innerHTML = `
             <div class="empty">
                 Products load nahi ho paaye.
                 <br><br>
-                ${error.message}
+                ${escapeHTML(
+                    error.message
+                )}
             </div>
-            `;
-
+        `;
     }
 }
 
@@ -339,20 +424,31 @@ function createStockCard(
 
             <img
                 class="stock-product-image"
-                src="${product.image || ""}"
-                alt="${product.name || ""}"
+                src="${escapeAttribute(
+                    product.image || ""
+                )}"
+                alt="${escapeAttribute(
+                    product.name || "Product"
+                )}"
             >
 
             <div>
 
-                <h3 class="stock-product-name">
-                    ${product.name || "Unnamed Product"}
+                <h3
+                    class="stock-product-name"
+                >
+                    ${escapeHTML(
+                        product.name ||
+                        "Unnamed Product"
+                    )}
                 </h3>
 
-                <p class="stock-product-price">
-                    ₹${Number(
-                        product.price || 0
-                    ).toLocaleString("en-IN")}
+                <p
+                    class="stock-product-price"
+                >
+                    ${formatPrice(
+                        product.price
+                    )}
                 </p>
 
             </div>
@@ -360,7 +456,9 @@ function createStockCard(
         </div>
 
 
-        <div class="stock-product-stock-row">
+        <div
+            class="stock-product-stock-row"
+        >
 
             <label>
                 Stock
@@ -372,13 +470,17 @@ function createStockCard(
                 step="1"
                 value="${stock}"
                 class="stock-input"
-                data-product-id="${product.firebaseId}"
+                data-product-id="${escapeAttribute(
+                    product.firebaseId
+                )}"
             >
 
             <button
                 type="button"
                 class="stock-save-btn"
-                data-product-id="${product.firebaseId}"
+                data-product-id="${escapeAttribute(
+                    product.firebaseId
+                )}"
             >
                 Save
             </button>
@@ -394,10 +496,6 @@ function createStockCard(
 
     `;
 
-
-    // =================================================
-    // SAVE STOCK
-    // =================================================
 
     const saveButton =
         card.querySelector(
@@ -415,7 +513,7 @@ function createStockCard(
         );
 
 
-    saveButton.addEventListener(
+    saveButton?.addEventListener(
         "click",
         async () => {
 
@@ -447,10 +545,9 @@ function createStockCard(
             saveButton.textContent =
                 "Saving...";
 
-
             try {
 
-                await updateDoc(
+                await setDoc(
 
                     doc(
                         db,
@@ -464,14 +561,12 @@ function createStockCard(
 
                         updatedAt:
                             serverTimestamp()
+                    },
+
+                    {
+                        merge:
+                            true
                     }
-
-                );
-
-
-                stockCacheForAdmin.set(
-                    productId,
-                    newStock
                 );
 
 
@@ -484,13 +579,16 @@ function createStockCard(
                     newStatus.text;
 
                 currentStatus.className =
-                    `stock-current ${newStatus.className}`;
+                    "stock-current " +
+                    newStatus.className;
 
 
                 showStockMessage(
-                    `${product.name} stock updated to ${newStock}.`
+                    `${
+                        product.name ||
+                        "Product"
+                    } stock updated to ${newStock}.`
                 );
-
 
             }
 
@@ -515,23 +613,13 @@ function createStockCard(
 
                 saveButton.textContent =
                     "Save";
-
             }
-
         }
     );
 
 
     return card;
 }
-
-
-// =====================================================
-// ADMIN STOCK CACHE
-// =====================================================
-
-const stockCacheForAdmin =
-    new Map();
 
 
 // =====================================================
@@ -566,7 +654,6 @@ async function syncProductsFromWebsite() {
             throw new Error(
                 "index.html load nahi hua."
             );
-
         }
 
         const html =
@@ -593,7 +680,6 @@ async function syncProductsFromWebsite() {
             throw new Error(
                 "index.html me products nahi mile."
             );
-
         }
 
         let synced =
@@ -617,9 +703,9 @@ async function syncProductsFromWebsite() {
 
             const productName =
                 addButton.dataset.name ||
-                card.querySelector("h3")
-                    ?.textContent
-                    ?.trim() ||
+                card.querySelector(
+                    "h3"
+                )?.textContent?.trim() ||
                 "";
 
             const price =
@@ -629,8 +715,11 @@ async function syncProductsFromWebsite() {
 
             const image =
                 addButton.dataset.image ||
-                card.querySelector("img")
-                    ?.getAttribute("src") ||
+                card.querySelector(
+                    "img"
+                )?.getAttribute(
+                    "src"
+                ) ||
                 "";
 
             const category =
@@ -642,62 +731,118 @@ async function syncProductsFromWebsite() {
                     card.dataset.discount
                 ) || 0;
 
-            const existingStock =
+            const htmlStock =
                 Number(
                     card.dataset.stock
                 );
 
-            const safeStock =
-                Number.isInteger(
-                    existingStock
-                ) &&
-                existingStock >= 0
-                    ? existingStock
-                    : 0;
 
+            // ------------------------------------------
+            // IMPORTANT:
+            // Existing Firestore stock preserve karo
+            // ------------------------------------------
 
-            await setDoc(
-
+            const productRef =
                 doc(
                     db,
                     "products",
                     productId
-                ),
+                );
 
-                {
+            const existingSnapshot =
+                await getDoc(
+                    productRef
+                );
 
-                    productId:
-                        productId,
 
-                    name:
-                        productName,
+            if (
+                existingSnapshot.exists()
+            ) {
 
-                    price:
-                        price,
+                // Product already exists.
+                // Stock overwrite NAHI karenge.
 
-                    image:
-                        image,
+                await setDoc(
 
-                    category:
-                        category,
+                    productRef,
 
-                    discount:
-                        discount,
+                    {
+                        productId:
+                            productId,
 
-                    stock:
-                        safeStock,
+                        name:
+                            productName,
 
-                    updatedAt:
-                        serverTimestamp()
+                        price:
+                            price,
 
-                },
+                        image:
+                            image,
 
-                {
-                    merge:
-                        true
-                }
+                        category:
+                            category,
 
-            );
+                        discount:
+                            discount,
+
+                        updatedAt:
+                            serverTimestamp()
+                    },
+
+                    {
+                        merge:
+                            true
+                    }
+                );
+
+            }
+
+            else {
+
+                // First time product create ho raha hai.
+
+                const initialStock =
+                    Number.isInteger(
+                        htmlStock
+                    ) &&
+                    htmlStock >= 0
+                        ? htmlStock
+                        : 0;
+
+                await setDoc(
+
+                    productRef,
+
+                    {
+                        productId:
+                            productId,
+
+                        name:
+                            productName,
+
+                        price:
+                            price,
+
+                        image:
+                            image,
+
+                        category:
+                            category,
+
+                        discount:
+                            discount,
+
+                        stock:
+                            initialStock,
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+                );
+            }
 
             synced++;
         }
@@ -723,7 +868,6 @@ async function syncProductsFromWebsite() {
             "Product sync failed:\n" +
             error.message
         );
-
     }
 
     finally {
@@ -733,7 +877,6 @@ async function syncProductsFromWebsite() {
 
         syncProductsBtn.textContent =
             "Sync Products";
-
     }
 }
 
@@ -747,79 +890,14 @@ syncProductsBtn?.addEventListener(
     syncProductsFromWebsite
 );
 
-// =====================================================
-// ACCEPT MODAL
-// =====================================================
-
-const acceptModal =
-    document.getElementById(
-        "acceptModal"
-    );
-
-const acceptOrderLabel =
-    document.getElementById(
-        "acceptOrderLabel"
-    );
-
-const acceptCourier =
-    document.getElementById(
-        "acceptCourier"
-    );
-
-const acceptTracking =
-    document.getElementById(
-        "acceptTracking"
-    );
-
-const acceptCloseBtn =
-    document.getElementById(
-        "acceptCloseBtn"
-    );
-
-const acceptConfirmBtn =
-    document.getElementById(
-        "acceptConfirmBtn"
-    );
-
-
-// =====================================================
-// CANCEL MODAL
-// =====================================================
-
-const cancelModal =
-    document.getElementById(
-        "cancelModal"
-    );
-
-const cancelOrderLabel =
-    document.getElementById(
-        "cancelOrderLabel"
-    );
-
-const cancelReason =
-    document.getElementById(
-        "cancelReason"
-    );
-
-const cancelCloseBtn =
-    document.getElementById(
-        "cancelCloseBtn"
-    );
-
-const cancelConfirmBtn =
-    document.getElementById(
-        "cancelConfirmBtn"
-    );
-
-
-let selectedOrder = null;
-
 
 // =====================================================
 // HELPERS
 // =====================================================
 
-function formatDate(timestamp) {
+function formatDate(
+    timestamp
+) {
 
     if (!timestamp) {
         return "—";
@@ -833,26 +911,33 @@ function formatDate(timestamp) {
                 "en-IN"
             );
 
-    } catch {
+    }
+
+    catch {
 
         return "—";
-
     }
 }
 
 
-function formatPrice(amount) {
+function formatPrice(
+    amount
+) {
 
     return (
         "₹" +
-        Number(amount || 0)
-            .toLocaleString("en-IN")
+        Number(
+            amount || 0
+        ).toLocaleString(
+            "en-IN"
+        )
     );
-
 }
 
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     const div =
         document.createElement(
@@ -865,7 +950,16 @@ function escapeHTML(value) {
             : String(value);
 
     return div.innerHTML;
+}
 
+
+function escapeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
 }
 
 
@@ -873,77 +967,10 @@ function getPaymentClass(
     status
 ) {
 
-    return status === "VERIFIED"
+    return status ===
+        "VERIFIED"
         ? "payment-status verified"
         : "payment-status pending";
-
-}
-
-
-// =====================================================
-// MODALS
-// =====================================================
-
-function openAcceptModal(order) {
-
-    selectedOrder =
-        order;
-
-    acceptOrderLabel.textContent =
-        `Order: ${order.orderId}`;
-
-    acceptCourier.value =
-        order.courier || "";
-
-    acceptTracking.value =
-        order.trackingNumber || "";
-
-    acceptModal.classList.add(
-        "show"
-    );
-
-}
-
-
-function closeAcceptModal() {
-
-    selectedOrder =
-        null;
-
-    acceptModal.classList.remove(
-        "show"
-    );
-
-}
-
-
-function openCancelModal(order) {
-
-    selectedOrder =
-        order;
-
-    cancelOrderLabel.textContent =
-        `Order: ${order.orderId}`;
-
-    cancelReason.value =
-        "";
-
-    cancelModal.classList.add(
-        "show"
-    );
-
-}
-
-
-function closeCancelModal() {
-
-    selectedOrder =
-        null;
-
-    cancelModal.classList.remove(
-        "show"
-    );
-
 }
 
 
@@ -957,18 +984,32 @@ function makeConfirmationMessage(
 ) {
 
     return (
-
         `AYONIZA Order Confirmed ✅\n\n` +
 
-        `Hi ${order.customerName || "Customer"},\n\n` +
+        `Hi ${
+            order.customerName ||
+            "Customer"
+        },\n\n` +
 
-        `Your order ${order.orderId} has been confirmed.\n\n` +
+        `Your order ${
+            order.orderId
+        } has been confirmed.\n\n` +
 
-        `Amount: ${formatPrice(order.total)}\n` +
+        `Amount: ${
+            formatPrice(
+                order.total
+            )
+        }\n` +
 
-        `Tracking ID: ${order.trackingNumber}\n` +
+        `Tracking ID: ${
+            order.trackingNumber ||
+            "—"
+        }\n` +
 
-        `Courier: ${order.courier}\n\n` +
+        `Courier: ${
+            order.courier ||
+            "—"
+        }\n\n` +
 
         `Track your order:\n` +
 
@@ -976,9 +1017,12 @@ function makeConfirmationMessage(
 
         `\n\nThank you for shopping with AYONIZA.`
     );
-
 }
 
+
+// =====================================================
+// CANCELLATION MESSAGE
+// =====================================================
 
 function makeCancellationMessage(
     order,
@@ -986,18 +1030,115 @@ function makeCancellationMessage(
 ) {
 
     return (
-
         `AYONIZA Order Update\n\n` +
 
-        `Hi ${order.customerName || "Customer"},\n\n` +
+        `Hi ${
+            order.customerName ||
+            "Customer"
+        },\n\n` +
 
-        `Your order ${order.orderId} has been cancelled.\n\n` +
+        `Your order ${
+            order.orderId
+        } has been cancelled.\n\n` +
 
-        `Reason: ${reason}\n\n` +
+        `Reason: ${
+            reason
+        }\n\n` +
 
         `For help, please contact AYONIZA support.`
     );
+}
 
+
+// =====================================================
+// ACCEPT MODAL
+// =====================================================
+
+function openAcceptModal(
+    order
+) {
+
+    selectedOrder =
+        order;
+
+    if (acceptOrderLabel) {
+
+        acceptOrderLabel.textContent =
+            `Order: ${
+                order.orderId
+            }`;
+    }
+
+    if (acceptCourier) {
+
+        acceptCourier.value =
+            order.courier ||
+            "";
+    }
+
+    if (acceptTracking) {
+
+        acceptTracking.value =
+            order.trackingNumber ||
+            "";
+    }
+
+    acceptModal?.classList.add(
+        "show"
+    );
+}
+
+
+function closeAcceptModal() {
+
+    selectedOrder =
+        null;
+
+    acceptModal?.classList.remove(
+        "show"
+    );
+}
+
+
+// =====================================================
+// CANCEL MODAL
+// =====================================================
+
+function openCancelModal(
+    order
+) {
+
+    selectedOrder =
+        order;
+
+    if (cancelOrderLabel) {
+
+        cancelOrderLabel.textContent =
+            `Order: ${
+                order.orderId
+            }`;
+    }
+
+    if (cancelReason) {
+
+        cancelReason.value =
+            "";
+    }
+
+    cancelModal?.classList.add(
+        "show"
+    );
+}
+
+
+function closeCancelModal() {
+
+    selectedOrder =
+        null;
+
+    cancelModal?.classList.remove(
+        "show"
+    );
 }
 
 
@@ -1009,11 +1150,15 @@ async function loadOrders() {
 
     try {
 
-        loading.hidden =
-            false;
+        if (loading) {
+            loading.hidden =
+                false;
+        }
 
-        ordersContainer.innerHTML =
-            "";
+        if (ordersContainer) {
+            ordersContainer.innerHTML =
+                "";
+        }
 
 
         const snapshot =
@@ -1033,7 +1178,6 @@ async function loadOrders() {
                         item.id,
 
                     ...item.data()
-
                 })
             );
 
@@ -1042,13 +1186,19 @@ async function loadOrders() {
             (a, b) => {
 
                 const aTime =
-                    a.createdAt?.toMillis?.() || 0;
+                    a.createdAt
+                        ?.toMillis?.() ||
+                    0;
 
                 const bTime =
-                    b.createdAt?.toMillis?.() || 0;
+                    b.createdAt
+                        ?.toMillis?.() ||
+                    0;
 
-                return bTime - aTime;
-
+                return (
+                    bTime -
+                    aTime
+                );
             }
         );
 
@@ -1057,29 +1207,41 @@ async function loadOrders() {
         // STATS
         // =================================================
 
-        totalOrders.textContent =
-            orders.length;
+        if (totalOrders) {
 
-        newOrders.textContent =
-            orders.filter(
-                (order) =>
-                    order.orderStatus ===
-                    "NEW"
-            ).length;
+            totalOrders.textContent =
+                orders.length;
+        }
 
-        shippedOrders.textContent =
-            orders.filter(
-                (order) =>
-                    order.orderStatus ===
-                    "SHIPPED"
-            ).length;
+        if (newOrders) {
 
-        deliveredOrders.textContent =
-            orders.filter(
-                (order) =>
-                    order.orderStatus ===
-                    "DELIVERED"
-            ).length;
+            newOrders.textContent =
+                orders.filter(
+                    (order) =>
+                        order.orderStatus ===
+                        "NEW"
+                ).length;
+        }
+
+        if (shippedOrders) {
+
+            shippedOrders.textContent =
+                orders.filter(
+                    (order) =>
+                        order.orderStatus ===
+                        "SHIPPED"
+                ).length;
+        }
+
+        if (deliveredOrders) {
+
+            deliveredOrders.textContent =
+                orders.filter(
+                    (order) =>
+                        order.orderStatus ===
+                        "DELIVERED"
+                ).length;
+        }
 
 
         // =================================================
@@ -1087,34 +1249,38 @@ async function loadOrders() {
         // =================================================
 
         if (
-            orders.length === 0
+            orders.length ===
+            0
         ) {
 
-            ordersContainer.innerHTML =
-                `
+            if (ordersContainer) {
+
+                ordersContainer.innerHTML = `
                     <div class="empty">
                         No orders found.
                     </div>
                 `;
+            }
 
             return;
-
         }
 
 
         // =================================================
-        // RENDER
+        // RENDER ORDERS
         // =================================================
 
         orders.forEach(
             (order) => {
 
-                ordersContainer.appendChild(
-                    createOrderCard(
-                        order
-                    )
-                );
+                if (ordersContainer) {
 
+                    ordersContainer.appendChild(
+                        createOrderCard(
+                            order
+                        )
+                    );
+                }
             }
         );
 
@@ -1127,9 +1293,11 @@ async function loadOrders() {
             error
         );
 
-        ordersContainer.innerHTML =
-            `
+        if (ordersContainer) {
+
+            ordersContainer.innerHTML = `
                 <div class="empty">
+
                     <strong>
                         Orders load nahi ho paaye.
                     </strong>
@@ -1139,18 +1307,21 @@ async function loadOrders() {
                     ${escapeHTML(
                         error.message
                     )}
+
                 </div>
             `;
+        }
 
     }
 
     finally {
 
-        loading.hidden =
-            true;
+        if (loading) {
 
+            loading.hidden =
+                true;
+        }
     }
-
 }
 
 
@@ -1176,56 +1347,71 @@ function createOrderCard(
     // =================================================
 
     const itemsHTML =
-        Array.isArray(order.items)
+        Array.isArray(
+            order.items
+        )
 
-            ? order.items.map(
-                (item) => `
+            ? order.items
+                .map(
+                    (item) => `
 
-                    <div class="item">
+                        <div class="item">
 
-                        <img
-                            src="${escapeHTML(
-                                item.image || ""
-                            )}"
-                            alt="${escapeHTML(
-                                item.productName ||
-                                "Product"
-                            )}"
-                        >
-
-                        <div class="item-info">
-
-                            <div class="item-name">
-                                ${escapeHTML(
+                            <img
+                                src="${escapeAttribute(
+                                    item.image ||
+                                    ""
+                                )}"
+                                alt="${escapeAttribute(
                                     item.productName ||
                                     "Product"
-                                )}
-                            </div>
+                                )}"
+                            >
 
-                            <div class="item-meta">
-                                Qty:
-                                ${Number(
-                                    item.quantity || 1
-                                )}
-                                |
-                                Price:
-                                ${formatPrice(
-                                    item.price
-                                )}
-                            </div>
+                            <div class="item-info">
 
-                            <div class="item-meta">
-                                Total:
-                                ${formatPrice(
-                                    item.lineTotal
-                                )}
+                                <div class="item-name">
+
+                                    ${escapeHTML(
+                                        item.productName ||
+                                        "Product"
+                                    )}
+
+                                </div>
+
+                                <div class="item-meta">
+
+                                    Qty:
+                                    ${Number(
+                                        item.quantity ||
+                                        1
+                                    )}
+
+                                    |
+
+                                    Price:
+                                    ${formatPrice(
+                                        item.price
+                                    )}
+
+                                </div>
+
+                                <div class="item-meta">
+
+                                    Total:
+                                    ${formatPrice(
+                                        item.lineTotal
+                                    )}
+
+                                </div>
+
                             </div>
 
                         </div>
 
-                    </div>
-                `
-            ).join("")
+                    `
+                )
+                .join("")
 
             : "";
 
@@ -1272,12 +1458,11 @@ function createOrderCard(
             </div>
 
         `;
-
     }
 
 
     // =================================================
-    // ACCEPTED / SHIPPING STATUS
+    // SHIPPING STATUS
     // =================================================
 
     else if (
@@ -1293,18 +1478,19 @@ function createOrderCard(
             NEXT_STATUSES
                 .map(
                     (status) => `
-
                         <option
-                            value="${status}"
+                            value="${escapeAttribute(
+                                status
+                            )}"
                             ${
-                                order.orderStatus === status
+                                order.orderStatus ===
+                                status
                                     ? "selected"
                                     : ""
                             }
                         >
                             ${status}
                         </option>
-
                     `
                 )
                 .join("");
@@ -1320,13 +1506,15 @@ function createOrderCard(
                 >
 
                     <option
-                        value="${escapeHTML(
-                            order.orderStatus
+                        value="${escapeAttribute(
+                            order.orderStatus ||
+                            ""
                         )}"
                         selected
                     >
                         ${escapeHTML(
-                            order.orderStatus
+                            order.orderStatus ||
+                            "UNKNOWN"
                         )}
                     </option>
 
@@ -1339,8 +1527,9 @@ function createOrderCard(
                     type="text"
                     class="courier-input"
                     placeholder="Courier name"
-                    value="${escapeHTML(
-                        order.courier || ""
+                    value="${escapeAttribute(
+                        order.courier ||
+                        ""
                     )}"
                 >
 
@@ -1349,8 +1538,9 @@ function createOrderCard(
                     type="text"
                     class="tracking-input"
                     placeholder="Tracking number"
-                    value="${escapeHTML(
-                        order.trackingNumber || ""
+                    value="${escapeAttribute(
+                        order.trackingNumber ||
+                        ""
                     )}"
                 >
 
@@ -1366,17 +1556,15 @@ function createOrderCard(
             </div>
 
         `;
-
     }
 
 
     // =================================================
-    // TRACKING LINK
+    // TRACKING
     // =================================================
 
     let trackingHTML =
         "";
-
 
     if (
         order.trackingUrl
@@ -1384,7 +1572,9 @@ function createOrderCard(
 
         trackingHTML = `
 
-            <div class="notification-box">
+            <div
+                class="notification-box"
+            >
 
                 <strong>
                     Tracking Link
@@ -1392,7 +1582,7 @@ function createOrderCard(
 
                 <a
                     class="tracking-link"
-                    href="${escapeHTML(
+                    href="${escapeAttribute(
                         order.trackingUrl
                     )}"
                     target="_blank"
@@ -1406,17 +1596,15 @@ function createOrderCard(
             </div>
 
         `;
-
     }
 
 
     // =================================================
-    // LAST NOTIFICATION
+    // NOTIFICATION
     // =================================================
 
     let notificationHTML =
         "";
-
 
     if (
         order.notificationMessage
@@ -1424,27 +1612,34 @@ function createOrderCard(
 
         notificationHTML = `
 
-            <div class="notification-box">
+            <div
+                class="notification-box"
+            >
 
                 <strong>
                     Customer Message
                 </strong>
 
                 <div>
+
                     ${escapeHTML(
                         order.notificationMessage
                     ).replace(
                         /\n/g,
                         "<br>"
                     )}
+
                 </div>
 
             </div>
 
         `;
-
     }
 
+
+    // =================================================
+    // CARD HTML
+    // =================================================
 
     card.innerHTML = `
 
@@ -1453,26 +1648,32 @@ function createOrderCard(
             <div>
 
                 <div class="order-id">
+
                     ${escapeHTML(
                         order.orderId ||
                         "No Order ID"
                     )}
+
                 </div>
 
                 <div class="order-date">
+
                     ${formatDate(
                         order.createdAt
                     )}
+
                 </div>
 
             </div>
 
 
             <div class="order-status">
+
                 ${escapeHTML(
                     order.orderStatus ||
                     "UNKNOWN"
                 )}
+
             </div>
 
         </div>
@@ -1490,27 +1691,42 @@ function createOrderCard(
                 </h3>
 
                 <p>
-                    <strong>Name:</strong>
+
+                    <strong>
+                        Name:
+                    </strong>
+
                     ${escapeHTML(
                         order.customerName ||
                         "—"
                     )}
+
                 </p>
 
                 <p>
-                    <strong>Email:</strong>
+
+                    <strong>
+                        Email:
+                    </strong>
+
                     ${escapeHTML(
                         order.email ||
                         "—"
                     )}
+
                 </p>
 
                 <p>
-                    <strong>Phone:</strong>
+
+                    <strong>
+                        Phone:
+                    </strong>
+
                     ${escapeHTML(
                         order.phone ||
                         "—"
                     )}
+
                 </p>
 
 
@@ -1519,6 +1735,7 @@ function createOrderCard(
                 </h3>
 
                 <p>
+
                     ${escapeHTML(
                         order.address ||
                         "—"
@@ -1575,7 +1792,9 @@ function createOrderCard(
                 </h3>
 
                 <div class="items">
+
                     ${itemsHTML}
+
                 </div>
 
                 <div class="amount-box">
@@ -1597,10 +1816,12 @@ function createOrderCard(
                     <span
                         class="${paymentClass}"
                     >
+
                         ${escapeHTML(
                             order.paymentStatus ||
                             "UNKNOWN"
                         )}
+
                     </span>
 
                 </p>
@@ -1624,12 +1845,15 @@ function createOrderCard(
                     order.trackingNumber
                         ? `
                             <p>
+
                                 <strong>
                                     Tracking ID:
                                 </strong>
+
                                 ${escapeHTML(
                                     order.trackingNumber
                                 )}
+
                             </p>
                         `
                         : ""
@@ -1654,20 +1878,20 @@ function createOrderCard(
 
             </section>
 
+
         </div>
 
     `;
 
 
     // =================================================
-    // ACCEPT
+    // ACCEPT BUTTON
     // =================================================
 
     const acceptButton =
         card.querySelector(
             '[data-action="accept"]'
         );
-
 
     acceptButton?.addEventListener(
         "click",
@@ -1676,20 +1900,18 @@ function createOrderCard(
             openAcceptModal(
                 order
             );
-
         }
     );
 
 
     // =================================================
-    // CANCEL
+    // CANCEL BUTTON
     // =================================================
 
     const cancelButton =
         card.querySelector(
             '[data-action="cancel"]'
         );
-
 
     cancelButton?.addEventListener(
         "click",
@@ -1698,20 +1920,18 @@ function createOrderCard(
             openCancelModal(
                 order
             );
-
         }
     );
 
 
     // =================================================
-    // SAVE SHIPPING UPDATE
+    // SHIPPING UPDATE
     // =================================================
 
     const saveButton =
         card.querySelector(
             '[data-action="save"]'
         );
-
 
     if (
         saveButton
@@ -1769,7 +1989,6 @@ function createOrderCard(
                                 serverTimestamp()
 
                         }
-
                     );
 
 
@@ -1785,7 +2004,7 @@ function createOrderCard(
                 catch (error) {
 
                     console.error(
-                        "Update error:",
+                        "Order update error:",
                         error
                     );
 
@@ -1803,17 +2022,13 @@ function createOrderCard(
 
                     saveButton.textContent =
                         "Save Order Update";
-
                 }
-
             }
         );
-
     }
 
 
     return card;
-
 }
 
 
@@ -1821,7 +2036,7 @@ function createOrderCard(
 // ACCEPT ORDER
 // =====================================================
 
-acceptConfirmBtn.addEventListener(
+acceptConfirmBtn?.addEventListener(
     "click",
     async () => {
 
@@ -1829,12 +2044,13 @@ acceptConfirmBtn.addEventListener(
             return;
         }
 
-
         const courier =
-            acceptCourier.value.trim();
+            acceptCourier?.value.trim() ||
+            "";
 
         const trackingNumber =
-            acceptTracking.value.trim();
+            acceptTracking?.value.trim() ||
+            "";
 
 
         if (!courier) {
@@ -1843,10 +2059,9 @@ acceptConfirmBtn.addEventListener(
                 "Courier name enter karo."
             );
 
-            acceptCourier.focus();
+            acceptCourier?.focus();
 
             return;
-
         }
 
 
@@ -1856,10 +2071,9 @@ acceptConfirmBtn.addEventListener(
                 "Tracking ID enter karo."
             );
 
-            acceptTracking.focus();
+            acceptTracking?.focus();
 
             return;
-
         }
 
 
@@ -1888,7 +2102,6 @@ acceptConfirmBtn.addEventListener(
 
                 trackingNumber:
                     trackingNumber
-
             };
 
 
@@ -1940,7 +2153,6 @@ acceptConfirmBtn.addEventListener(
                         serverTimestamp()
 
                 }
-
             );
 
 
@@ -1977,9 +2189,7 @@ acceptConfirmBtn.addEventListener(
 
             acceptConfirmBtn.textContent =
                 "Confirm Order";
-
         }
-
     }
 );
 
@@ -1988,7 +2198,7 @@ acceptConfirmBtn.addEventListener(
 // CANCEL ORDER
 // =====================================================
 
-cancelConfirmBtn.addEventListener(
+cancelConfirmBtn?.addEventListener(
     "click",
     async () => {
 
@@ -1996,9 +2206,9 @@ cancelConfirmBtn.addEventListener(
             return;
         }
 
-
         const reason =
-            cancelReason.value.trim();
+            cancelReason?.value.trim() ||
+            "";
 
 
         if (!reason) {
@@ -2007,10 +2217,9 @@ cancelConfirmBtn.addEventListener(
                 "Cancellation reason enter karo."
             );
 
-            cancelReason.focus();
+            cancelReason?.focus();
 
             return;
-
         }
 
 
@@ -2068,7 +2277,6 @@ cancelConfirmBtn.addEventListener(
                         serverTimestamp()
 
                 }
-
             );
 
 
@@ -2105,58 +2313,52 @@ cancelConfirmBtn.addEventListener(
 
             cancelConfirmBtn.textContent =
                 "Cancel Order";
-
         }
-
     }
 );
 
 
 // =====================================================
-// MODAL CLOSE BUTTONS
+// MODAL CLOSE
 // =====================================================
 
-acceptCloseBtn.addEventListener(
+acceptCloseBtn?.addEventListener(
     "click",
     closeAcceptModal
 );
 
-cancelCloseBtn.addEventListener(
+cancelCloseBtn?.addEventListener(
     "click",
     closeCancelModal
 );
 
 
-acceptModal.addEventListener(
+acceptModal?.addEventListener(
     "click",
-    (e) => {
+    (event) => {
 
         if (
-            e.target ===
+            event.target ===
             acceptModal
         ) {
 
             closeAcceptModal();
-
         }
-
     }
 );
 
 
-cancelModal.addEventListener(
+cancelModal?.addEventListener(
     "click",
-    (e) => {
+    (event) => {
 
         if (
-            e.target ===
+            event.target ===
             cancelModal
         ) {
 
             closeCancelModal();
-
         }
-
     }
 );
 
@@ -2179,11 +2381,12 @@ onAuthStateChanged(
                 "login.html";
 
             return;
-
         }
 
 
-        if (!isAdmin(user)) {
+        if (
+            !isAdmin(user)
+        ) {
 
             alert(
                 "Access denied. Admin account required."
@@ -2193,11 +2396,14 @@ onAuthStateChanged(
                 "index.html";
 
             return;
-
         }
 
 
+        // Orders load
         await loadOrders();
+
+        // Stock products load
+        await loadProducts();
 
     }
 );
@@ -2207,7 +2413,7 @@ onAuthStateChanged(
 // LOGOUT
 // =====================================================
 
-logoutBtn.addEventListener(
+logoutBtn?.addEventListener(
     "click",
     async () => {
 
@@ -2232,8 +2438,6 @@ logoutBtn.addEventListener(
             alert(
                 "Logout failed."
             );
-
         }
-
     }
 );
