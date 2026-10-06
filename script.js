@@ -152,6 +152,139 @@ function initApp() {
   }
 
   // =================================================
+// LOW STOCK BADGE
+// =================================================
+
+function applyLowStockBadge(card) {
+
+    if (!card) {
+        return;
+    }
+
+    // Already added
+    if (
+        card.dataset.stockBadgeDone === "1"
+    ) {
+        return;
+    }
+
+    card.dataset.stockBadgeDone = "1";
+
+
+    const stock =
+        Number(
+            card.dataset.stock
+        );
+
+
+    // Stock not configured
+    if (
+        Number.isNaN(stock)
+    ) {
+        return;
+    }
+
+
+    // More than 5 = don't show anything
+    if (
+        stock > 5
+    ) {
+        return;
+    }
+
+
+    const productInfo =
+        card.querySelector(
+            ".product-info"
+        );
+
+
+    if (!productInfo) {
+        return;
+    }
+
+
+    const badge =
+        document.createElement(
+            "div"
+        );
+
+
+    badge.className =
+        "low-stock-badge";
+
+
+    // OUT OF STOCK
+    if (
+        stock <= 0
+    ) {
+
+        badge.classList.add(
+            "out-of-stock"
+        );
+
+        badge.textContent =
+            "Out of Stock";
+
+
+        card.classList.add(
+            "out-of-stock"
+        );
+
+
+        // Disable buttons
+        card
+            .querySelectorAll(
+                ".add-cart-btn, .buy-now-btn"
+            )
+            .forEach(
+                (button) => {
+
+                    button.disabled =
+                        true;
+
+                }
+            );
+
+    }
+
+    // LOW STOCK
+    else {
+
+        badge.textContent =
+            stock === 1
+                ? "Only 1 piece remaining"
+                : `Only ${stock} pieces remaining`;
+
+    }
+
+
+    // Put stock message below description
+    const description =
+        productInfo.querySelector(
+            ".product-description"
+        );
+
+
+    if (
+        description
+    ) {
+
+        description.insertAdjacentElement(
+            "afterend",
+            badge
+        );
+
+    } else {
+
+        productInfo.prepend(
+            badge
+        );
+
+    }
+
+}
+  // =================================================
   // CART
   // =================================================
 
