@@ -19,7 +19,6 @@ import {
 
 import { firebaseConfig } from "./firebase-config.js";
 
-
 // =====================================================
 // FIREBASE
 // =====================================================
@@ -29,394 +28,189 @@ const firebaseApp =
     ? getApps()[0]
     : initializeApp(firebaseConfig);
 
-const firebaseAuth =
-  getAuth(firebaseApp);
-
-const firestore =
-  getFirestore(firebaseApp);
+const firebaseAuth = getAuth(firebaseApp);
+const firestore = getFirestore(firebaseApp);
 
 let loggedInUser = null;
-
 
 // =====================================================
 // AUTH READY
 // =====================================================
 
 const authReady = new Promise((resolve) => {
-
-  onAuthStateChanged(
-    firebaseAuth,
-    (user) => {
-
-      loggedInUser = user;
-
-      resolve(user);
-
-    }
-  );
-
+  onAuthStateChanged(firebaseAuth, (user) => {
+    loggedInUser = user;
+    resolve(user);
+  });
 });
 
-
 async function getUser() {
-
   await Promise.race([
-
     authReady,
-
-    new Promise((resolve) =>
-      setTimeout(
-        resolve,
-        4000
-      )
-    )
-
+    new Promise((resolve) => setTimeout(resolve, 4000))
   ]);
 
-  return (
-    loggedInUser ||
-    firebaseAuth.currentUser
-  );
+  return loggedInUser || firebaseAuth.currentUser;
 }
-
 
 // =====================================================
 // MAIN APP
 // =====================================================
 
 function initApp() {
-
   const isCategoryPage =
-    document.body.classList.contains(
-      "category-page"
-    );
-
+    document.body.classList.contains("category-page");
 
   // =================================================
   // CATEGORY LABELS
   // =================================================
 
   const CATEGORY_LABELS = {
-
-    all:
-      "All Jewellery",
-
-    earrings:
-      "Earrings",
-
-    bracelets:
-      "Bracelets",
-
-    sets:
-      "Jewellery Sets",
-
-    kamarbandh:
-      "Kamarbandh",
-
-    necklaces:
-      "Necklaces",
-
-    hathphool:
-      "Hathphool",
-
-    "hair-accessories":
-      "Hair Accessories",
-
-    anklets:
-      "Anklets",
-
-    rings:
-      "Rings"
-
+    all: "All Jewellery",
+    earrings: "Earrings",
+    bracelets: "Bracelets",
+    sets: "Jewellery Sets",
+    kamarbandh: "Kamarbandh",
+    necklaces: "Necklaces",
+    hathphool: "Hathphool",
+    "hair-accessories": "Hair Accessories",
+    anklets: "Anklets",
+    rings: "Rings"
   };
-
 
   // =================================================
   // HELPERS
   // =================================================
 
-  function formatRupees(
-    amount
-  ) {
-
-    return (
-      "₹" +
-      Number(
-        amount || 0
-      ).toLocaleString(
-        "en-IN"
-      )
-    );
-
+  function formatRupees(amount) {
+    return "₹" + Number(amount || 0).toLocaleString("en-IN");
   }
 
-
-  function esc(
-    value
-  ) {
-
-    return String(
-      value == null
-        ? ""
-        : value
-    )
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#39;"
-      );
-
+  function esc(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
-
 
   // =================================================
   // DISCOUNT BADGE
   // =================================================
 
-  function applyDiscountBadge(
-    card
-  ) {
-
-    if (
-      !card ||
-      card.dataset.badgeDone ===
-        "1"
-    ) {
-
+  function applyDiscountBadge(card) {
+    if (!card || card.dataset.badgeDone === "1") {
       return;
     }
 
-    card.dataset.badgeDone =
-      "1";
+    card.dataset.badgeDone = "1";
 
-    const discount =
-      Number(
-        card.dataset.discount ||
-        0
-      );
+    const discount = Number(card.dataset.discount || 0);
 
     if (!discount) {
       return;
     }
 
-    const priceEl =
-      card.querySelector(
-        ".product-price"
-      );
+    const priceEl = card.querySelector(".product-price");
+    const imageEl = card.querySelector(".product-image");
 
-    const imageEl =
-      card.querySelector(
-        ".product-image"
-      );
-
-    if (
-      !priceEl ||
-      !imageEl
-    ) {
-
+    if (!priceEl || !imageEl) {
       return;
     }
 
-    const currentPrice =
-      Number(
-
-        priceEl.dataset.price ||
-
-        priceEl.textContent.replace(
-          /[^\d.]/g,
-          ""
-        )
-
-      );
+    const currentPrice = Number(
+      priceEl.dataset.price ||
+      priceEl.textContent.replace(/[^\d.]/g, "")
+    );
 
     if (!currentPrice) {
       return;
     }
 
-    const originalPrice =
-      Math.round(
-
-        currentPrice /
-        (
-          1 -
-          discount / 100
-        )
-
-      );
-
-
-    const badge =
-      document.createElement(
-        "span"
-      );
-
-    badge.className =
-      "discount-badge";
-
-    badge.textContent =
-      `${discount}% OFF`;
-
-    imageEl.appendChild(
-      badge
+    const originalPrice = Math.round(
+      currentPrice / (1 - discount / 100)
     );
 
+    const badge = document.createElement("span");
 
-    const group =
-      document.createElement(
-        "span"
-      );
+    badge.className = "discount-badge";
+    badge.textContent = `${discount}% OFF`;
 
-    group.className =
-      "price-group";
+    imageEl.appendChild(badge);
 
+    const group = document.createElement("span");
 
-    const originalSpan =
-      document.createElement(
-        "span"
-      );
+    group.className = "price-group";
 
-    originalSpan.className =
-      "price-original";
+    const originalSpan = document.createElement("span");
+
+    originalSpan.className = "price-original";
 
     originalSpan.textContent =
-      formatRupees(
-        originalPrice
-      );
+      formatRupees(originalPrice);
 
+    priceEl.replaceWith(group);
 
-    priceEl.replaceWith(
-      group
-    );
-
-    group.appendChild(
-      originalSpan
-    );
-
-    group.appendChild(
-      priceEl
-    );
-
+    group.appendChild(originalSpan);
+    group.appendChild(priceEl);
   }
-
 
   // =================================================
   // LOW STOCK BADGE
   // =================================================
 
-  function applyLowStockBadge(
-    card
-  ) {
-
+  function applyLowStockBadge(card) {
     if (!card) {
       return;
     }
 
-    const stock =
-      Number(
-        card.dataset.stock
-      );
+    const stock = Number(card.dataset.stock);
 
-    if (
-      !Number.isFinite(
-        stock
-      )
-    ) {
-
+    if (!Number.isFinite(stock)) {
       return;
     }
 
-
-    // Remove old badge
+    // Remove old stock badges
     card
-      .querySelectorAll(
-        ".low-stock-badge"
-      )
-      .forEach(
-        (badge) =>
-          badge.remove()
-      );
+      .querySelectorAll(".low-stock-badge")
+      .forEach((badge) => {
+        badge.remove();
+      });
 
-
-    // Reset out of stock state
-    card.classList.remove(
-      "out-of-stock"
-    );
+    // Reset card
+    card.classList.remove("out-of-stock");
 
     card
-      .querySelectorAll(
-        ".add-cart-btn, .buy-now-btn"
-      )
-      .forEach(
-        (button) => {
-
-          button.disabled =
-            false;
-
-        }
-      );
-
+      .querySelectorAll(".add-cart-btn, .buy-now-btn")
+      .forEach((button) => {
+        button.disabled = false;
+      });
 
     const productInfo =
-      card.querySelector(
-        ".product-info"
-      );
+      card.querySelector(".product-info");
 
     if (!productInfo) {
       return;
     }
 
-
-    // =================================================
-    // MORE THAN 5
-    // =================================================
-
-    if (
-      stock > 5
-    ) {
-
-      card.dataset.stockBadgeDone =
-        "1";
-
+    // More than 5 = no message
+    if (stock > 5) {
+      card.dataset.stockBadgeDone = "1";
       return;
     }
 
-
-    // =================================================
-    // CREATE BADGE
-    // =================================================
-
     const badge =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
     badge.className =
       "low-stock-badge";
-
 
     // =================================================
     // OUT OF STOCK
     // =================================================
 
-    if (
-      stock <= 0
-    ) {
-
+    if (stock <= 0) {
       badge.classList.add(
         "out-of-stock"
       );
@@ -424,25 +218,17 @@ function initApp() {
       badge.textContent =
         "Out of Stock";
 
-
       card.classList.add(
         "out-of-stock"
       );
-
 
       card
         .querySelectorAll(
           ".add-cart-btn, .buy-now-btn"
         )
-        .forEach(
-          (button) => {
-
-            button.disabled =
-              true;
-
-          }
-        );
-
+        .forEach((button) => {
+          button.disabled = true;
+        });
     }
 
     // =================================================
@@ -450,20 +236,14 @@ function initApp() {
     // =================================================
 
     else {
-
       badge.textContent =
-
         stock === 1
-
           ? "Only 1 piece remaining"
-
           : `Only ${stock} pieces remaining`;
-
     }
 
-
     // =================================================
-    // PUT BADGE
+    // BADGE POSITION
     // =================================================
 
     const description =
@@ -471,38 +251,25 @@ function initApp() {
         ".product-description"
       );
 
-
     if (description) {
-
       description.insertAdjacentElement(
         "afterend",
         badge
       );
-
-    }
-
-    else {
-
+    } else {
       productInfo.prepend(
         badge
       );
-
     }
 
-
-    card.dataset.stockBadgeDone =
-      "1";
-
+    card.dataset.stockBadgeDone = "1";
   }
-
 
   // =================================================
   // STOCK CACHE
   // =================================================
 
-  const stockCache =
-    new Map();
-
+  const stockCache = new Map();
 
   // =================================================
   // FIND PRODUCT CARD
@@ -512,82 +279,55 @@ function initApp() {
     productId,
     root = document
   ) {
-
     if (!productId) {
       return null;
     }
-
 
     const cards =
       root.querySelectorAll(
         ".product-card"
       );
 
-
-    for (
-      const card of cards
-    ) {
-
+    for (const card of cards) {
       const buttons =
         card.querySelectorAll(
           "[data-id]"
         );
 
-
-      for (
-        const button of buttons
-      ) {
-
+      for (const button of buttons) {
         if (
           button.dataset.id ===
-          String(
-            productId
-          )
+          String(productId)
         ) {
-
           return card;
-
         }
-
       }
-
     }
 
-
     return null;
-
   }
-
 
   // =================================================
   // GET PRODUCT STOCK
-  // FIRESTORE IS MAIN SOURCE
+  // FIRESTORE = MAIN SOURCE
   // =================================================
 
   async function getProductStock(
     productId,
     sourceButton = null
   ) {
-
     const normalizedId =
-      String(
-        productId || ""
-      );
-
+      String(productId || "");
 
     if (!normalizedId) {
-
       return null;
-
     }
-
 
     // =================================================
     // 1. FIRESTORE
     // =================================================
 
     try {
-
       const productRef =
         doc(
           firestore,
@@ -595,56 +335,37 @@ function initApp() {
           normalizedId
         );
 
-
       const snapshot =
         await getDoc(
           productRef
         );
 
-
-      if (
-        snapshot.exists()
-      ) {
-
+      if (snapshot.exists()) {
         const data =
           snapshot.data();
-
 
         const stock =
           Number(
             data.stock
           );
 
-
-        if (
-          Number.isFinite(
-            stock
-          )
-        ) {
-
+        if (Number.isFinite(stock)) {
           stockCache.set(
             normalizedId,
             stock
           );
 
-
           return stock;
-
         }
-
       }
-
     }
 
     catch (error) {
-
       console.error(
         "Firestore stock read error:",
         error
       );
-
     }
-
 
     // =================================================
     // 2. CACHE
@@ -655,66 +376,49 @@ function initApp() {
         normalizedId
       )
     ) {
-
       return stockCache.get(
         normalizedId
       );
-
     }
-
 
     // =================================================
     // 3. HTML FALLBACK
     // =================================================
 
     const currentCard =
-
       sourceButton?.closest(
         ".product-card"
-      )
-
-      ||
-
+      ) ||
       findProductCardById(
         normalizedId
       );
-
 
     if (
       currentCard &&
       currentCard.dataset.stock !==
         undefined
     ) {
-
       const stock =
         Number(
           currentCard.dataset.stock
         );
-
 
       if (
         Number.isFinite(
           stock
         )
       ) {
-
         stockCache.set(
           normalizedId,
           stock
         );
 
-
         return stock;
-
       }
-
     }
 
-
     return null;
-
   }
-
 
   // =================================================
   // VALIDATE CHECKOUT STOCK
@@ -723,60 +427,40 @@ function initApp() {
   async function validateCheckoutStock(
     items
   ) {
-
     for (
       const item of items
     ) {
-
       const stock =
         await getProductStock(
           item.id
         );
-
 
       if (
         !Number.isFinite(
           stock
         )
       ) {
-
         continue;
-
       }
 
-
       const qty =
-        Number(
-          item.qty
-        ) || 1;
-
+        Number(item.qty) || 1;
 
       if (
         stock <= 0
       ) {
-
         return {
-
-          ok:
-            false,
-
+          ok: false,
           message:
             `${item.name} is out of stock.`
-
         };
-
       }
-
 
       if (
         qty > stock
       ) {
-
         return {
-
-          ok:
-            false,
-
+          ok: false,
           message:
             `Only ${stock} piece${
               stock === 1
@@ -785,21 +469,14 @@ function initApp() {
             } of ${
               item.name
             } available.`
-
         };
-
       }
-
     }
 
-
     return {
-      ok:
-        true
+      ok: true
     };
-
   }
-
 
   // =================================================
   // CART
@@ -814,138 +491,96 @@ function initApp() {
   const BUY_NOW_KEY =
     "ayonizaBuyNow";
 
-
   // =================================================
   // LOAD CART
   // =================================================
 
   function loadCart() {
-
     try {
-
       const raw =
         localStorage.getItem(
           CART_KEY
         );
 
-
       const parsed =
         raw
-          ? JSON.parse(
-              raw
-            )
+          ? JSON.parse(raw)
           : [];
 
-
       if (
-        !Array.isArray(
-          parsed
-        )
+        !Array.isArray(parsed)
       ) {
-
         return [];
-
       }
 
-
       return parsed
-
         .filter(
           (item) =>
-
             item &&
             item.id &&
             item.name &&
-            Number(
-              item.price
-            ) >= 0 &&
-            Number(
-              item.qty
-            ) > 0
+            Number(item.price) >= 0 &&
+            Number(item.qty) > 0
         )
-
         .map(
           (item) => ({
+            id: String(
+              item.id
+            ),
 
-            id:
-              String(
-                item.id
-              ),
+            name: String(
+              item.name
+            ),
 
-            name:
-              String(
-                item.name
-              ),
+            price: Number(
+              item.price
+            ),
 
-            price:
-              Number(
-                item.price
-              ),
+            image: String(
+              item.image || ""
+            ),
 
-            image:
-              String(
-                item.image ||
-                ""
-              ),
-
-            qty:
-              Math.floor(
-                Number(
-                  item.qty
-                )
-              )
-
+            qty: Math.floor(
+              Number(item.qty)
+            )
           })
         );
-
     }
 
     catch (error) {
-
       console.error(
         "Cart load error:",
         error
       );
 
       return [];
-
     }
-
   }
-
 
   // =================================================
   // SAVE CART
   // =================================================
 
   function saveCart() {
-
     try {
-
       localStorage.setItem(
         CART_KEY,
         JSON.stringify(
           cart
         )
       );
-
     }
 
     catch (error) {
-
       console.error(
         "Cart save error:",
         error
       );
-
     }
-
   }
-
 
   let cart =
     loadCart();
-
 
   // =================================================
   // CART ELEMENTS
@@ -1001,13 +636,11 @@ function initApp() {
       "checkoutBtn"
     );
 
-
   // =================================================
   // OPEN CART
   // =================================================
 
   function openCart() {
-
     cartDrawer?.classList.add(
       "open"
     );
@@ -1020,16 +653,13 @@ function initApp() {
       "aria-hidden",
       "false"
     );
-
   }
-
 
   // =================================================
   // CLOSE CART
   // =================================================
 
   function closeCart() {
-
     cartDrawer?.classList.remove(
       "open"
     );
@@ -1042,126 +672,88 @@ function initApp() {
       "aria-hidden",
       "true"
     );
-
   }
-
 
   // =================================================
   // RENDER CART
   // =================================================
 
   function renderCart() {
-
     saveCart();
-
 
     const totalQty =
       cart.reduce(
-        (
-          sum,
-          item
-        ) =>
-          sum +
-          item.qty,
+        (sum, item) =>
+          sum + item.qty,
         0
       );
-
 
     const totalPrice =
       cart.reduce(
-        (
-          sum,
-          item
-        ) =>
+        (sum, item) =>
           sum +
-          (
-            item.qty *
-            item.price
-          ),
+          item.qty *
+            item.price,
         0
       );
-
 
     if (
       cartCountEl
     ) {
-
       cartCountEl.textContent =
         totalQty;
-
     }
-
 
     if (
       cartTotalEl
     ) {
-
       cartTotalEl.textContent =
         formatRupees(
           totalPrice
         );
-
     }
-
 
     if (
       checkoutBtn
     ) {
-
       checkoutBtn.disabled =
         cart.length === 0;
-
     }
-
 
     if (
       !cartItemsEl
     ) {
-
       return;
-
     }
-
 
     cartItemsEl
       .querySelectorAll(
         ".cart-item"
       )
       .forEach(
-        (
-          element
-        ) =>
+        (element) =>
           element.remove()
       );
-
 
     if (
       cart.length === 0
     ) {
-
       if (
         cartEmptyEl
       ) {
-
         cartEmptyEl.hidden =
           false;
-
       }
 
       return;
-
     }
-
 
     if (
       cartEmptyEl
     ) {
-
       cartEmptyEl.hidden =
         true;
-
     }
-
 
     cart.forEach(
       (item) => {
@@ -1171,13 +763,10 @@ function initApp() {
             "div"
           );
 
-
         row.className =
           "cart-item";
 
-
         row.innerHTML = `
-
           <img
             src="${esc(
               item.image
@@ -1187,30 +776,21 @@ function initApp() {
             )}"
           >
 
-
           <div>
 
-            <p
-              class="cart-item-name"
-            >
+            <p class="cart-item-name">
               ${esc(
                 item.name
               )}
             </p>
 
-
-            <p
-              class="cart-item-price"
-            >
+            <p class="cart-item-price">
               ${formatRupees(
                 item.price
               )}
             </p>
 
-
-            <div
-              class="cart-item-qty"
-            >
+            <div class="cart-item-qty">
 
               <button
                 class="qty-btn"
@@ -1223,11 +803,9 @@ function initApp() {
                 −
               </button>
 
-
               <span>
                 ${item.qty}
               </span>
-
 
               <button
                 class="qty-btn"
@@ -1244,7 +822,6 @@ function initApp() {
 
           </div>
 
-
           <button
             class="remove-item"
             data-action="remove"
@@ -1254,19 +831,14 @@ function initApp() {
           >
             Remove
           </button>
-
         `;
-
 
         cartItemsEl.appendChild(
           row
         );
-
       }
     );
-
   }
-
 
   // =================================================
   // ADD TO CART
@@ -1281,34 +853,25 @@ function initApp() {
     },
     shouldOpen = true
   ) {
-
     const normalizedId =
       String(
         id || ""
       );
 
-
     const existing =
       cart.find(
-        (
-          item
-        ) =>
+        (item) =>
           item.id ===
           normalizedId
       );
 
-
     if (
       existing
     ) {
-
-      existing.qty +=
-        1;
-
+      existing.qty += 1;
     }
 
     else {
-
       cart.push({
 
         id:
@@ -1333,23 +896,16 @@ function initApp() {
           1
 
       });
-
     }
 
-
     renderCart();
-
 
     if (
       shouldOpen
     ) {
-
       openCart();
-
     }
-
   }
-
 
   // =================================================
   // CHANGE QUANTITY
@@ -1359,70 +915,55 @@ function initApp() {
     id,
     delta
   ) {
-
     const item =
       cart.find(
-        (
-          entry
-        ) =>
+        (entry) =>
           entry.id ===
           id
       );
-
 
     if (!item) {
       return;
     }
 
-
-    // Increase
+    // Increase quantity
     if (
       delta > 0
     ) {
-
       const stock =
         await getProductStock(
           id
         );
 
-
       if (
         Number.isFinite(
           stock
         )
-      {
+      ) {
 
         if (
           stock <= 0
         ) {
-
           alert(
             `${item.name} is out of stock.`
           );
 
-
           cart =
             cart.filter(
-              (
-                entry
-              ) =>
+              (entry) =>
                 entry.id !==
                 id
             );
 
-
           renderCart();
 
           return;
-
         }
-
 
         if (
           item.qty >=
           stock
         ) {
-
           alert(
             `Only ${stock} piece${
               stock === 1
@@ -1431,40 +972,26 @@ function initApp() {
             } available for ${item.name}.`
           );
 
-
           return;
-
         }
-
       }
-
     }
 
-
-    item.qty +=
-      delta;
-
+    item.qty += delta;
 
     if (
       item.qty <= 0
     ) {
-
       cart =
         cart.filter(
-          (
-            entry
-          ) =>
+          (entry) =>
             entry.id !==
             id
         );
-
     }
 
-
     renderCart();
-
   }
-
 
   // =================================================
   // REMOVE ITEM
@@ -1473,21 +1000,15 @@ function initApp() {
   function removeItem(
     id
   ) {
-
     cart =
       cart.filter(
-        (
-          item
-        ) =>
+        (item) =>
           item.id !==
           id
       );
 
-
     renderCart();
-
   }
-
 
   // =================================================
   // CHECKOUT ELEMENTS
@@ -1495,7 +1016,6 @@ function initApp() {
 
   const STORAGE_KEY =
     "ayonizaCustomerInfo";
-
 
   const checkoutOverlay =
     document.getElementById(
@@ -1597,7 +1117,6 @@ function initApp() {
       "#checkoutSteps .step-item"
     );
 
-
   let checkoutItems =
     [];
 
@@ -1607,20 +1126,17 @@ function initApp() {
   let currentStep =
     1;
 
-
   // =================================================
   // LOAD SAVED INFO
   // =================================================
 
   function loadSavedInfo() {
-
     try {
 
       const raw =
         localStorage.getItem(
           STORAGE_KEY
         );
-
 
       return raw
         ? JSON.parse(
@@ -1637,36 +1153,24 @@ function initApp() {
         error
       );
 
-
       return null;
-
     }
-
   }
 
-
   // =================================================
-  // PREFILL FORM
+  // PREFILL CHECKOUT FORM
   // =================================================
 
   async function prefillForm() {
-
-    if (
-      !checkoutForm
-    ) {
-
+    if (!checkoutForm) {
       return;
-
     }
-
 
     let saved =
       loadSavedInfo();
 
-
     const user =
       await getUser();
-
 
     if (
       user
@@ -1683,14 +1187,12 @@ function initApp() {
             )
           );
 
-
         if (
           snapshot.exists()
         ) {
 
           const data =
             snapshot.data();
-
 
           saved = {
 
@@ -1736,14 +1238,11 @@ function initApp() {
               "India"
 
           };
-
         }
 
       }
 
-      catch (
-        error
-      ) {
+      catch (error) {
 
         console.error(
           "Could not load customer profile:",
@@ -1751,134 +1250,94 @@ function initApp() {
         );
 
       }
-
     }
 
-
-    if (
-      !saved
-    ) {
-
+    if (!saved) {
       return;
-
     }
-
 
     if (
       checkoutForm.custName
     ) {
-
       checkoutForm.custName.value =
         saved.name || "";
-
     }
-
 
     if (
       checkoutForm.custMobile
     ) {
-
       checkoutForm.custMobile.value =
         saved.mobile || "";
-
     }
-
 
     if (
       checkoutForm.custAddress
     ) {
-
       checkoutForm.custAddress.value =
         saved.address || "";
-
     }
-
 
     if (
       checkoutForm.custLandmark
     ) {
-
       checkoutForm.custLandmark.value =
         saved.landmark || "";
-
     }
-
 
     if (
       checkoutForm.custCity
     ) {
-
       checkoutForm.custCity.value =
         saved.city || "";
-
     }
-
 
     if (
       checkoutForm.custState
     ) {
-
       checkoutForm.custState.value =
         saved.state || "";
-
     }
-
 
     if (
       checkoutForm.custPin
     ) {
-
       checkoutForm.custPin.value =
         saved.pin || "";
-
     }
-
 
     if (
       checkoutForm.custCountry
     ) {
-
       checkoutForm.custCountry.value =
         saved.country ||
         "India";
-
     }
-
 
     if (
       saveInfoCheckbox
     ) {
-
       saveInfoCheckbox.checked =
         true;
-
     }
-
   }
 
-
   // =================================================
-  // PRODUCT BUTTONS
+  // PRODUCT BUTTONS - ADD TO CART
   // =================================================
 
   async function wireAddButton(
     btn
   ) {
-
     if (
       !btn ||
       btn.dataset.wired ===
         "1"
     ) {
-
       return;
-
     }
-
 
     btn.dataset.wired =
       "1";
-
 
     btn.addEventListener(
       "click",
@@ -1886,7 +1345,6 @@ function initApp() {
 
         const user =
           await getUser();
-
 
         if (
           !user
@@ -1896,31 +1354,24 @@ function initApp() {
             "Please login before adding products to cart."
           );
 
-
           window.location.href =
             "login.html";
 
-
           return;
-
         }
-
 
         const productId =
           btn.dataset.id;
 
-
         const productName =
           btn.dataset.name ||
           "This product";
-
 
         const stock =
           await getProductStock(
             productId,
             btn
           );
-
 
         if (
           Number.isFinite(
@@ -1936,21 +1387,15 @@ function initApp() {
               `${productName} is out of stock.`
             );
 
-
             return;
-
           }
-
 
           const existing =
             cart.find(
-              (
-                item
-              ) =>
+              (item) =>
                 item.id ===
                 productId
             );
-
 
           const currentQty =
             existing
@@ -1958,7 +1403,6 @@ function initApp() {
                   existing.qty
                 ) || 0
               : 0;
-
 
           if (
             currentQty >=
@@ -1973,16 +1417,11 @@ function initApp() {
               } available for ${productName}.`
             );
 
-
             return;
-
           }
-
         }
 
-
         addToCart({
-
           id:
             productId,
 
@@ -1994,37 +1433,28 @@ function initApp() {
 
           image:
             btn.dataset.image
-
         });
-
       }
     );
-
   }
 
-
   // =================================================
-  // BUY NOW
+  // BUY NOW BUTTON
   // =================================================
 
   async function wireBuyButton(
     btn
   ) {
-
     if (
       !btn ||
       btn.dataset.wired ===
         "1"
     ) {
-
       return;
-
     }
-
 
     btn.dataset.wired =
       "1";
-
 
     btn.addEventListener(
       "click",
@@ -2032,7 +1462,6 @@ function initApp() {
 
         const user =
           await getUser();
-
 
         if (
           !user
@@ -2042,31 +1471,24 @@ function initApp() {
             "Please login before buying."
           );
 
-
           window.location.href =
             "login.html";
 
-
           return;
-
         }
-
 
         const productId =
           btn.dataset.id;
 
-
         const productName =
           btn.dataset.name ||
           "This product";
-
 
         const stock =
           await getProductStock(
             productId,
             btn
           );
-
 
         if (
           Number.isFinite(
@@ -2079,11 +1501,8 @@ function initApp() {
             `${productName} is out of stock.`
           );
 
-
           return;
-
         }
-
 
         const item = {
 
@@ -2104,9 +1523,7 @@ function initApp() {
 
           qty:
             1
-
         };
-
 
         if (
           !checkoutForm
@@ -2119,26 +1536,19 @@ function initApp() {
             )
           );
 
-
           window.location.href =
             "index.html";
 
-
           return;
-
         }
-
 
         await openCheckout(
           [item],
           "buynow"
         );
-
       }
     );
-
   }
-
 
   // =================================================
   // PRODUCT CARD
@@ -2147,40 +1557,26 @@ function initApp() {
   function wireProductCard(
     card
   ) {
-
     applyDiscountBadge(
       card
     );
-
 
     applyLowStockBadge(
       card
     );
 
-
-    const addBtn =
+    void wireAddButton(
       card.querySelector(
         ".add-cart-btn"
-      );
-
-
-    const buyBtn =
-      card.querySelector(
-        ".buy-now-btn"
-      );
-
-
-    void wireAddButton(
-      addBtn
+      )
     );
-
 
     void wireBuyButton(
-      buyBtn
+      card.querySelector(
+        ".buy-now-btn"
+      )
     );
-
   }
-
 
   // =================================================
   // MOBILE NAV
@@ -2191,12 +1587,10 @@ function initApp() {
       "menuToggle"
     );
 
-
   const primaryNav =
     document.getElementById(
       "primaryNav"
     );
-
 
   if (
     menuToggle &&
@@ -2212,26 +1606,21 @@ function initApp() {
             "open"
           );
 
-
         menuToggle.setAttribute(
           "aria-expanded",
           String(
             isOpen
           )
         );
-
       }
     );
-
 
     primaryNav
       .querySelectorAll(
         "a"
       )
       .forEach(
-        (
-          link
-        ) => {
+        (link) => {
 
           link.addEventListener(
             "click",
@@ -2241,77 +1630,61 @@ function initApp() {
                 "open"
               );
 
-
               menuToggle.setAttribute(
                 "aria-expanded",
                 "false"
               );
-
             }
           );
-
         }
       );
-
   }
-
 
   // =================================================
   // CATEGORY TILES
+  // Works with button OR anchor
   // =================================================
 
   document
     .querySelectorAll(
-      ".category-tile[data-category]"
+      ".category-tile"
     )
     .forEach(
-      (
-        tile
-      ) => {
+      (tile) => {
 
         tile.addEventListener(
           "click",
           (event) => {
 
-            // Anchor hai to browser ka href use hone do
-            if (
-              tile.tagName.toLowerCase() ===
-                "a"
-            ) {
-
-              return;
-
-            }
-
-
-            event.preventDefault();
-
-
             const category =
               tile.dataset.category;
-
 
             if (
               !category
             ) {
-
               return;
-
             }
 
+            // If anchor has href,
+            // allow normal browser navigation.
+            if (
+              tile.tagName.toLowerCase() ===
+              "a"
+            ) {
+              return;
+            }
+
+            event.preventDefault();
 
             window.location.href =
               "category.html?cat=" +
               encodeURIComponent(
                 category
               );
-
           }
         );
-
       }
     );
-
 
   // =================================================
   // CART EVENTS
@@ -2326,22 +1699,17 @@ function initApp() {
           "button[data-action]"
         );
 
-
       if (
         !target
       ) {
-
         return;
-
       }
-
 
       const {
         action,
         id
       } =
         target.dataset;
-
 
       if (
         action ===
@@ -2355,7 +1723,6 @@ function initApp() {
 
       }
 
-
       if (
         action ===
         "decrease"
@@ -2368,7 +1735,6 @@ function initApp() {
 
       }
 
-
       if (
         action ===
         "remove"
@@ -2377,12 +1743,9 @@ function initApp() {
         removeItem(
           id
         );
-
       }
-
     }
   );
-
 
   // =================================================
   // CART SYNC
@@ -2400,14 +1763,10 @@ function initApp() {
         cart =
           loadCart();
 
-
         renderCart();
-
       }
-
     }
   );
-
 
   window.addEventListener(
     "pageshow",
@@ -2420,16 +1779,12 @@ function initApp() {
         cart =
           loadCart();
 
-
         renderCart();
 
         void refreshStockBadges();
-
       }
-
     }
   );
-
 
   // =================================================
   // CART BUTTONS
@@ -2440,27 +1795,23 @@ function initApp() {
     openCart
   );
 
-
   closeCartBtn?.addEventListener(
     "click",
     closeCart
   );
-
 
   continueShoppingBtn?.addEventListener(
     "click",
     closeCart
   );
 
-
   cartOverlay?.addEventListener(
     "click",
     closeCart
   );
 
-
   // =================================================
-  // CHECKOUT ELEMENTS
+  // CHECKOUT STEPS
   // =================================================
 
   const STEP_TITLES = {
@@ -2476,7 +1827,6 @@ function initApp() {
 
   };
 
-
   function goToStep(
     stepNumber
   ) {
@@ -2484,16 +1834,13 @@ function initApp() {
     currentStep =
       stepNumber;
 
-
     if (
       checkoutForm
     ) {
 
       checkoutForm.hidden =
         stepNumber !== 1;
-
     }
-
 
     if (
       checkoutConfirmStep
@@ -2501,9 +1848,7 @@ function initApp() {
 
       checkoutConfirmStep.hidden =
         stepNumber !== 2;
-
     }
-
 
     if (
       checkoutPaymentStep
@@ -2511,9 +1856,7 @@ function initApp() {
 
       checkoutPaymentStep.hidden =
         stepNumber !== 3;
-
     }
-
 
     if (
       checkoutBack
@@ -2521,9 +1864,7 @@ function initApp() {
 
       checkoutBack.hidden =
         stepNumber === 1;
-
     }
-
 
     if (
       checkoutTitle
@@ -2533,26 +1874,20 @@ function initApp() {
         STEP_TITLES[
           stepNumber
         ] || "";
-
     }
 
-
     stepItems.forEach(
-      (
-        item
-      ) => {
+      (item) => {
 
         const number =
           Number(
             item.dataset.step
           );
 
-
         item.classList.remove(
           "active",
           "done"
         );
-
 
         if (
           number <
@@ -2573,20 +1908,15 @@ function initApp() {
           item.classList.add(
             "active"
           );
-
         }
-
       }
     );
-
 
     checkoutModal?.scrollTo?.({
       top:
         0
     });
-
   }
-
 
   // =================================================
   // OPEN CHECKOUT
@@ -2605,13 +1935,10 @@ function initApp() {
     ) {
 
       return;
-
     }
-
 
     const user =
       await getUser();
-
 
     if (
       !user
@@ -2621,21 +1948,15 @@ function initApp() {
         "Please login before checkout."
       );
 
-
       window.location.href =
         "login.html";
 
-
       return;
-
     }
-
 
     const normalizedItems =
       items.map(
-        (
-          item
-        ) => ({
+        (item) => ({
 
           id:
             String(
@@ -2662,16 +1983,13 @@ function initApp() {
             Number(
               item.qty
             ) || 1
-
         })
       );
-
 
     const stockValidation =
       await validateCheckoutStock(
         normalizedItems
       );
-
 
     if (
       !stockValidation.ok
@@ -2681,48 +1999,36 @@ function initApp() {
         stockValidation.message
       );
 
-
       return;
-
     }
-
 
     checkoutSource =
       source;
 
-
     checkoutItems =
       normalizedItems;
 
-
     await prefillForm();
-
 
     goToStep(
       1
     );
 
-
     closeCart();
-
 
     checkoutOverlay?.classList.add(
       "active"
     );
 
-
     checkoutModal?.classList.add(
       "open"
     );
-
 
     checkoutModal?.setAttribute(
       "aria-hidden",
       "false"
     );
-
   }
-
 
   // =================================================
   // CLOSE CHECKOUT
@@ -2734,19 +2040,15 @@ function initApp() {
       "active"
     );
 
-
     checkoutModal?.classList.remove(
       "open"
     );
-
 
     checkoutModal?.setAttribute(
       "aria-hidden",
       "true"
     );
-
   }
-
 
   // =================================================
   // ESC KEY
@@ -2754,9 +2056,7 @@ function initApp() {
 
   document.addEventListener(
     "keydown",
-    (
-      event
-    ) => {
+    (event) => {
 
       if (
         event.key ===
@@ -2764,14 +2064,10 @@ function initApp() {
       ) {
 
         closeCart();
-
         closeCheckout();
-
       }
-
     }
   );
-
 
   // =================================================
   // UPI
@@ -2780,18 +2076,15 @@ function initApp() {
   const UPI_ID =
     "9589790094-2@ybl";
 
-
   const upiCopyBtn =
     document.getElementById(
       "upiCopyBtn"
     );
 
-
   const upiPayLink =
     document.getElementById(
       "upiPayLink"
     );
-
 
   upiCopyBtn?.addEventListener(
     "click",
@@ -2814,46 +2107,36 @@ function initApp() {
             "textarea"
           );
 
-
         temp.value =
           UPI_ID;
-
 
         document.body.appendChild(
           temp
         );
 
-
         temp.select();
-
 
         document.execCommand(
           "copy"
         );
 
-
         document.body.removeChild(
           temp
         );
-
       }
-
 
       upiCopyBtn.textContent =
         "Copied!";
 
-
       upiCopyBtn.classList.add(
         "copied"
       );
-
 
       setTimeout(
         () => {
 
           upiCopyBtn.textContent =
             "Copy";
-
 
           upiCopyBtn.classList.remove(
             "copied"
@@ -2862,10 +2145,8 @@ function initApp() {
         },
         1800
       );
-
     }
   );
-
 
   // =================================================
   // ORDER SUMMARY
@@ -2881,22 +2162,16 @@ function initApp() {
     ) {
 
       return 0;
-
     }
-
 
     container.innerHTML =
       "";
 
-
     let total =
       0;
 
-
     checkoutItems.forEach(
-      (
-        item
-      ) => {
+      (item) => {
 
         const lineTotal =
           Number(
@@ -2906,20 +2181,16 @@ function initApp() {
             item.qty
           );
 
-
         total +=
           lineTotal;
-
 
         const row =
           document.createElement(
             "div"
           );
 
-
         row.className =
           "order-summary-row";
-
 
         row.innerHTML = `
 
@@ -2930,7 +2201,6 @@ function initApp() {
             x${item.qty}
           </span>
 
-
           <span>
             ${formatRupees(
               lineTotal
@@ -2939,14 +2209,11 @@ function initApp() {
 
         `;
 
-
         container.appendChild(
           row
         );
-
       }
     );
-
 
     if (
       totalEl
@@ -2956,17 +2223,13 @@ function initApp() {
         formatRupees(
           total
         );
-
     }
 
-
     return total;
-
   }
 
-
   // =================================================
-  // ORDER SUMMARY + UPI
+  // RENDER ORDER SUMMARY
   // =================================================
 
   function renderOrderSummary() {
@@ -2976,7 +2239,6 @@ function initApp() {
         orderSummaryEl,
         orderTotalEl
       );
-
 
     if (
       upiPayLink
@@ -3004,17 +2266,12 @@ function initApp() {
 
         });
 
-
       upiPayLink.href =
         `upi://pay?${upiParams.toString()}`;
-
     }
 
-
     return total;
-
   }
-
 
   // =================================================
   // STEP 1 -> STEP 2
@@ -3022,12 +2279,9 @@ function initApp() {
 
   checkoutForm?.addEventListener(
     "submit",
-    (
-      event
-    ) => {
+    (event) => {
 
       event.preventDefault();
-
 
       if (
         !checkoutForm.checkValidity()
@@ -3036,9 +2290,7 @@ function initApp() {
         checkoutForm.reportValidity();
 
         return;
-
       }
-
 
       const info = {
 
@@ -3065,22 +2317,17 @@ function initApp() {
 
         country:
           checkoutForm.custCountry.value.trim()
-
       };
-
 
       if (
         saveInfoCheckbox?.checked
       ) {
 
         localStorage.setItem(
-
           STORAGE_KEY,
-
           JSON.stringify(
             info
           )
-
         );
 
       }
@@ -3090,15 +2337,12 @@ function initApp() {
         localStorage.removeItem(
           STORAGE_KEY
         );
-
       }
-
 
       checkoutForm.dataset.pendingInfo =
         JSON.stringify(
           info
         );
-
 
       if (
         confirmNameEl
@@ -3106,42 +2350,28 @@ function initApp() {
 
         confirmNameEl.textContent =
           info.name;
-
       }
-
 
       if (
         confirmAddressLineEl
       ) {
 
         confirmAddressLineEl.textContent =
-
           info.address +
-
           (
             info.landmark
               ? ` (${info.landmark})`
               : ""
           ) +
-
           ", " +
-
           info.city +
-
           ", " +
-
           info.state +
-
           " - " +
-
           info.pin +
-
           ", " +
-
           info.country;
-
       }
-
 
       if (
         confirmPhoneLineEl
@@ -3149,23 +2379,18 @@ function initApp() {
 
         confirmPhoneLineEl.textContent =
           info.mobile;
-
       }
-
 
       renderSummaryInto(
         confirmOrderSummaryEl,
         confirmOrderTotalEl
       );
 
-
       goToStep(
         2
       );
-
     }
   );
-
 
   // =================================================
   // CHANGE ADDRESS
@@ -3178,10 +2403,8 @@ function initApp() {
       goToStep(
         1
       );
-
     }
   );
-
 
   // =================================================
   // STEP 2 -> STEP 3
@@ -3196,10 +2419,8 @@ function initApp() {
       goToStep(
         3
       );
-
     }
   );
-
 
   // =================================================
   // BACK
@@ -3228,12 +2449,9 @@ function initApp() {
         goToStep(
           1
         );
-
       }
-
     }
   );
-
 
   // =================================================
   // CLOSE
@@ -3244,12 +2462,9 @@ function initApp() {
     closeCheckout
   );
 
-
   checkoutOverlay?.addEventListener(
     "click",
-    (
-      event
-    ) => {
+    (event) => {
 
       if (
         event.target ===
@@ -3257,12 +2472,9 @@ function initApp() {
       ) {
 
         closeCheckout();
-
       }
-
     }
   );
-
 
   // =================================================
   // PLACE ORDER
@@ -3275,7 +2487,6 @@ function initApp() {
       const user =
         await getUser();
 
-
       if (
         !user
       ) {
@@ -3284,15 +2495,11 @@ function initApp() {
           "Please login before placing your order."
         );
 
-
         window.location.href =
           "login.html";
 
-
         return;
-
       }
-
 
       if (
         !checkoutItems.length
@@ -3302,77 +2509,55 @@ function initApp() {
           "Your cart is empty."
         );
 
-
         return;
-
       }
-
 
       let info =
         {};
-
 
       try {
 
         info =
           JSON.parse(
-
             checkoutForm?.dataset.pendingInfo ||
             "{}"
-
           );
 
       }
 
-      catch (
-        error
-      ) {
+      catch (error) {
 
         console.error(
           "Customer info parse error:",
           error
         );
-
       }
 
-
       if (
-
         !info.name ||
-
         !info.mobile ||
-
         !info.address ||
-
         !info.city ||
-
         !info.state ||
-
         !info.pin
-
       ) {
 
         alert(
           "Please complete your delivery address first."
         );
 
-
         goToStep(
           1
         );
 
-
         return;
-
       }
 
-
-      // Final stock check
+      // Final stock validation
       const stockValidation =
         await validateCheckoutStock(
           checkoutItems
         );
-
 
       if (
         !stockValidation.ok
@@ -3382,52 +2567,37 @@ function initApp() {
           stockValidation.message
         );
 
-
         await refreshStockBadges();
 
-
         return;
-
       }
-
 
       const total =
         checkoutItems.reduce(
-
           (
             sum,
             item
           ) =>
-
             sum +
-
-            (
-              Number(
-                item.price
-              ) *
-
-              Number(
-                item.qty
-              )
+            Number(
+              item.price
+            ) *
+            Number(
+              item.qty
             ),
-
           0
-
         );
-
 
       placeOrderBtn.disabled =
         true;
 
-
       placeOrderBtn.textContent =
         "Placing Order...";
-
 
       try {
 
         // =================================================
-        // SAVE PROFILE
+        // SAVE CUSTOMER PROFILE
         // =================================================
 
         if (
@@ -3437,41 +2607,47 @@ function initApp() {
           try {
 
             await setDoc(
-
               doc(
                 firestore,
                 "users",
                 user.uid
               ),
-
               {
 
                 uid:
                   user.uid,
 
                 fullName:
-                  info.name || "",
+                  info.name ||
+                  "",
 
                 email:
-                  user.email || "",
+                  user.email ||
+                  "",
 
                 phone:
-                  info.mobile || "",
+                  info.mobile ||
+                  "",
 
                 address:
-                  info.address || "",
+                  info.address ||
+                  "",
 
                 landmark:
-                  info.landmark || "",
+                  info.landmark ||
+                  "",
 
                 city:
-                  info.city || "",
+                  info.city ||
+                  "",
 
                 state:
-                  info.state || "",
+                  info.state ||
+                  "",
 
                 pincode:
-                  info.pin || "",
+                  info.pin ||
+                  "",
 
                 country:
                   info.country ||
@@ -3479,14 +2655,11 @@ function initApp() {
 
                 updatedAt:
                   serverTimestamp()
-
               },
-
               {
                 merge:
                   true
               }
-
             );
 
           }
@@ -3499,11 +2672,8 @@ function initApp() {
               "Profile update error:",
               profileError
             );
-
           }
-
         }
-
 
         // =================================================
         // ORDER NUMBER
@@ -3511,7 +2681,6 @@ function initApp() {
 
         const now =
           new Date();
-
 
         const datePart =
           now
@@ -3525,7 +2694,6 @@ function initApp() {
               ""
             );
 
-
         const randomPart =
           Math.floor(
             1000 +
@@ -3533,10 +2701,8 @@ function initApp() {
               9000
           );
 
-
         const orderNumber =
           `AYZ${datePart}${randomPart}`;
-
 
         // =================================================
         // ORDER ITEMS
@@ -3544,9 +2710,7 @@ function initApp() {
 
         const orderItems =
           checkoutItems.map(
-            (
-              item
-            ) => ({
+            (item) => ({
 
               productId:
                 item.id ||
@@ -3571,23 +2735,18 @@ function initApp() {
                 "",
 
               lineTotal:
-
                 (
                   Number(
                     item.price
                   ) || 0
-
                 ) *
-
                 (
                   Number(
                     item.qty
                   ) || 1
                 )
-
             })
           );
-
 
         // =================================================
         // ORDER DATA
@@ -3669,26 +2828,20 @@ function initApp() {
 
           updatedAt:
             serverTimestamp()
-
         };
-
 
         // =================================================
         // SAVE ORDER
         // =================================================
 
         await setDoc(
-
           doc(
             firestore,
             "orders",
             orderNumber
           ),
-
           orderData
-
         );
-
 
         // =================================================
         // CLEAR CART
@@ -3703,74 +2856,50 @@ function initApp() {
             [];
 
           renderCart();
-
         }
-
 
         localStorage.setItem(
           "ayonizaLastOrderId",
           orderNumber
         );
 
-
-        // =================================================
-        // SUCCESS
-        // =================================================
-
         alert(
-
           `Order placed successfully!\n\n` +
-
           `Order ID: ${orderNumber}\n\n` +
-
           `Payment status: Pending verification`
-
         );
-
 
         closeCheckout();
 
       }
 
-
-      catch (
-        error
-      ) {
+      catch (error) {
 
         console.error(
           "Order creation error:",
           error
         );
 
-
         alert(
-
           "We could not place your order right now. Please try again.\n\n" +
-
           (
             error?.message ||
             "Unknown error"
           )
-
         );
 
       }
-
 
       finally {
 
         placeOrderBtn.disabled =
           false;
 
-
         placeOrderBtn.textContent =
           "Place Order";
-
       }
-
     }
   );
-
 
   // =================================================
   // CART -> CHECKOUT
@@ -3786,13 +2915,10 @@ function initApp() {
       ) {
 
         return;
-
       }
-
 
       const user =
         await getUser();
-
 
       if (
         !user
@@ -3802,33 +2928,22 @@ function initApp() {
           "Please login before checkout."
         );
 
-
         window.location.href =
           "login.html";
 
-
         return;
-
       }
 
-
       await openCheckout(
-
         cart.map(
-          (
-            item
-          ) => ({
+          (item) => ({
             ...item
           })
         ),
-
         "cart"
-
       );
-
     }
   );
-
 
   // =================================================
   // PRODUCT BUTTONS
@@ -3842,34 +2957,27 @@ function initApp() {
       wireProductCard
     );
 
-
   document
     .querySelectorAll(
       ".add-cart-btn"
     )
     .forEach(
-      (
-        button
-      ) =>
+      (button) =>
         void wireAddButton(
           button
         )
     );
-
 
   document
     .querySelectorAll(
       ".buy-now-btn"
     )
     .forEach(
-      (
-        button
-      ) =>
+      (button) =>
         void wireBuyButton(
           button
         )
     );
-
 
   // =================================================
   // CATEGORY PAGE
@@ -3884,42 +2992,33 @@ function initApp() {
         "productsGrid"
       );
 
-
     const noResults =
       document.getElementById(
         "noResults"
       );
-
 
     const titleEl =
       document.getElementById(
         "selectedCategoryTitle"
       );
 
-
     const params =
       new URLSearchParams(
         window.location.search
       );
 
-
     const cat =
-      params.get(
-        "cat"
-      ) || "all";
-
+      params.get("cat") ||
+      "all";
 
     let allCards =
       [];
 
-
     let currentSearch =
       (
-        params.get(
-          "q"
-        ) || ""
+        params.get("q") ||
+        ""
       ).toLowerCase();
-
 
     if (
       titleEl
@@ -3929,9 +3028,7 @@ function initApp() {
         CATEGORY_LABELS[
           cat
         ] || cat;
-
     }
-
 
     function renderList() {
 
@@ -3940,36 +3037,23 @@ function initApp() {
       ) {
 
         return;
-
       }
-
 
       grid.innerHTML =
         "";
 
-
       let shown =
         0;
 
-
       allCards.forEach(
-        (
-          original
-        ) => {
+        (original) => {
 
           const categoryMatch =
-
-            cat ===
-            "all"
-
-            ||
-
+            cat === "all" ||
             original.dataset.category ===
-            cat;
-
+              cat;
 
           const name =
-
             (
               original
                 .querySelector(
@@ -3979,9 +3063,7 @@ function initApp() {
               ""
             ).toLowerCase();
 
-
           const desc =
-
             (
               original
                 .querySelector(
@@ -3991,19 +3073,14 @@ function initApp() {
               ""
             ).toLowerCase();
 
-
           const searchMatch =
-
             !currentSearch ||
-
             name.includes(
               currentSearch
             ) ||
-
             desc.includes(
               currentSearch
             );
-
 
           if (
             categoryMatch &&
@@ -4015,68 +3092,52 @@ function initApp() {
                 true
               );
 
-
             clone.removeAttribute(
               "data-badge-done"
             );
 
-
             clone.removeAttribute(
               "data-stock-badge-done"
             );
-
 
             clone
               .querySelectorAll(
                 "[data-wired]"
               )
               .forEach(
-                (
-                  element
-                ) => {
+                (element) => {
 
                   element.removeAttribute(
                     "data-wired"
                   );
-
                 }
               );
-
 
             clone
               .querySelectorAll(
                 ".discount-badge, .low-stock-badge"
               )
               .forEach(
-                (
-                  badge
-                ) =>
+                (badge) =>
                   badge.remove()
               );
-
 
             clone.classList.remove(
               "out-of-stock"
             );
 
-
             grid.appendChild(
               clone
             );
-
 
             wireProductCard(
               clone
             );
 
-
             shown++;
-
           }
-
         }
       );
-
 
       if (
         noResults
@@ -4084,15 +3145,11 @@ function initApp() {
 
         noResults.hidden =
           shown !== 0;
-
       }
 
-
-      // Firestore stock load
+      // Get latest stock from Firestore
       void refreshStockBadges();
-
     }
-
 
     fetch(
       "index.html",
@@ -4103,9 +3160,7 @@ function initApp() {
     )
 
       .then(
-        (
-          response
-        ) => {
+        (response) => {
 
           if (
             !response.ok
@@ -4114,20 +3169,14 @@ function initApp() {
             throw new Error(
               "Could not load index.html"
             );
-
           }
 
-
           return response.text();
-
         }
       )
 
-
       .then(
-        (
-          html
-        ) => {
+        (html) => {
 
           const parsedDoc =
             new DOMParser()
@@ -4136,7 +3185,6 @@ function initApp() {
                 "text/html"
               );
 
-
           allCards =
             Array.from(
               parsedDoc.querySelectorAll(
@@ -4144,59 +3192,43 @@ function initApp() {
               )
             );
 
-
           renderList();
-
         }
       )
 
-
       .catch(
-        (
-          error
-        ) => {
+        (error) => {
 
           console.error(
             "Category product load error:",
             error
           );
 
-
           if (
             grid
           ) {
 
             grid.innerHTML =
-
               '<p class="no-results">' +
-
               'Products load nahi ho paaye. ' +
-
               'Page refresh karke dekhein.' +
-
               '</p>';
-
           }
-
         }
       );
-
 
     const searchInputCP =
       document.getElementById(
         "searchInput"
       );
 
-
     if (
       searchInputCP
     ) {
 
       searchInputCP.value =
-        params.get(
-          "q"
-        ) || "";
-
+        params.get("q") ||
+        "";
 
       searchInputCP.addEventListener(
         "input",
@@ -4208,16 +3240,11 @@ function initApp() {
               .trim()
               .toLowerCase();
 
-
           renderList();
-
         }
       );
-
     }
-
   }
-
 
   // =================================================
   // SEARCH
@@ -4228,18 +3255,15 @@ function initApp() {
       "openSearchBtn"
     );
 
-
   const searchBar =
     document.getElementById(
       "searchBar"
     );
 
-
   const searchInput =
     document.getElementById(
       "searchInput"
     );
-
 
   openSearchBtn?.addEventListener(
     "click",
@@ -4249,7 +3273,6 @@ function initApp() {
         "open"
       );
 
-
       if (
         searchBar?.classList.contains(
           "open"
@@ -4257,12 +3280,9 @@ function initApp() {
       ) {
 
         searchInput?.focus();
-
       }
-
     }
   );
-
 
   if (
     !isCategoryPage
@@ -4270,61 +3290,42 @@ function initApp() {
 
     searchInput?.addEventListener(
       "keydown",
-      (
-        event
-      ) => {
+      (event) => {
 
         if (
-
           event.key ===
-          "Enter" &&
-
+            "Enter" &&
           searchInput.value.trim()
-
         ) {
 
           window.location.href =
-
             "category.html?cat=all&q=" +
-
             encodeURIComponent(
               searchInput.value.trim()
             );
-
         }
-
       }
     );
-
   }
-
 
   document.addEventListener(
     "keydown",
-    (
-      event
-    ) => {
+    (event) => {
 
       if (
-
         event.key ===
-        "Escape" &&
-
+          "Escape" &&
         searchBar?.classList.contains(
           "open"
         )
-
       ) {
 
         searchBar.classList.remove(
           "open"
         );
-
       }
-
     }
   );
-
 
   // =================================================
   // HERO SLIDER
@@ -4335,7 +3336,6 @@ function initApp() {
       "heroBannerSlider"
     );
 
-
   if (
     heroSlider
   ) {
@@ -4345,7 +3345,6 @@ function initApp() {
         ".hero-banner-slide"
       );
 
-
     if (
       heroSlides.length > 1
     ) {
@@ -4353,19 +3352,14 @@ function initApp() {
       let heroCurrent =
         0;
 
-
       let heroTimer =
         null;
-
 
       const HERO_INTERVAL_MS =
         4000;
 
-
       const showHeroSlide =
-        (
-          number
-        ) => {
+        (number) => {
 
           heroSlides[
             heroCurrent
@@ -4373,25 +3367,19 @@ function initApp() {
             "active"
           );
 
-
           heroCurrent =
-
             (
               number +
               heroSlides.length
             ) %
-
             heroSlides.length;
-
 
           heroSlides[
             heroCurrent
           ]?.classList.add(
             "active"
           );
-
         };
-
 
       const startHero =
         () => {
@@ -4399,11 +3387,8 @@ function initApp() {
           if (
             heroTimer
           ) {
-
             return;
-
           }
-
 
           heroTimer =
             setInterval(
@@ -4417,9 +3402,7 @@ function initApp() {
               },
               HERO_INTERVAL_MS
             );
-
         };
-
 
       const stopHero =
         () => {
@@ -4428,15 +3411,11 @@ function initApp() {
             heroTimer
           );
 
-
           heroTimer =
             null;
-
         };
 
-
       startHero();
-
 
       document.addEventListener(
         "visibilitychange",
@@ -4448,21 +3427,14 @@ function initApp() {
 
             stopHero();
 
-          }
-
-          else {
+          } else {
 
             startHero();
-
           }
-
         }
       );
-
     }
-
   }
-
 
   // =================================================
   // REFRESH STOCK BADGES
@@ -4475,7 +3447,6 @@ function initApp() {
         ".product-card"
       );
 
-
     for (
       const card of cards
     ) {
@@ -4485,35 +3456,28 @@ function initApp() {
           ".add-cart-btn, .buy-now-btn"
         );
 
-
       if (
         !button
       ) {
 
         continue;
-
       }
-
 
       const productId =
         button.dataset.id;
-
 
       if (
         !productId
       ) {
 
         continue;
-
       }
-
 
       const stock =
         await getProductStock(
           productId,
           button
         );
-
 
       if (
         !Number.isFinite(
@@ -4522,28 +3486,18 @@ function initApp() {
       ) {
 
         continue;
-
       }
-
 
       card.dataset.stock =
         String(
           stock
         );
 
-
-      card.dataset.stockBadgeDone =
-        "0";
-
-
       applyLowStockBadge(
         card
       );
-
     }
-
   }
-
 
   // =================================================
   // INITIAL CART
@@ -4551,10 +3505,8 @@ function initApp() {
 
   renderCart();
 
-
   // Load latest Firestore stock
   void refreshStockBadges();
-
 
   // =================================================
   // PENDING BUY NOW
@@ -4563,17 +3515,14 @@ function initApp() {
   let pendingBuyNow =
     null;
 
-
   try {
 
     pendingBuyNow =
       JSON.parse(
-
         localStorage.getItem(
           BUY_NOW_KEY
         ) ||
         "null"
-
       );
 
   }
@@ -4586,27 +3535,20 @@ function initApp() {
       "Buy Now restore error:",
       error
     );
-
   }
-
 
   localStorage.removeItem(
     BUY_NOW_KEY
   );
-
 
   // =================================================
   // OPEN PENDING BUY NOW
   // =================================================
 
   if (
-
     pendingBuyNow &&
-
     pendingBuyNow.id &&
-
     checkoutForm
-
   ) {
 
     void openCheckout(
@@ -4616,36 +3558,28 @@ function initApp() {
 
   }
 
-
   // =================================================
   // OPEN CART FROM PRODUCT PAGE
   // =================================================
 
   else if (
-
     localStorage.getItem(
       OPEN_CART_FLAG
     ) === "1"
-
   ) {
 
     localStorage.removeItem(
       OPEN_CART_FLAG
     );
 
-
     if (
       cart.length > 0
     ) {
 
       openCart();
-
     }
-
   }
-
 }
-
 
 // =====================================================
 // RUN APP
@@ -4661,9 +3595,7 @@ if (
     initApp
   );
 
-}
-
-else {
+} else {
 
   initApp();
 
