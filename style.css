@@ -1175,3 +1175,133 @@ nav a:hover::after { width: 100%; }
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* =====================================================
+   ADMIN STOCK MANAGEMENT
+   ===================================================== */
+
+.stock-management-section {
+    margin-top: 30px;
+}
+
+.stock-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.stock-product-card {
+    background: #ffffff;
+    border: 1px solid #eadfda;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+}
+
+.stock-product-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.stock-product-image {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f8f5f3;
+}
+
+.stock-product-name {
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.stock-product-price {
+    margin: 0;
+    font-size: 14px;
+    color: #777;
+}
+
+.stock-product-stock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.stock-product-stock-row label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.stock-input {
+    width: 90px;
+    padding: 10px 12px;
+    border: 1px solid #d8cbc5;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+}
+
+.stock-input:focus {
+    border-color: #8d5a45;
+}
+
+.stock-save-btn {
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #8d5a45;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.stock-save-btn:hover {
+    opacity: 0.9;
+}
+
+.stock-current {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.stock-current.low {
+    color: #b54708;
+}
+
+.stock-current.out {
+    color: #b42318;
+}
+
+.stock-current.available {
+    color: #26734d;
+}
+
+.stock-admin-message {
+    margin-top: 15px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f5f1ee;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+
+    .stock-product-stock-row {
+        flex-wrap: wrap;
+    }
+
+    .stock-input {
+        width: 100%;
+    }
+
+    .stock-save-btn {
+        width: 100%;
+    }
+}
