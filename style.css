@@ -1147,26 +1147,18 @@ nav a:hover::after { width: 100%; }
   margin: 0.2rem 0;
 }
 
-/* =========================================
-   LOW STOCK
-========================================= */
-
 .low-stock-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-
     margin-top: 8px;
-
     padding: 6px 10px;
-
     border-radius: 7px;
-
     background: #fff3e8;
     color: #b54708;
-
     font-size: 12px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .low-stock-badge.out-of-stock {
@@ -1175,12 +1167,11 @@ nav a:hover::after { width: 100%; }
 }
 
 .product-card.out-of-stock {
-    opacity: .75;
+    opacity: 0.75;
 }
 
 .product-card.out-of-stock .add-cart-btn,
 .product-card.out-of-stock .buy-now-btn {
-    pointer-events: none;
-    opacity: .5;
+    opacity: 0.5;
     cursor: not-allowed;
 }
