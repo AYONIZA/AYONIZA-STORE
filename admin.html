@@ -361,6 +361,142 @@
             color: #fff;
         }
 
+
+        /* =====================================================
+           PRODUCT STOCK MANAGEMENT
+           ===================================================== */
+
+        .stock-management-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
+        }
+
+        .stock-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .stock-section-header h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+        }
+
+        .stock-section-header p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .stock-products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stock-product-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .stock-product-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stock-product-image {
+            width: 68px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 9px;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .stock-product-name {
+            margin: 0 0 5px;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+
+        .stock-product-price {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .stock-product-stock-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .stock-product-stock-row label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stock-input {
+            width: 85px;
+            padding: 9px 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .stock-save-btn {
+            border: 0;
+            padding: 9px 13px;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #111;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .stock-save-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .stock-current {
+            margin-top: 11px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stock-current.low {
+            color: #b54708;
+        }
+
+        .stock-current.out {
+            color: #b42318;
+        }
+
+        .stock-current.available {
+            color: #1c6b2b;
+        }
+
+        .stock-admin-message {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f2f7f3;
+            color: #1c6b2b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
         @media (max-width: 850px) {
 
             .stats {
@@ -444,6 +580,50 @@
     ></div>
 
 </main>
+
+
+
+    <!-- =====================================================
+         PRODUCT STOCK MANAGEMENT
+    ====================================================== -->
+
+    <section class="stock-management-section">
+
+        <div class="stock-section-header">
+
+            <div>
+                <h2>Product Stock</h2>
+                <p>
+                    Update product stock directly from the admin panel.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="syncProductsBtn"
+                class="save-btn">
+                Sync Products
+            </button>
+
+        </div>
+
+        <div
+            id="stockMessage"
+            class="stock-admin-message"
+            hidden>
+        </div>
+
+        <div
+            id="stockProductsContainer"
+            class="stock-products-grid">
+
+            <div class="empty">
+                Loading products...
+            </div>
+
+        </div>
+
+    </section>
 
 
 <!-- =====================================================
