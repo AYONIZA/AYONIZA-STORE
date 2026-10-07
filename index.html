@@ -616,27 +616,85 @@
       <button type="button" class="btn primary checkout-continue" id="confirmContinueBtn">Continue to Payment</button>
     </div>
 
-    <div class="checkout-step" id="checkoutPaymentStep" hidden>
-      <div class="payment-info-box">
-        <p class="payment-methods-line">Pay via UPI</p>
-        <div class="upi-qr-wrap">
-          <img src="assets/payment-qr.png" alt="PhonePe UPI QR code for AYONIZA" class="upi-qr-img">
+<div class="checkout-step" id="checkoutPaymentStep" hidden>
+
+    <div class="payment-info-box">
+
+        <p class="payment-methods-line">
+            Secure Payment
+        </p>
+
+        <div style="
+            text-align:center;
+            padding:24px 10px;
+        ">
+
+            <div style="
+                font-size:42px;
+                margin-bottom:10px;
+            ">
+                🔒
+            </div>
+
+            <h3 style="
+                margin:0 0 8px;
+                font-size:20px;
+            ">
+                Pay Securely with PhonePe
+            </h3>
+
+            <p style="
+                margin:0;
+                color:#777;
+                font-size:14px;
+                line-height:1.5;
+            ">
+                You will be redirected to the
+                secure PhonePe payment page.
+            </p>
+
         </div>
-        <p class="upi-scan-label">Scan &amp; Pay using any UPI app</p>
-        <div class="upi-id-row">
-          <span class="upi-id-value" id="upiIdValue">9589790094-2@ybl</span>
-          <button type="button" class="upi-copy-btn" id="upiCopyBtn">Copy</button>
-        </div>
-        <a class="upi-pay-link" id="upiPayLink" href="#">Pay with UPI App</a>
-        <p class="payment-sub">After completing the UPI payment, tap "Place Order" below. Your order will be created with payment status pending verification.</p>
-      </div>
-      <div class="order-summary" id="orderSummary"></div>
-      <div class="order-total-row">
-        <span>Total</span>
-        <strong id="orderTotal">₹0</strong>
-      </div>
-      <button type="button" class="btn primary checkout-submit" id="placeOrderBtn">Place Order</button>
+
     </div>
+
+
+    <div
+        class="order-summary"
+        id="orderSummary">
+    </div>
+
+
+    <div class="order-total-row">
+
+        <span>
+            Total
+        </span>
+
+        <strong id="orderTotal">
+            ₹0
+        </strong>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn primary checkout-submit"
+        id="placeOrderBtn">
+        Pay Now
+    </button>
+
+
+    <p style="
+        text-align:center;
+        font-size:12px;
+        color:#888;
+        margin-top:12px;
+    ">
+        Secure payment powered by PhonePe
+    </p>
+
+</div>
 
   </div>
 </div>
