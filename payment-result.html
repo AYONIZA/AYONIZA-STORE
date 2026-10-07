@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Payment Status | AYONIZA
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f3ef;
+            font-family: Arial, sans-serif;
+            color: #222;
+        }
+
+        .payment-result-card {
+            width: min(92%, 480px);
+            background: #fff;
+            border-radius: 18px;
+            padding: 34px 26px;
+            text-align: center;
+            box-shadow:
+                0 12px 35px
+                rgba(0,0,0,.08);
+        }
+
+        .icon {
+            font-size: 58px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .order-id {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f8f3ef;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 22px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #7c243c;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .loading {
+            color: #777;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div
+        class="payment-result-card"
+        id="paymentResult"
+    >
+
+        <div class="icon">
+            ⏳
+        </div>
+
+        <h1>
+            Checking Payment...
+        </h1>
+
+        <p class="loading">
+            Please wait while we verify your PhonePe payment.
+        </p>
+
+    </div>
+
+
+<script>
+
+const WORKER_URL =
+    "https://ayoniza-payment.ayoniza-support.workers.dev";
+
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const orderId =
+    params.get(
+        "orderId"
+    );
+
+
+const resultEl =
+    document.getElementById(
+        "paymentResult"
+    );
+
+
+async function checkPayment() {
+
+    if (!orderId) {
+
+        resultEl.innerHTML = `
+
+            <div class="icon">
+                ❌
+            </div>
+
+            <h1>
+                Invalid Order
+            </h1>
+
+            <p>
+                Order ID was not found.
+            </p>
+
+            <a
+                class="btn"
+                href="index.html"
+            >
+                Back to Website
+            </a>
+
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                `${WORKER_URL}/payment-status?merchantOrderId=${encodeURIComponent(
+                    orderId
+                )}`
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "PhonePe status:",
+            data
+        );
+
+
+        const state =
+            String(
+                data?.state ||
+                data?.status ||
+                ""
+            ).toUpperCase();
+
+
+        // =========================================
+        // SUCCESS
+        // =========================================
+
+        if (
+            state ===
+            "COMPLETED" ||
+            state ===
+            "SUCCESS"
+        ) {
+
+            resultEl.innerHTML = `
+
+                <div class="icon">
+                    ✅
+                </div>
+
+                <h1>
+                    Payment Successful
+                </h1>
+
+                <p>
+                    Your payment has been received successfully.
+                </p>
+
+                <div class="order-id">
+                    Order ID:
+                    ${orderId}
+                </div>
+
+                <a
+                    class="btn"
+                    href="track-order.html?orderId=${encodeURIComponent(
+                        orderId
+                    )}"
+                >
+                    Track Order
+                </a>
+
+            `;
+
+            return;
+        }
+
+
+        // =========================================
+        // FAILED
+        // =========================================
+
+        if (
+            state ===
+            "FAILED"
+        ) {
+
+            resultEl.innerHTML = `
+
+                <div class="icon">
+                    ❌
+                </div>
+
+                <h1>
+                    Payment Failed
+                </h1>
+
+                <p>
+                    Your PhonePe payment was not completed.
+                    Please try again.
+                </p>
+
+                <div class="order-id">
+                    Order ID:
+                    ${orderId}
+                </div>
+
+                <a
+                    class="btn"
+                    href="index.html"
+                >
+                    Try Again
+                </a>
+
+            `;
+
+            return;
+        }
+
+
+        // =========================================
+        // PENDING
+        // =========================================
+
+        resultEl.innerHTML = `
+
+            <div class="icon">
+                ⏳
+            </div>
+
+            <h1>
+                Payment Pending
+            </h1>
+
+            <p>
+                We are still checking your payment status.
+            </p>
+
+            <div class="order-id">
+                Order ID:
+                ${orderId}
+            </div>
+
+            <a
+                class="btn"
+                href="track-order.html?orderId=${encodeURIComponent(
+                    orderId
+                )}"
+            >
+                Track Order
+            </a>
+
+        `;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Payment result error:",
+            error
+        );
+
+
+        resultEl.innerHTML = `
+
+            <div class="icon">
+                ⚠️
+            </div>
+
+            <h1>
+                Verification Error
+            </h1>
+
+            <p>
+                We could not verify the payment right now.
+                Please contact AYONIZA support.
+            </p>
+
+            <div class="order-id">
+                Order ID:
+                ${orderId}
+            </div>
+
+            <a
+                class="btn"
+                href="index.html"
+            >
+                Back to Website
+            </a>
+
+        `;
+
+    }
+
+}
+
+
+checkPayment();
+
+</script>
+
+</body>
+
+</html>
