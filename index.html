@@ -6,6 +6,18 @@
 <title>AYONIZA | Grace of Sita</title>
 <meta name="description" content="AYONIZA — graceful, timeless jewellery for women and girls who love a modern touch of elegance.">
 <link rel="stylesheet" href="style.css">
+
+<!--
+  Home page par products nahi dikhane hain.
+  #productsGrid sirf data-source hai: category.html is page ko fetch karke
+  yahin se product cards leta hai. Isliye grid page me rehta hai, par chhupa hua.
+-->
+<style>
+  #productsGrid,
+  #noResults {
+    display: none !important;
+  }
+</style>
 </head>
 <body>
 
@@ -72,10 +84,10 @@
 
 <section class="collection-strip">
   <div class="collection-strip-track">
-    <a href="index.html#shop" class="collection-tile"><img src="assets/earring-1.jpg" alt="Earrings"><span>Earrings</span></a>
-    <a href="index.html#shop" class="collection-tile"><img src="assets/kamarbandh-1.png" alt="Kamarbandh"><span>Kamarbandh</span></a>
-    <a href="index.html#shop" class="collection-tile"><img src="assets/necklace-1.jpg" alt="Necklaces"><span>Necklaces</span></a>
-    <a href="index.html#shop" class="collection-tile"><img src="assets/hathphool-infinity.png" alt="Hathphool"><span>Hathphool</span></a>
+    <a href="category.html?cat=earrings" class="collection-tile"><img src="assets/earring-1.jpg" alt="Earrings"><span>Earrings</span></a>
+    <a href="category.html?cat=kamarbandh" class="collection-tile"><img src="assets/kamarbandh-1.png" alt="Kamarbandh"><span>Kamarbandh</span></a>
+    <a href="category.html?cat=necklaces" class="collection-tile"><img src="assets/necklace-1.jpg" alt="Necklaces"><span>Necklaces</span></a>
+    <a href="category.html?cat=hathphool" class="collection-tile"><img src="assets/hathphool-infinity.png" alt="Hathphool"><span>Hathphool</span></a>
   </div>
 </section>
 
@@ -113,108 +125,56 @@
     <p>Explore our jewellery collection and find a piece that matches your style.</p>
   </div>
 
- <div class="category-grid" id="categoryGrid">
+  <!-- CATEGORIES: click karne par products category.html me khulte hain -->
+  <div class="category-grid" id="categoryGrid">
 
-    <a
-        class="category-tile"
-        href="category.html?cat=earrings"
-    >
-        <img
-            src="assets/earring-1.jpg"
-            alt="Earrings"
-        >
-        <span>Earrings</span>
+    <a class="category-tile" href="category.html?cat=earrings">
+      <img src="assets/earring-1.jpg" alt="Earrings">
+      <span>Earrings</span>
     </a>
 
-
-    <a
-        class="category-tile category-tile-text"
-        href="category.html?cat=bracelets"
-    >
-      <img
-          src="assets/pink bracelet.jpg"
-          alt="Bracelets"
-        >
-        <span>Bracelets</span>
+    <a class="category-tile" href="category.html?cat=bracelets">
+      <img src="assets/pink%20bracelet.jpg" alt="Bracelets">
+      <span>Bracelets</span>
     </a>
 
-
-    <a
-        class="category-tile"
-        href="category.html?cat=sets"
-    >
-        <img
-            src="assets/jewellery-set-1-1.jpg"
-            alt="Jewellery Sets"
-        >
-        <span>Jewellery Sets</span>
+    <a class="category-tile" href="category.html?cat=sets">
+      <img src="assets/jewellery-set-1-1.jpg" alt="Jewellery Sets">
+      <span>Jewellery Sets</span>
     </a>
 
-
-    <a
-        class="category-tile"
-        href="category.html?cat=kamarbandh"
-    >
-        <img
-            src="assets/kamarbandh-1.png"
-            alt="Kamarbandh"
-        >
-        <span>Kamarbandh</span>
+    <a class="category-tile" href="category.html?cat=kamarbandh">
+      <img src="assets/kamarbandh-1.png" alt="Kamarbandh">
+      <span>Kamarbandh</span>
     </a>
 
-
-    <a
-        class="category-tile"
-        href="category.html?cat=necklaces"
-    >
-        <img
-            src="assets/necklace-1.jpg"
-            alt="Necklaces"
-        >
-        <span>Necklaces</span>
+    <a class="category-tile" href="category.html?cat=necklaces">
+      <img src="assets/necklace-1.jpg" alt="Necklaces">
+      <span>Necklaces</span>
     </a>
 
-
-    <a
-        class="category-tile"
-        href="category.html?cat=hathphool"
-    >
-        <img
-            src="assets/hathphool-infinity.png"
-            alt="Hathphool"
-        >
-        <span>Hathphool</span>
+    <a class="category-tile" href="category.html?cat=hathphool">
+      <img src="assets/hathphool-infinity.png" alt="Hathphool">
+      <span>Hathphool</span>
     </a>
 
-
-    <a
-        class="category-tile category-tile-text"
-        href="category.html?cat=hair-accessories"
-    >
-        <span>Hair Accessories</span>
+    <a class="category-tile category-tile-text" href="category.html?cat=hair-accessories">
+      <span>Hair Accessories</span>
     </a>
 
-
-    <a
-        class="category-tile category-tile-text"
-        href="category.html?cat=anklets"
-    >
-        <span>Anklets</span>
+    <a class="category-tile category-tile-text" href="category.html?cat=anklets">
+      <span>Anklets</span>
     </a>
 
-
-    <a
-        class="category-tile category-tile-text"
-        href="category.html?cat=rings"
-    >
-        <span>Rings</span>
+    <a class="category-tile category-tile-text" href="category.html?cat=rings">
+      <span>Rings</span>
     </a>
 
-</div>
+  </div>
 
+  <!-- PRODUCT DATA SOURCE (home par hidden; category.html yahin se cards leta hai) -->
   <div class="products-grid" id="productsGrid" hidden>
 
-  
     <article class="product-card" data-category="earrings" data-discount="25" data-stock="5">
       <div class="product-image"><img src="assets/earring-1.jpg" alt="Pink Bloom Pearl Hoops" loading="lazy"></div>
       <div class="product-info">
@@ -424,7 +384,7 @@
     </article>
 
   </div>
-  
+
   <p class="no-results" id="noResults" hidden>No pieces in this category yet — check back soon.</p>
 </section>
 
@@ -497,13 +457,13 @@
 
     <div class="footer-col">
       <h4>Shop</h4>
-      <a href="index.html#shop">All Jewellery</a>
-      <a href="index.html#shop">Earrings</a>
-      <a href="index.html#shop">Bracelets</a>
-      <a href="index.html#shop">Jewellery Sets</a>
-      <a href="index.html#shop">Kamarbandh</a>
-      <a href="index.html#shop">Necklaces</a>
-      <a href="index.html#shop">Hathphool</a>
+      <a href="category.html?cat=all">All Jewellery</a>
+      <a href="category.html?cat=earrings">Earrings</a>
+      <a href="category.html?cat=bracelets">Bracelets</a>
+      <a href="category.html?cat=sets">Jewellery Sets</a>
+      <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+      <a href="category.html?cat=necklaces">Necklaces</a>
+      <a href="category.html?cat=hathphool">Hathphool</a>
     </div>
 
     <div class="footer-col">
@@ -620,85 +580,40 @@
       <button type="button" class="btn primary checkout-continue" id="confirmContinueBtn">Continue to Payment</button>
     </div>
 
-<div class="checkout-step" id="checkoutPaymentStep" hidden>
+    <div class="checkout-step" id="checkoutPaymentStep" hidden>
 
-    <div class="payment-info-box">
+      <div class="payment-info-box">
 
-        <p class="payment-methods-line">
-            Secure Payment
-        </p>
+        <p class="payment-methods-line">Secure Payment</p>
 
-        <div style="
-            text-align:center;
-            padding:24px 10px;
-        ">
+        <div style="text-align:center; padding:24px 10px;">
 
-            <div style="
-                font-size:42px;
-                margin-bottom:10px;
-            ">
-                🔒
-            </div>
+          <div style="font-size:42px; margin-bottom:10px;">🔒</div>
 
-            <h3 style="
-                margin:0 0 8px;
-                font-size:20px;
-            ">
-                Pay Securely with PhonePe
-            </h3>
+          <h3 style="margin:0 0 8px; font-size:20px;">Pay Securely with PhonePe</h3>
 
-            <p style="
-                margin:0;
-                color:#777;
-                font-size:14px;
-                line-height:1.5;
-            ">
-                You will be redirected to the
-                secure PhonePe payment page.
-            </p>
+          <p style="margin:0; color:#777; font-size:14px; line-height:1.5;">
+            You will be redirected to the secure PhonePe payment page.
+          </p>
 
         </div>
 
-    </div>
+      </div>
 
+      <div class="order-summary" id="orderSummary"></div>
 
-    <div
-        class="order-summary"
-        id="orderSummary">
-    </div>
+      <div class="order-total-row">
+        <span>Total</span>
+        <strong id="orderTotal">₹0</strong>
+      </div>
 
+      <button type="button" class="btn primary checkout-submit" id="placeOrderBtn">Pay Now</button>
 
-    <div class="order-total-row">
-
-        <span>
-            Total
-        </span>
-
-        <strong id="orderTotal">
-            ₹0
-        </strong>
-
-    </div>
-
-
-    <button
-        type="button"
-        class="btn primary checkout-submit"
-        id="placeOrderBtn">
-        Pay Now
-    </button>
-
-
-    <p style="
-        text-align:center;
-        font-size:12px;
-        color:#888;
-        margin-top:12px;
-    ">
+      <p style="text-align:center; font-size:12px; color:#888; margin-top:12px;">
         Secure payment powered by PhonePe
-    </p>
+      </p>
 
-</div>
+    </div>
 
   </div>
 </div>
