@@ -498,6 +498,7 @@ function initApp() {
 
   function loadCart() {
     try {
+
       const raw =
         localStorage.getItem(
           CART_KEY
@@ -1996,7 +1997,6 @@ function initApp() {
           id,
           -1
         );
-
       }
 
       if (
