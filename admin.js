@@ -1,44 +1,28 @@
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    getApps,
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    getDoc,
-    updateDoc,
-    setDoc,
-    doc,
-    serverTimestamp
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
 
-import {
-    firebaseConfig
-} from "./firebase-config.js";
-
-
-// =====================================================
-// FIREBASE
-// =====================================================
-
-const firebaseApp =
-    getApps().length > 0
-        ? getApps()[0]
-        : initializeApp(firebaseConfig);
+const app =
+  getApps().length
+    ? getApps()[0]
+    : initializeApp(firebaseConfig);
 
 const auth =
-    getAuth(firebaseApp);
+  getAuth(app);
 
 const db =
-    getFirestore(firebaseApp);
+  getFirestore(app);
 
 
 // =====================================================
@@ -46,23 +30,9 @@ const db =
 // =====================================================
 
 const ADMIN_UIDS = [
-    "t8lcx1r7jdSXowv4EPgxJA8FXKn1",
-    "ZWCoYQo4EwN6T58bYcxbw27KN4D3"
+  "t8lcx1r7jdSXowv4EPgxJA8FXKn1",
+  "ZWCoYQo4EwN6T58bYcxbw27KN4D3"
 ];
-
-
-// =====================================================
-// ADMIN CHECK
-// =====================================================
-
-function isAdmin(user) {
-
-    return (
-        user &&
-        ADMIN_UIDS.includes(user.uid)
-    );
-
-}
 
 
 // =====================================================
@@ -70,56 +40,50 @@ function isAdmin(user) {
 // =====================================================
 
 const TRACK_BASE_URL =
-    "https://ayoniza.shop/track-order.html?orderId=";
+  "https://ayoniza.shop/track-order.html?orderId=";
 
 const NEXT_STATUSES = [
-    "READY_TO_PACK",
-    "PACKED",
-    "READY_TO_SHIP",
-    "SHIPPED",
-    "IN_TRANSIT",
-    "DELIVERED"
+  "READY_TO_PACK",
+  "PACKED",
+  "READY_TO_SHIP",
+  "SHIPPED",
+  "IN_TRANSIT",
+  "DELIVERED"
 ];
 
 
 // =====================================================
-// DOM
+// HELPER
+// =====================================================
+
+const $ = (id) =>
+  document.getElementById(id);
+
+
+// =====================================================
+// ORDER DOM
 // =====================================================
 
 const loading =
-    document.getElementById(
-        "loading"
-    );
+  $("loading");
 
 const ordersContainer =
-    document.getElementById(
-        "ordersContainer"
-    );
+  $("ordersContainer");
 
 const totalOrders =
-    document.getElementById(
-        "totalOrders"
-    );
+  $("totalOrders");
 
 const newOrders =
-    document.getElementById(
-        "newOrders"
-    );
+  $("newOrders");
 
 const shippedOrders =
-    document.getElementById(
-        "shippedOrders"
-    );
+  $("shippedOrders");
 
 const deliveredOrders =
-    document.getElementById(
-        "deliveredOrders"
-    );
+  $("deliveredOrders");
 
 const logoutBtn =
-    document.getElementById(
-        "logoutBtn"
-    );
+  $("logoutBtn");
 
 
 // =====================================================
@@ -127,123 +91,225 @@ const logoutBtn =
 // =====================================================
 
 const stockProductsContainer =
-    document.getElementById(
-        "stockProductsContainer"
-    );
+  $("stockProductsContainer");
 
 const syncProductsBtn =
-    document.getElementById(
-        "syncProductsBtn"
-    );
+  $("syncProductsBtn");
 
 const stockMessage =
-    document.getElementById(
-        "stockMessage"
-    );
+  $("stockMessage");
 
 
 // =====================================================
-// ACCEPT MODAL DOM
+// PRODUCT MANAGEMENT DOM
+// =====================================================
+
+const productForm =
+  $("productForm");
+
+const productFormTitle =
+  $("productFormTitle");
+
+const editingProductId =
+  $("editingProductId");
+
+const productNameInput =
+  $("productNameInput");
+
+const productPriceInput =
+  $("productPriceInput");
+
+const productCategoryInput =
+  $("productCategoryInput");
+
+const productDiscountInput =
+  $("productDiscountInput");
+
+const productStockInput =
+  $("productStockInput");
+
+const productImageInput =
+  $("productImageInput");
+
+const productDescriptionInput =
+  $("productDescriptionInput");
+
+const productListedInput =
+  $("productListedInput");
+
+const productSubmitBtn =
+  $("productSubmitBtn");
+
+const productCancelEditBtn =
+  $("productCancelEditBtn");
+
+const productListContainer =
+  $("productListContainer");
+
+const refreshProductListBtn =
+  $("refreshProductListBtn");
+
+const productAdminMessage =
+  $("productAdminMessage");
+
+
+// =====================================================
+// ACCEPT MODAL
 // =====================================================
 
 const acceptModal =
-    document.getElementById(
-        "acceptModal"
-    );
+  $("acceptModal");
 
 const acceptOrderLabel =
-    document.getElementById(
-        "acceptOrderLabel"
-    );
+  $("acceptOrderLabel");
 
 const acceptCourier =
-    document.getElementById(
-        "acceptCourier"
-    );
+  $("acceptCourier");
 
 const acceptTracking =
-    document.getElementById(
-        "acceptTracking"
-    );
+  $("acceptTracking");
 
 const acceptCloseBtn =
-    document.getElementById(
-        "acceptCloseBtn"
-    );
+  $("acceptCloseBtn");
 
 const acceptConfirmBtn =
-    document.getElementById(
-        "acceptConfirmBtn"
-    );
+  $("acceptConfirmBtn");
 
 
 // =====================================================
-// CANCEL MODAL DOM
+// CANCEL MODAL
 // =====================================================
 
 const cancelModal =
-    document.getElementById(
-        "cancelModal"
-    );
+  $("cancelModal");
 
 const cancelOrderLabel =
-    document.getElementById(
-        "cancelOrderLabel"
-    );
+  $("cancelOrderLabel");
 
 const cancelReason =
-    document.getElementById(
-        "cancelReason"
-    );
+  $("cancelReason");
 
 const cancelCloseBtn =
-    document.getElementById(
-        "cancelCloseBtn"
-    );
+  $("cancelCloseBtn");
 
 const cancelConfirmBtn =
-    document.getElementById(
-        "cancelConfirmBtn"
-    );
+  $("cancelConfirmBtn");
 
 
 // =====================================================
 // SELECTED ORDER
 // =====================================================
 
-let selectedOrder = null;
+let selectedOrder =
+  null;
 
 
 // =====================================================
-// STOCK MESSAGE
+// ADMIN CHECK
 // =====================================================
 
-function showStockMessage(
-    message
+function isAdmin(
+  user
 ) {
 
-    if (!stockMessage) {
-        return;
-    }
+  return (
+    !!user &&
+    ADMIN_UIDS.includes(
+      user.uid
+    )
+  );
 
-    stockMessage.textContent =
-        message;
+}
 
-    stockMessage.hidden =
-        false;
 
-    clearTimeout(
-        window.ayonizaStockMessageTimer
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function esc(
+  value
+) {
+
+  const div =
+    document.createElement(
+      "div"
     );
 
-    window.ayonizaStockMessageTimer =
-        setTimeout(
-            () => {
-                stockMessage.hidden =
-                    true;
-            },
-            3000
-        );
+  div.textContent =
+    value == null
+      ? ""
+      : String(value);
+
+  return div.innerHTML;
+
+}
+
+
+// =====================================================
+// ESCAPE ATTRIBUTE
+// =====================================================
+
+function escAttr(
+  value
+) {
+
+  return esc(
+    value
+  );
+
+}
+
+
+// =====================================================
+// FORMAT PRICE
+// =====================================================
+
+function formatPrice(
+  value
+) {
+
+  return (
+    "₹" +
+    Number(
+      value || 0
+    ).toLocaleString(
+      "en-IN"
+    )
+  );
+
+}
+
+
+// =====================================================
+// FORMAT DATE
+// =====================================================
+
+function formatDate(
+  timestamp
+) {
+
+  if (!timestamp) {
+
+    return "—";
+
+  }
+
+  try {
+
+    return timestamp
+      .toDate()
+      .toLocaleString(
+        "en-IN"
+      );
+
+  }
+
+  catch {
+
+    return "—";
+
+  }
+
 }
 
 
@@ -252,143 +318,276 @@ function showStockMessage(
 // =====================================================
 
 function getStockStatus(
-    stock
+  stock
 ) {
 
-    const value =
-        Number(stock || 0);
+  const value =
+    Number(
+      stock || 0
+    );
 
-    if (value <= 0) {
 
-        return {
-            text:
-                "Out of Stock",
-
-            className:
-                "out"
-        };
-    }
-
-    if (value <= 5) {
-
-        return {
-            text:
-                `Only ${value} piece${
-                    value === 1
-                        ? ""
-                        : "s"
-                } remaining`,
-
-            className:
-                "low"
-        };
-    }
+  if (
+    value <= 0
+  ) {
 
     return {
-        text:
-            `${value} pieces available`,
+      text:
+        "Out of Stock",
 
-        className:
-            "available"
+      className:
+        "out"
     };
+
+  }
+
+
+  if (
+    value <= 5
+  ) {
+
+    return {
+
+      text:
+        `Only ${value} piece${
+          value === 1
+            ? ""
+            : "s"
+        } remaining`,
+
+      className:
+        "low"
+
+    };
+
+  }
+
+
+  return {
+
+    text:
+      `${value} pieces available`,
+
+    className:
+      "available"
+
+  };
+
 }
 
 
 // =====================================================
-// LOAD PRODUCTS
+// MESSAGE
+// =====================================================
+
+function showMessage(
+  element,
+  message,
+  type = "success"
+) {
+
+  if (!element) {
+
+    return;
+
+  }
+
+
+  element.textContent =
+    message;
+
+  element.hidden =
+    false;
+
+
+  element.classList.remove(
+    "success",
+    "error"
+  );
+
+
+  element.classList.add(
+    type
+  );
+
+
+  clearTimeout(
+    element._hideTimer
+  );
+
+
+  element._hideTimer =
+    setTimeout(
+      () => {
+
+        element.hidden =
+          true;
+
+      },
+      3500
+    );
+
+}
+
+
+// =====================================================
+// STOCK MESSAGE
+// =====================================================
+
+function showStockMessage(
+  message
+) {
+
+  showMessage(
+    stockMessage,
+    message,
+    "success"
+  );
+
+}
+
+
+// =====================================================
+// PRODUCT MESSAGE
+// =====================================================
+
+function showProductMessage(
+  message,
+  type = "success"
+) {
+
+  showMessage(
+    productAdminMessage,
+    message,
+    type
+  );
+
+}
+
+
+// =====================================================
+// LOAD PRODUCTS - STOCK
 // =====================================================
 
 async function loadProducts() {
 
-    if (!stockProductsContainer) {
-        return;
+  if (
+    !stockProductsContainer
+  ) {
+
+    return;
+
+  }
+
+
+  stockProductsContainer.innerHTML = `
+    <div class="empty">
+      Loading products...
+    </div>
+  `;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "products"
+        )
+      );
+
+
+    const products =
+      snapshot.docs
+        .map(
+          (item) => ({
+
+            firebaseId:
+              item.id,
+
+            ...item.data()
+
+          })
+        )
+
+
+        .sort(
+          (a, b) =>
+
+            String(
+              a.name ||
+              ""
+            ).localeCompare(
+
+              String(
+                b.name ||
+                ""
+              )
+
+            )
+        );
+
+
+    if (
+      !products.length
+    ) {
+
+      stockProductsContainer.innerHTML = `
+        <div class="empty">
+          No products found.
+          <br><br>
+          Click "Sync Products" first.
+        </div>
+      `;
+
+      return;
+
     }
+
+
+    stockProductsContainer.innerHTML =
+      "";
+
+
+    products.forEach(
+      (product) => {
+
+        stockProductsContainer.appendChild(
+
+          createStockCard(
+            product
+          )
+
+        );
+
+      }
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Product loading error:",
+      error
+    );
+
 
     stockProductsContainer.innerHTML = `
-        <div class="empty">
-            Loading products...
-        </div>
+      <div class="empty">
+        Products load nahi ho paaye.
+        <br><br>
+        ${esc(
+          error.message
+        )}
+      </div>
     `;
 
-    try {
+  }
 
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "products"
-                )
-            );
-
-        const products =
-            snapshot.docs.map(
-                (item) => ({
-                    firebaseId:
-                        item.id,
-
-                    ...item.data()
-                })
-            );
-
-        products.sort(
-            (a, b) =>
-                String(
-                    a.name || ""
-                ).localeCompare(
-                    String(
-                        b.name || ""
-                    )
-                )
-        );
-
-        if (
-            products.length === 0
-        ) {
-
-            stockProductsContainer.innerHTML = `
-                <div class="empty">
-                    No products found.
-                    <br><br>
-                    Click "Sync Products" first.
-                </div>
-            `;
-
-            return;
-        }
-
-        stockProductsContainer.innerHTML =
-            "";
-
-        products.forEach(
-            (product) => {
-
-                stockProductsContainer.appendChild(
-                    createStockCard(
-                        product
-                    )
-                );
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Product loading error:",
-            error
-        );
-
-        stockProductsContainer.innerHTML = `
-            <div class="empty">
-                Products load nahi ho paaye.
-                <br><br>
-                ${escapeHTML(
-                    error.message
-                )}
-            </div>
-        `;
-    }
 }
 
 
@@ -397,626 +596,1711 @@ async function loadProducts() {
 // =====================================================
 
 function createStockCard(
-    product
+  product
 ) {
 
-    const card =
-        document.createElement(
-            "div"
-        );
-
-    card.className =
-        "stock-product-card";
-
-    const stock =
-        Number(
-            product.stock ?? 0
-        );
-
-    const status =
-        getStockStatus(
-            stock
-        );
-
-    card.innerHTML = `
-
-        <div class="stock-product-top">
-
-            <img
-                class="stock-product-image"
-                src="${escapeAttribute(
-                    product.image || ""
-                )}"
-                alt="${escapeAttribute(
-                    product.name || "Product"
-                )}"
-            >
-
-            <div>
-
-                <h3
-                    class="stock-product-name"
-                >
-                    ${escapeHTML(
-                        product.name ||
-                        "Unnamed Product"
-                    )}
-                </h3>
-
-                <p
-                    class="stock-product-price"
-                >
-                    ${formatPrice(
-                        product.price
-                    )}
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="stock-product-stock-row"
-        >
-
-            <label>
-                Stock
-            </label>
-
-            <input
-                type="number"
-                min="0"
-                step="1"
-                value="${stock}"
-                class="stock-input"
-                data-product-id="${escapeAttribute(
-                    product.firebaseId
-                )}"
-            >
-
-            <button
-                type="button"
-                class="stock-save-btn"
-                data-product-id="${escapeAttribute(
-                    product.firebaseId
-                )}"
-            >
-                Save
-            </button>
-
-        </div>
-
-
-        <div
-            class="stock-current ${status.className}"
-        >
-            ${status.text}
-        </div>
-
-    `;
-
-
-    const saveButton =
-        card.querySelector(
-            ".stock-save-btn"
-        );
-
-    const input =
-        card.querySelector(
-            ".stock-input"
-        );
-
-    const currentStatus =
-        card.querySelector(
-            ".stock-current"
-        );
-
-
-    saveButton?.addEventListener(
-        "click",
-        async () => {
-
-            const newStock =
-                Number(
-                    input.value
-                );
-
-            if (
-                !Number.isInteger(
-                    newStock
-                ) ||
-                newStock < 0
-            ) {
-
-                alert(
-                    "Stock must be a whole number 0 or greater."
-                );
-
-                return;
-            }
-
-            const productId =
-                saveButton.dataset.productId;
-
-            saveButton.disabled =
-                true;
-
-            saveButton.textContent =
-                "Saving...";
-
-            try {
-
-                await setDoc(
-
-                    doc(
-                        db,
-                        "products",
-                        productId
-                    ),
-
-                    {
-                        stock:
-                            newStock,
-
-                        updatedAt:
-                            serverTimestamp()
-                    },
-
-                    {
-                        merge:
-                            true
-                    }
-                );
-
-
-                const newStatus =
-                    getStockStatus(
-                        newStock
-                    );
-
-                currentStatus.textContent =
-                    newStatus.text;
-
-                currentStatus.className =
-                    "stock-current " +
-                    newStatus.className;
-
-
-                showStockMessage(
-                    `${
-                        product.name ||
-                        "Product"
-                    } stock updated to ${newStock}.`
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Stock update error:",
-                    error
-                );
-
-                alert(
-                    "Stock update failed:\n" +
-                    error.message
-                );
-
-            }
-
-            finally {
-
-                saveButton.disabled =
-                    false;
-
-                saveButton.textContent =
-                    "Save";
-            }
-        }
+  const card =
+    document.createElement(
+      "div"
     );
 
 
-    return card;
+  card.className =
+    "stock-product-card";
+
+
+  const stock =
+    Number(
+      product.stock ??
+      0
+    );
+
+
+  const status =
+    getStockStatus(
+      stock
+    );
+
+
+  const listed =
+    product.listed !==
+    false;
+
+
+  card.innerHTML = `
+
+    <div class="stock-product-top">
+
+      <img
+        class="stock-product-image"
+        src="${escAttr(
+          product.image ||
+          ""
+        )}"
+        alt="${escAttr(
+          product.name ||
+          "Product"
+        )}"
+      >
+
+      <div>
+
+        <h3 class="stock-product-name">
+
+          ${esc(
+            product.name ||
+            "Unnamed Product"
+          )}
+
+        </h3>
+
+        <p class="stock-product-price">
+
+          ${formatPrice(
+            product.price
+          )}
+
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="stock-product-stock-row">
+
+      <label>
+        Stock
+      </label>
+
+      <input
+        type="number"
+        min="0"
+        step="1"
+        value="${stock}"
+        class="stock-input"
+      >
+
+      <button
+        type="button"
+        class="stock-save-btn"
+      >
+        Save
+      </button>
+
+    </div>
+
+
+    <div class="stock-current ${status.className}">
+
+      ${status.text}
+
+    </div>
+
+
+    <div
+      style="
+        margin-top:8px;
+        font-size:12px;
+        font-weight:600;
+      "
+    >
+
+      Website:
+      ${listed ? "Listed" : "Unlisted"}
+
+    </div>
+
+  `;
+
+
+  const input =
+    card.querySelector(
+      ".stock-input"
+    );
+
+
+  const saveBtn =
+    card.querySelector(
+      ".stock-save-btn"
+    );
+
+
+  const statusEl =
+    card.querySelector(
+      ".stock-current"
+    );
+
+
+  saveBtn.addEventListener(
+    "click",
+    async () => {
+
+      const newStock =
+        Number(
+          input.value
+        );
+
+
+      if (
+
+        !Number.isInteger(
+          newStock
+        ) ||
+
+        newStock < 0
+
+      ) {
+
+        alert(
+          "Stock must be a whole number 0 or greater."
+        );
+
+        return;
+
+      }
+
+
+      saveBtn.disabled =
+        true;
+
+
+      saveBtn.textContent =
+        "Saving...";
+
+
+      try {
+
+        await updateDoc(
+
+          doc(
+            db,
+            "products",
+            product.firebaseId
+          ),
+
+          {
+
+            stock:
+              newStock,
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+
+        );
+
+
+        const newStatus =
+          getStockStatus(
+            newStock
+          );
+
+
+        statusEl.textContent =
+          newStatus.text;
+
+
+        statusEl.className =
+          `stock-current ${newStatus.className}`;
+
+
+        showStockMessage(
+          `${
+            product.name ||
+            "Product"
+          } stock updated to ${newStock}.`
+        );
+
+
+        await loadProductManager();
+
+      }
+
+      catch (
+        error
+      ) {
+
+        console.error(
+          "Stock update error:",
+          error
+        );
+
+
+        alert(
+          "Stock update failed:\n" +
+          error.message
+        );
+
+      }
+
+      finally {
+
+        saveBtn.disabled =
+          false;
+
+        saveBtn.textContent =
+          "Save";
+
+      }
+
+    }
+  );
+
+
+  return card;
+
 }
 
 
 // =====================================================
-// SYNC PRODUCTS FROM INDEX.HTML
+// SYNC PRODUCTS FROM WEBSITE
 // =====================================================
 
 async function syncProductsFromWebsite() {
 
-    if (!syncProductsBtn) {
-        return;
+  if (
+    !syncProductsBtn
+  ) {
+
+    return;
+
+  }
+
+
+  syncProductsBtn.disabled =
+    true;
+
+
+  syncProductsBtn.textContent =
+    "Syncing...";
+
+
+  try {
+
+    const response =
+      await fetch(
+        "index.html",
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        "index.html load nahi hua."
+      );
+
     }
+
+
+    const html =
+      await response.text();
+
+
+    const parsed =
+      new DOMParser()
+        .parseFromString(
+          html,
+          "text/html"
+        );
+
+
+    const cards =
+      Array.from(
+        parsed.querySelectorAll(
+          ".product-card"
+        )
+      );
+
+
+    if (
+      !cards.length
+    ) {
+
+      throw new Error(
+        "index.html me products nahi mile."
+      );
+
+    }
+
+
+    let synced =
+      0;
+
+
+    for (
+      const card of cards
+    ) {
+
+      const button =
+        card.querySelector(
+          ".add-cart-btn"
+        );
+
+
+      const productId =
+        button?.dataset.id;
+
+
+      if (
+        !productId
+      ) {
+
+        continue;
+
+      }
+
+
+      const productName =
+
+        button.dataset.name ||
+
+        card
+          .querySelector(
+            "h3"
+          )
+          ?.textContent
+          ?.trim() ||
+
+        "";
+
+
+      const price =
+        Number(
+          button.dataset.price
+        ) || 0;
+
+
+      const image =
+
+        button.dataset.image ||
+
+        card
+          .querySelector(
+            "img"
+          )
+          ?.getAttribute(
+            "src"
+          ) ||
+
+        "";
+
+
+      const category =
+        card.dataset.category ||
+        "";
+
+
+      const discount =
+        Number(
+          card.dataset.discount
+        ) || 0;
+
+
+      const htmlStock =
+        Number(
+          card.dataset.stock
+        );
+
+
+      const ref =
+        doc(
+          db,
+          "products",
+          productId
+        );
+
+
+      const existing =
+        await getDoc(
+          ref
+        );
+
+
+      if (
+        existing.exists()
+      ) {
+
+        await setDoc(
+
+          ref,
+
+          {
+
+            productId,
+
+            name:
+              productName,
+
+            price,
+
+            image,
+
+            category,
+
+            discount,
+
+            updatedAt:
+              serverTimestamp()
+
+          },
+
+          {
+            merge:
+              true
+          }
+
+        );
+
+      }
+
+      else {
+
+        const initialStock =
+
+          Number.isInteger(
+            htmlStock
+          ) &&
+
+          htmlStock >= 0
+
+            ? htmlStock
+
+            : 0;
+
+
+        await setDoc(
+
+          ref,
+
+          {
+
+            productId,
+
+            name:
+              productName,
+
+            price,
+
+            image,
+
+            category,
+
+            description:
+
+              card
+                .querySelector(
+                  ".product-description"
+                )
+                ?.textContent
+                ?.trim() ||
+
+              "",
+
+            discount,
+
+            stock:
+              initialStock,
+
+            listed:
+              true,
+
+            createdAt:
+              serverTimestamp(),
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+
+        );
+
+      }
+
+
+      synced++;
+
+    }
+
+
+    showStockMessage(
+      `${synced} products synced successfully.`
+    );
+
+
+    await loadProducts();
+
+
+    await loadProductManager();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Product sync error:",
+      error
+    );
+
+
+    alert(
+      "Product sync failed:\n" +
+      error.message
+    );
+
+  }
+
+  finally {
 
     syncProductsBtn.disabled =
-        true;
+      false;
+
 
     syncProductsBtn.textContent =
-        "Syncing...";
+      "Sync Products";
 
-    try {
+  }
 
-        const response =
-            await fetch(
-                "index.html",
-                {
-                    cache:
-                        "no-store"
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "index.html load nahi hua."
-            );
-        }
-
-        const html =
-            await response.text();
-
-        const parsedDoc =
-            new DOMParser()
-                .parseFromString(
-                    html,
-                    "text/html"
-                );
-
-        const cards =
-            Array.from(
-                parsedDoc.querySelectorAll(
-                    ".product-card"
-                )
-            );
-
-        if (
-            cards.length === 0
-        ) {
-
-            throw new Error(
-                "index.html me products nahi mile."
-            );
-        }
-
-        let synced =
-            0;
-
-        for (
-            const card of cards
-        ) {
-
-            const addButton =
-                card.querySelector(
-                    ".add-cart-btn"
-                );
-
-            const productId =
-                addButton?.dataset.id;
-
-            if (!productId) {
-                continue;
-            }
-
-            const productName =
-                addButton.dataset.name ||
-                card.querySelector(
-                    "h3"
-                )?.textContent?.trim() ||
-                "";
-
-            const price =
-                Number(
-                    addButton.dataset.price
-                ) || 0;
-
-            const image =
-                addButton.dataset.image ||
-                card.querySelector(
-                    "img"
-                )?.getAttribute(
-                    "src"
-                ) ||
-                "";
-
-            const category =
-                card.dataset.category ||
-                "";
-
-            const discount =
-                Number(
-                    card.dataset.discount
-                ) || 0;
-
-            const htmlStock =
-                Number(
-                    card.dataset.stock
-                );
-
-
-            // ------------------------------------------
-            // IMPORTANT:
-            // Existing Firestore stock preserve karo
-            // ------------------------------------------
-
-            const productRef =
-                doc(
-                    db,
-                    "products",
-                    productId
-                );
-
-            const existingSnapshot =
-                await getDoc(
-                    productRef
-                );
-
-
-            if (
-                existingSnapshot.exists()
-            ) {
-
-                // Product already exists.
-                // Stock overwrite NAHI karenge.
-
-                await setDoc(
-
-                    productRef,
-
-                    {
-                        productId:
-                            productId,
-
-                        name:
-                            productName,
-
-                        price:
-                            price,
-
-                        image:
-                            image,
-
-                        category:
-                            category,
-
-                        discount:
-                            discount,
-
-                        updatedAt:
-                            serverTimestamp()
-                    },
-
-                    {
-                        merge:
-                            true
-                    }
-                );
-
-            }
-
-            else {
-
-                // First time product create ho raha hai.
-
-                const initialStock =
-                    Number.isInteger(
-                        htmlStock
-                    ) &&
-                    htmlStock >= 0
-                        ? htmlStock
-                        : 0;
-
-                await setDoc(
-
-                    productRef,
-
-                    {
-                        productId:
-                            productId,
-
-                        name:
-                            productName,
-
-                        price:
-                            price,
-
-                        image:
-                            image,
-
-                        category:
-                            category,
-
-                        discount:
-                            discount,
-
-                        stock:
-                            initialStock,
-
-                        createdAt:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-                    }
-                );
-            }
-
-            synced++;
-        }
-
-
-        showStockMessage(
-            `${synced} products synced successfully.`
-        );
-
-
-        await loadProducts();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Product sync error:",
-            error
-        );
-
-        alert(
-            "Product sync failed:\n" +
-            error.message
-        );
-    }
-
-    finally {
-
-        syncProductsBtn.disabled =
-            false;
-
-        syncProductsBtn.textContent =
-            "Sync Products";
-    }
 }
 
 
-// =====================================================
-// SYNC BUTTON
-// =====================================================
-
 syncProductsBtn?.addEventListener(
-    "click",
-    syncProductsFromWebsite
+  "click",
+  syncProductsFromWebsite
 );
 
 
 // =====================================================
-// HELPERS
+// RESET PRODUCT FORM
 // =====================================================
 
-function formatDate(
-    timestamp
+function resetProductForm() {
+
+  productForm?.reset();
+
+
+  if (
+    editingProductId
+  ) {
+
+    editingProductId.value =
+      "";
+
+  }
+
+
+  if (
+    productFormTitle
+  ) {
+
+    productFormTitle.textContent =
+      "Add New Product";
+
+  }
+
+
+  if (
+    productSubmitBtn
+  ) {
+
+    productSubmitBtn.textContent =
+      "Add Product";
+
+  }
+
+
+  if (
+    productCancelEditBtn
+  ) {
+
+    productCancelEditBtn.hidden =
+      true;
+
+  }
+
+
+  if (
+    productListedInput
+  ) {
+
+    productListedInput.checked =
+      true;
+
+  }
+
+
+  if (
+    productDiscountInput
+  ) {
+
+    productDiscountInput.value =
+      "0";
+
+  }
+
+
+  if (
+    productStockInput
+  ) {
+
+    productStockInput.value =
+      "0";
+
+  }
+
+}
+
+
+// =====================================================
+// FILL PRODUCT FORM
+// =====================================================
+
+function fillProductForm(
+  product
 ) {
 
-    if (!timestamp) {
-        return "—";
+  editingProductId.value =
+    product.productId ||
+    product.firebaseId ||
+    "";
+
+
+  productNameInput.value =
+    product.name ||
+    "";
+
+
+  productPriceInput.value =
+    Number(
+      product.price ||
+      0
+    );
+
+
+  productCategoryInput.value =
+    product.category ||
+    "earrings";
+
+
+  productDiscountInput.value =
+    Number(
+      product.discount ||
+      0
+    );
+
+
+  productStockInput.value =
+    Number(
+      product.stock ||
+      0
+    );
+
+
+  productImageInput.value =
+    product.image ||
+    "";
+
+
+  productDescriptionInput.value =
+    product.description ||
+    "";
+
+
+  productListedInput.checked =
+    product.listed !==
+    false;
+
+
+  productFormTitle.textContent =
+    "Edit Product";
+
+
+  productSubmitBtn.textContent =
+    "Update Product";
+
+
+  productCancelEditBtn.hidden =
+    false;
+
+
+  productForm?.scrollIntoView({
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+  });
+
+}
+
+
+// =====================================================
+// CREATE PRODUCT MANAGEMENT CARD
+// =====================================================
+
+function createProductManageCard(
+  product
+) {
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+
+  card.className =
+    "product-manage-card";
+
+
+  const listed =
+    product.listed !==
+    false;
+
+
+  const stock =
+    Number(
+      product.stock ??
+      0
+    );
+
+
+  const status =
+    getStockStatus(
+      stock
+    );
+
+
+  card.innerHTML = `
+
+    <div class="product-manage-image-wrap">
+
+      <img
+        class="product-manage-image"
+        src="${escAttr(
+          product.image ||
+          ""
+        )}"
+        alt="${escAttr(
+          product.name ||
+          "Product"
+        )}"
+      >
+
+    </div>
+
+
+    <div class="product-manage-info">
+
+      <div class="product-manage-title-row">
+
+        <h3>
+
+          ${esc(
+            product.name ||
+            "Unnamed Product"
+          )}
+
+        </h3>
+
+        <span
+          class="
+            product-list-status
+            ${
+              listed
+                ? "listed"
+                : "unlisted"
+            }
+          "
+        >
+
+          ${
+            listed
+              ? "Listed"
+              : "Unlisted"
+          }
+
+        </span>
+
+      </div>
+
+
+      <p>
+
+        ${esc(
+          product.category ||
+          ""
+        )}
+
+      </p>
+
+
+      <strong>
+
+        ${formatPrice(
+          product.price
+        )}
+
+      </strong>
+
+
+      <small>
+
+        Discount:
+        ${
+          Number(
+            product.discount ||
+            0
+          )
+        }%
+
+        ·
+
+        Stock:
+        ${stock}
+
+      </small>
+
+
+      <small
+        class="${status.className}"
+      >
+
+        ${esc(
+          status.text
+        )}
+
+      </small>
+
+
+      <div class="product-manage-actions">
+
+        <button
+          type="button"
+          class="save-btn edit-product-btn"
+        >
+          Edit
+        </button>
+
+
+        <button
+          type="button"
+          class="save-btn toggle-list-btn"
+        >
+
+          ${
+            listed
+              ? "Unlist"
+              : "List"
+          }
+
+        </button>
+
+
+        <button
+          type="button"
+          class="cancel-btn delete-product-btn"
+        >
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  card
+    .querySelector(
+      ".edit-product-btn"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        fillProductForm(
+          product
+        );
+
+      }
+    );
+
+
+  card
+    .querySelector(
+      ".toggle-list-btn"
+    )
+    ?.addEventListener(
+      "click",
+      async () => {
+
+        const nextListed =
+          !listed;
+
+
+        const button =
+          card.querySelector(
+            ".toggle-list-btn"
+          );
+
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          "Saving...";
+
+
+        try {
+
+          await setDoc(
+
+            doc(
+              db,
+              "products",
+              product.firebaseId
+            ),
+
+            {
+
+              listed:
+                nextListed,
+
+              updatedAt:
+                serverTimestamp()
+
+            },
+
+            {
+              merge:
+                true
+            }
+
+          );
+
+
+          showProductMessage(
+
+            nextListed
+
+              ? "Product listed on website."
+
+              : "Product hidden from website."
+
+          );
+
+
+          await loadProductManager();
+
+        }
+
+        catch (
+          error
+        ) {
+
+          console.error(
+            "Listing update error:",
+            error
+          );
+
+
+          alert(
+            "Could not update listing status:\n" +
+            error.message
+          );
+
+        }
+
+        finally {
+
+          button.disabled =
+            false;
+
+        }
+
+      }
+    );
+
+
+  card
+    .querySelector(
+      ".delete-product-btn"
+    )
+    ?.addEventListener(
+      "click",
+      async () => {
+
+        const ok =
+          confirm(
+            `Delete "${
+              product.name ||
+              "this product"
+            }" permanently?`
+          );
+
+
+        if (
+          !ok
+        ) {
+
+          return;
+
+        }
+
+
+        const button =
+          card.querySelector(
+            ".delete-product-btn"
+          );
+
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          "Deleting...";
+
+
+        try {
+
+          await deleteDoc(
+
+            doc(
+              db,
+              "products",
+              product.firebaseId
+            )
+
+          );
+
+
+          if (
+
+            editingProductId?.value ===
+            product.firebaseId
+
+          ) {
+
+            resetProductForm();
+
+          }
+
+
+          showProductMessage(
+            "Product deleted successfully."
+          );
+
+
+          await loadProductManager();
+
+
+          await loadProducts();
+
+        }
+
+        catch (
+          error
+        ) {
+
+          console.error(
+            "Product delete error:",
+            error
+          );
+
+
+          alert(
+            "Product delete failed:\n" +
+            error.message
+          );
+
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "Delete";
+
+        }
+
+      }
+    );
+
+
+  return card;
+
+}
+
+
+// =====================================================
+// LOAD PRODUCT MANAGER
+// =====================================================
+
+async function loadProductManager() {
+
+  if (
+    !productListContainer
+  ) {
+
+    return;
+
+  }
+
+
+  productListContainer.innerHTML = `
+    <div class="empty">
+      Loading products...
+    </div>
+  `;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "products"
+        )
+      );
+
+
+    const products =
+      snapshot.docs
+
+        .map(
+          (item) => ({
+
+            firebaseId:
+              item.id,
+
+            ...item.data()
+
+          })
+        )
+
+        .sort(
+
+          (a, b) =>
+
+            String(
+              a.name ||
+              ""
+            ).localeCompare(
+
+              String(
+                b.name ||
+                ""
+              )
+
+            )
+
+        );
+
+
+    if (
+      !products.length
+    ) {
+
+      productListContainer.innerHTML = `
+        <div class="empty">
+          No products found.
+          Add a product or click Sync Products.
+        </div>
+      `;
+
+      return;
+
     }
+
+
+    productListContainer.innerHTML =
+      "";
+
+
+    products.forEach(
+      (product) => {
+
+        productListContainer.appendChild(
+
+          createProductManageCard(
+            product
+          )
+
+        );
+
+      }
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Product manager load error:",
+      error
+    );
+
+
+    productListContainer.innerHTML = `
+      <div class="empty">
+        Products load nahi ho paaye.
+        <br><br>
+        ${esc(
+          error.message
+        )}
+      </div>
+    `;
+
+  }
+
+}
+
+
+// =====================================================
+// PRODUCT FORM SUBMIT
+// =====================================================
+
+productForm?.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
+
+
+    const name =
+      productNameInput.value.trim();
+
+
+    const price =
+      Number(
+        productPriceInput.value
+      );
+
+
+    const category =
+      productCategoryInput.value.trim();
+
+
+    const discount =
+      Number(
+        productDiscountInput.value ||
+        0
+      );
+
+
+    const stock =
+      Number(
+        productStockInput.value ||
+        0
+      );
+
+
+    const image =
+      productImageInput.value.trim();
+
+
+    const description =
+      productDescriptionInput.value.trim();
+
+
+    const listed =
+      !!productListedInput.checked;
+
+
+    const editingId =
+      editingProductId.value.trim();
+
+
+    if (
+      !name
+    ) {
+
+      alert(
+        "Product name enter karo."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !Number.isFinite(
+        price
+      ) ||
+
+      price < 0
+
+    ) {
+
+      alert(
+        "Valid price enter karo."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !category
+    ) {
+
+      alert(
+        "Category select karo."
+      );
+
+      return;
+
+    }
+
+
+    if (
+
+      !Number.isFinite(
+        discount
+      ) ||
+
+      discount < 0 ||
+
+      discount > 100
+
+    ) {
+
+      alert(
+        "Discount 0 se 100 ke beech hona chahiye."
+      );
+
+      return;
+
+    }
+
+
+    if (
+
+      !Number.isInteger(
+        stock
+      ) ||
+
+      stock < 0
+
+    ) {
+
+      alert(
+        "Stock whole number 0 or greater hona chahiye."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !image
+    ) {
+
+      alert(
+        "Image URL / path enter karo."
+      );
+
+      return;
+
+    }
+
+
+    productSubmitBtn.disabled =
+      true;
+
+
+    productSubmitBtn.textContent =
+
+      editingId
+        ? "Updating..."
+        : "Adding...";
+
 
     try {
 
-        return timestamp
-            .toDate()
-            .toLocaleString(
-                "en-IN"
+      let productId =
+        editingId;
+
+
+      if (
+        !productId
+      ) {
+
+        const base =
+
+          name
+
+            .toLowerCase()
+
+            .trim()
+
+            .replace(
+              /[^a-z0-9]+/g,
+              "-"
+            )
+
+            .replace(
+              /^-+|-+$/g,
+              ""
             );
 
-    }
 
-    catch {
-
-        return "—";
-    }
-}
+        productId =
+          base ||
+          `product-${Date.now()}`;
 
 
-function formatPrice(
-    amount
-) {
+        const existing =
+          await getDoc(
 
-    return (
-        "₹" +
-        Number(
-            amount || 0
-        ).toLocaleString(
-            "en-IN"
-        )
-    );
-}
+            doc(
+              db,
+              "products",
+              productId
+            )
+
+          );
 
 
-function escapeHTML(
-    value
-) {
+        if (
+          existing.exists()
+        ) {
 
-    const div =
-        document.createElement(
-            "div"
+          productId =
+            `${productId}-${Date.now()}`;
+
+        }
+
+      }
+
+
+      const ref =
+        doc(
+          db,
+          "products",
+          productId
         );
 
-    div.textContent =
-        value == null
-            ? ""
-            : String(value);
 
-    return div.innerHTML;
-}
+      const existing =
+        await getDoc(
+          ref
+        );
 
 
-function escapeAttribute(
-    value
+      const productData = {
+
+        productId,
+
+        name,
+
+        price,
+
+        image,
+
+        category,
+
+        description,
+
+        discount,
+
+        stock,
+
+        listed,
+
+        updatedAt:
+          serverTimestamp()
+
+      };
+
+
+      if (
+        !existing.exists()
+      ) {
+
+        productData.createdAt =
+          serverTimestamp();
+
+      }
+
+
+      await setDoc(
+
+        ref,
+
+        productData,
+
+        {
+          merge:
+            true
+        }
+
+      );
+
+
+      showProductMessage(
+
+        editingId
+
+          ? "Product updated successfully."
+
+          : "Product added successfully."
+
+      );
+
+
+      resetProductForm();
+
+
+      await loadProductManager();
+
+
+      await loadProducts();
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "Product save error:",
+        error
+      );
+
+
+      alert(
+        "Product save failed:\n" +
+        error.message
+      );
+
+    }
+
+    finally {
+
+      productSubmitBtn.disabled =
+        false;
+
+
+      productSubmitBtn.textContent =
+
+        editingId
+
+          ? "Update Product"
+
+          : "Add Product";
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// CANCEL EDIT
+// =====================================================
+
+productCancelEditBtn?.addEventListener(
+  "click",
+  resetProductForm
+);
+
+
+// =====================================================
+// REFRESH PRODUCTS
+// =====================================================
+
+refreshProductListBtn?.addEventListener(
+  "click",
+  loadProductManager
+);
+
+
+// =====================================================
+// PAYMENT CLASS
+// =====================================================
+
+function paymentClass(
+  status
 ) {
 
-    return escapeHTML(
-        value
-    );
-}
+  return (
 
+    status ===
+    "VERIFIED"
 
-function getPaymentClass(
-    status
-) {
+  )
 
-    return status ===
-        "VERIFIED"
-        ? "payment-status verified"
-        : "payment-status pending";
+    ? "payment-status verified"
+
+    : "payment-status pending";
+
 }
 
 
 // =====================================================
-// CUSTOMER CONFIRMATION MESSAGE
+// CONFIRMATION MESSAGE
 // =====================================================
 
 function makeConfirmationMessage(
-    order,
-    trackingUrl
+  order,
+  trackingUrl
 ) {
 
-    return (
-        `AYONIZA Order Confirmed ✅\n\n` +
+  return (
 
-        `Hi ${
-            order.customerName ||
-            "Customer"
-        },\n\n` +
+    `AYONIZA Order Confirmed ✅\n\n` +
 
-        `Your order ${
-            order.orderId
-        } has been confirmed.\n\n` +
+    `Hi ${
+      order.customerName ||
+      "Customer"
+    },\n\n` +
 
-        `Amount: ${
-            formatPrice(
-                order.total
-            )
-        }\n` +
+    `Your order ${
+      order.orderId
+    } has been confirmed.\n\n` +
 
-        `Tracking ID: ${
-            order.trackingNumber ||
-            "—"
-        }\n` +
+    `Amount: ${
+      formatPrice(
+        order.total
+      )
+    }\n` +
 
-        `Courier: ${
-            order.courier ||
-            "—"
-        }\n\n` +
+    `Tracking ID: ${
+      order.trackingNumber ||
+      "—"
+    }\n` +
 
-        `Track your order:\n` +
+    `Courier: ${
+      order.courier ||
+      "—"
+    }\n\n` +
 
-        trackingUrl +
+    `Track your order:\n` +
 
-        `\n\nThank you for shopping with AYONIZA.`
-    );
+    trackingUrl +
+
+    `\n\nThank you for shopping with AYONIZA.`
+
+  );
+
 }
 
 
@@ -1025,120 +2309,159 @@ function makeConfirmationMessage(
 // =====================================================
 
 function makeCancellationMessage(
-    order,
-    reason
+  order,
+  reason
 ) {
 
-    return (
-        `AYONIZA Order Update\n\n` +
+  return (
 
-        `Hi ${
-            order.customerName ||
-            "Customer"
-        },\n\n` +
+    `AYONIZA Order Update\n\n` +
 
-        `Your order ${
-            order.orderId
-        } has been cancelled.\n\n` +
+    `Hi ${
+      order.customerName ||
+      "Customer"
+    },\n\n` +
 
-        `Reason: ${
-            reason
-        }\n\n` +
+    `Your order ${
+      order.orderId
+    } has been cancelled.\n\n` +
 
-        `For help, please contact AYONIZA support.`
-    );
+    `Reason: ${
+      reason
+    }\n\n` +
+
+    `For help, please contact AYONIZA support.`
+
+  );
+
 }
 
 
 // =====================================================
-// ACCEPT MODAL
+// OPEN ACCEPT MODAL
 // =====================================================
 
 function openAcceptModal(
-    order
+  order
 ) {
 
-    selectedOrder =
-        order;
+  selectedOrder =
+    order;
 
-    if (acceptOrderLabel) {
 
-        acceptOrderLabel.textContent =
-            `Order: ${
-                order.orderId
-            }`;
-    }
+  if (
+    acceptOrderLabel
+  ) {
 
-    if (acceptCourier) {
+    acceptOrderLabel.textContent =
+      `Order: ${
+        order.orderId
+      }`;
 
-        acceptCourier.value =
-            order.courier ||
-            "";
-    }
+  }
 
-    if (acceptTracking) {
 
-        acceptTracking.value =
-            order.trackingNumber ||
-            "";
-    }
+  if (
+    acceptCourier
+  ) {
 
-    acceptModal?.classList.add(
-        "show"
-    );
+    acceptCourier.value =
+      order.courier ||
+      "";
+
+  }
+
+
+  if (
+    acceptTracking
+  ) {
+
+    acceptTracking.value =
+      order.trackingNumber ||
+      "";
+
+  }
+
+
+  acceptModal?.classList.add(
+    "show"
+  );
+
 }
 
+
+// =====================================================
+// CLOSE ACCEPT MODAL
+// =====================================================
 
 function closeAcceptModal() {
 
-    selectedOrder =
-        null;
+  selectedOrder =
+    null;
 
-    acceptModal?.classList.remove(
-        "show"
-    );
+
+  acceptModal?.classList.remove(
+    "show"
+  );
+
 }
 
 
 // =====================================================
-// CANCEL MODAL
+// OPEN CANCEL MODAL
 // =====================================================
 
 function openCancelModal(
-    order
+  order
 ) {
 
-    selectedOrder =
-        order;
+  selectedOrder =
+    order;
 
-    if (cancelOrderLabel) {
 
-        cancelOrderLabel.textContent =
-            `Order: ${
-                order.orderId
-            }`;
-    }
+  if (
+    cancelOrderLabel
+  ) {
 
-    if (cancelReason) {
+    cancelOrderLabel.textContent =
+      `Order: ${
+        order.orderId
+      }`;
 
-        cancelReason.value =
-            "";
-    }
+  }
 
-    cancelModal?.classList.add(
-        "show"
-    );
+
+  if (
+    cancelReason
+  ) {
+
+    cancelReason.value =
+      "";
+
+  }
+
+
+  cancelModal?.classList.add(
+    "show"
+  );
+
 }
 
 
+// =====================================================
+// CLOSE CANCEL MODAL
+// =====================================================
+
 function closeCancelModal() {
 
-    selectedOrder =
-        null;
+  selectedOrder =
+    null;
 
-    cancelModal?.classList.remove(
-        "show"
-    );
+
+  cancelModal?.classList.remove(
+    "show"
+  );
+
 }
 
 
@@ -1148,180 +2471,216 @@ function closeCancelModal() {
 
 async function loadOrders() {
 
-    try {
+  try {
 
-        if (loading) {
-            loading.hidden =
-                false;
-        }
+    if (
+      loading
+    ) {
 
-        if (ordersContainer) {
-            ordersContainer.innerHTML =
-                "";
-        }
-
-
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "orders"
-                )
-            );
-
-
-        const orders =
-            snapshot.docs.map(
-                (item) => ({
-
-                    firebaseId:
-                        item.id,
-
-                    ...item.data()
-                })
-            );
-
-
-        orders.sort(
-            (a, b) => {
-
-                const aTime =
-                    a.createdAt
-                        ?.toMillis?.() ||
-                    0;
-
-                const bTime =
-                    b.createdAt
-                        ?.toMillis?.() ||
-                    0;
-
-                return (
-                    bTime -
-                    aTime
-                );
-            }
-        );
-
-
-        // =================================================
-        // STATS
-        // =================================================
-
-        if (totalOrders) {
-
-            totalOrders.textContent =
-                orders.length;
-        }
-
-        if (newOrders) {
-
-            newOrders.textContent =
-                orders.filter(
-                    (order) =>
-                        order.orderStatus ===
-                        "NEW"
-                ).length;
-        }
-
-        if (shippedOrders) {
-
-            shippedOrders.textContent =
-                orders.filter(
-                    (order) =>
-                        order.orderStatus ===
-                        "SHIPPED"
-                ).length;
-        }
-
-        if (deliveredOrders) {
-
-            deliveredOrders.textContent =
-                orders.filter(
-                    (order) =>
-                        order.orderStatus ===
-                        "DELIVERED"
-                ).length;
-        }
-
-
-        // =================================================
-        // EMPTY
-        // =================================================
-
-        if (
-            orders.length ===
-            0
-        ) {
-
-            if (ordersContainer) {
-
-                ordersContainer.innerHTML = `
-                    <div class="empty">
-                        No orders found.
-                    </div>
-                `;
-            }
-
-            return;
-        }
-
-
-        // =================================================
-        // RENDER ORDERS
-        // =================================================
-
-        orders.forEach(
-            (order) => {
-
-                if (ordersContainer) {
-
-                    ordersContainer.appendChild(
-                        createOrderCard(
-                            order
-                        )
-                    );
-                }
-            }
-        );
+      loading.hidden =
+        false;
 
     }
 
-    catch (error) {
 
-        console.error(
-            "Order loading error:",
-            error
+    if (
+      ordersContainer
+    ) {
+
+      ordersContainer.innerHTML =
+        "";
+
+    }
+
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "orders"
+        )
+      );
+
+
+    const orders =
+      snapshot.docs
+
+        .map(
+          (item) => ({
+
+            firebaseId:
+              item.id,
+
+            ...item.data()
+
+          })
+        )
+
+        .sort(
+
+          (a, b) =>
+
+            (
+              b.createdAt
+                ?.toMillis?.() ||
+              0
+            ) -
+
+            (
+              a.createdAt
+                ?.toMillis?.() ||
+              0
+            )
+
         );
 
-        if (ordersContainer) {
 
-            ordersContainer.innerHTML = `
-                <div class="empty">
+    if (
+      totalOrders
+    ) {
 
-                    <strong>
-                        Orders load nahi ho paaye.
-                    </strong>
-
-                    <br><br>
-
-                    ${escapeHTML(
-                        error.message
-                    )}
-
-                </div>
-            `;
-        }
+      totalOrders.textContent =
+        orders.length;
 
     }
 
-    finally {
 
-        if (loading) {
+    if (
+      newOrders
+    ) {
 
-            loading.hidden =
-                true;
-        }
+      newOrders.textContent =
+
+        orders.filter(
+          (order) =>
+
+            order.orderStatus ===
+            "NEW"
+
+        ).length;
+
     }
+
+
+    if (
+      shippedOrders
+    ) {
+
+      shippedOrders.textContent =
+
+        orders.filter(
+          (order) =>
+
+            order.orderStatus ===
+            "SHIPPED"
+
+        ).length;
+
+    }
+
+
+    if (
+      deliveredOrders
+    ) {
+
+      deliveredOrders.textContent =
+
+        orders.filter(
+          (order) =>
+
+            order.orderStatus ===
+            "DELIVERED"
+
+        ).length;
+
+    }
+
+
+    if (
+      !orders.length
+    ) {
+
+      if (
+        ordersContainer
+      ) {
+
+        ordersContainer.innerHTML = `
+          <div class="empty">
+            No orders found.
+          </div>
+        `;
+
+      }
+
+
+      return;
+
+    }
+
+
+    orders.forEach(
+      (order) => {
+
+        ordersContainer?.appendChild(
+
+          createOrderCard(
+            order
+          )
+
+        );
+
+      }
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Order loading error:",
+      error
+    );
+
+
+    if (
+      ordersContainer
+    ) {
+
+      ordersContainer.innerHTML = `
+        <div class="empty">
+
+          <strong>
+            Orders load nahi ho paaye.
+          </strong>
+
+          <br><br>
+
+          ${esc(
+            error.message
+          )}
+
+        </div>
+      `;
+
+    }
+
+  }
+
+  finally {
+
+    if (
+      loading
+    ) {
+
+      loading.hidden =
+        true;
+
+    }
+
+  }
+
 }
 
 
@@ -1330,705 +2689,798 @@ async function loadOrders() {
 // =====================================================
 
 function createOrderCard(
-    order
+  order
 ) {
 
-    const card =
-        document.createElement(
-            "article"
-        );
-
-    card.className =
-        "order-card";
+  const card =
+    document.createElement(
+      "article"
+    );
 
 
-    // =================================================
-    // ITEMS
-    // =================================================
-
-    const itemsHTML =
-        Array.isArray(
-            order.items
-        )
-
-            ? order.items
-                .map(
-                    (item) => `
-
-                        <div class="item">
-
-                            <img
-                                src="${escapeAttribute(
-                                    item.image ||
-                                    ""
-                                )}"
-                                alt="${escapeAttribute(
-                                    item.productName ||
-                                    "Product"
-                                )}"
-                            >
-
-                            <div class="item-info">
-
-                                <div class="item-name">
-
-                                    ${escapeHTML(
-                                        item.productName ||
-                                        "Product"
-                                    )}
-
-                                </div>
-
-                                <div class="item-meta">
-
-                                    Qty:
-                                    ${Number(
-                                        item.quantity ||
-                                        1
-                                    )}
-
-                                    |
-
-                                    Price:
-                                    ${formatPrice(
-                                        item.price
-                                    )}
-
-                                </div>
-
-                                <div class="item-meta">
-
-                                    Total:
-                                    ${formatPrice(
-                                        item.lineTotal
-                                    )}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    `
-                )
-                .join("")
-
-            : "";
+  card.className =
+    "order-card";
 
 
-    const paymentClass =
-        getPaymentClass(
-            order.paymentStatus
-        );
+  const itemsHTML =
 
+    Array.isArray(
+      order.items
+    )
 
-    let actionHTML =
-        "";
+      ? order.items
+          .map(
 
+            (item) => `
 
-    // =================================================
-    // NEW ORDER
-    // =================================================
+              <div class="item">
 
-    if (
-        order.orderStatus ===
-        "NEW"
-    ) {
-
-        actionHTML = `
-
-            <div class="admin-actions">
-
-                <button
-                    type="button"
-                    class="accept-btn"
-                    data-action="accept"
-                >
-                    Accept Order
-                </button>
-
-                <button
-                    type="button"
-                    class="cancel-btn"
-                    data-action="cancel"
-                >
-                    Cancel Order
-                </button>
-
-            </div>
-
-        `;
-    }
-
-
-    // =================================================
-    // SHIPPING STATUS
-    // =================================================
-
-    else if (
-        ![
-            "CANCELLED",
-            "DELIVERED"
-        ].includes(
-            order.orderStatus
-        )
-    ) {
-
-        const options =
-            NEXT_STATUSES
-                .map(
-                    (status) => `
-                        <option
-                            value="${escapeAttribute(
-                                status
-                            )}"
-                            ${
-                                order.orderStatus ===
-                                status
-                                    ? "selected"
-                                    : ""
-                            }
-                        >
-                            ${status}
-                        </option>
-                    `
-                )
-                .join("");
-
-
-        actionHTML = `
-
-            <div class="shipping-box">
-
-                <select
-                    class="status-select"
-                    data-field="status"
+                <img
+                  src="${escAttr(
+                    item.image ||
+                    ""
+                  )}"
+                  alt="${escAttr(
+                    item.productName ||
+                    "Product"
+                  )}"
                 >
 
-                    <option
-                        value="${escapeAttribute(
-                            order.orderStatus ||
-                            ""
-                        )}"
-                        selected
-                    >
-                        ${escapeHTML(
-                            order.orderStatus ||
-                            "UNKNOWN"
-                        )}
-                    </option>
+                <div class="item-info">
 
-                    ${options}
+                  <div class="item-name">
 
-                </select>
-
-
-                <input
-                    type="text"
-                    class="courier-input"
-                    placeholder="Courier name"
-                    value="${escapeAttribute(
-                        order.courier ||
-                        ""
-                    )}"
-                >
-
-
-                <input
-                    type="text"
-                    class="tracking-input"
-                    placeholder="Tracking number"
-                    value="${escapeAttribute(
-                        order.trackingNumber ||
-                        ""
-                    )}"
-                >
-
-
-                <button
-                    type="button"
-                    class="save-btn"
-                    data-action="save"
-                >
-                    Save Order Update
-                </button>
-
-            </div>
-
-        `;
-    }
-
-
-    // =================================================
-    // TRACKING
-    // =================================================
-
-    let trackingHTML =
-        "";
-
-    if (
-        order.trackingUrl
-    ) {
-
-        trackingHTML = `
-
-            <div
-                class="notification-box"
-            >
-
-                <strong>
-                    Tracking Link
-                </strong>
-
-                <a
-                    class="tracking-link"
-                    href="${escapeAttribute(
-                        order.trackingUrl
-                    )}"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    ${escapeHTML(
-                        order.trackingUrl
-                    )}
-                </a>
-
-            </div>
-
-        `;
-    }
-
-
-    // =================================================
-    // NOTIFICATION
-    // =================================================
-
-    let notificationHTML =
-        "";
-
-    if (
-        order.notificationMessage
-    ) {
-
-        notificationHTML = `
-
-            <div
-                class="notification-box"
-            >
-
-                <strong>
-                    Customer Message
-                </strong>
-
-                <div>
-
-                    ${escapeHTML(
-                        order.notificationMessage
-                    ).replace(
-                        /\n/g,
-                        "<br>"
+                    ${esc(
+                      item.productName ||
+                      "Product"
                     )}
 
-                </div>
-
-            </div>
-
-        `;
-    }
+                  </div>
 
 
-    // =================================================
-    // CARD HTML
-    // =================================================
+                  <div class="item-meta">
 
-    card.innerHTML = `
-
-        <div class="order-header">
-
-            <div>
-
-                <div class="order-id">
-
-                    ${escapeHTML(
-                        order.orderId ||
-                        "No Order ID"
-                    )}
-
-                </div>
-
-                <div class="order-date">
-
-                    ${formatDate(
-                        order.createdAt
-                    )}
-
-                </div>
-
-            </div>
-
-
-            <div class="order-status">
-
-                ${escapeHTML(
-                    order.orderStatus ||
-                    "UNKNOWN"
-                )}
-
-            </div>
-
-        </div>
-
-
-        <div class="order-grid">
-
-
-            <!-- CUSTOMER -->
-
-            <section class="section">
-
-                <h3>
-                    Customer
-                </h3>
-
-                <p>
-
-                    <strong>
-                        Name:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.customerName ||
-                        "—"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Email:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.email ||
-                        "—"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Phone:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.phone ||
-                        "—"
-                    )}
-
-                </p>
-
-
-                <h3>
-                    Delivery Address
-                </h3>
-
-                <p>
-
-                    ${escapeHTML(
-                        order.address ||
-                        "—"
-                    )}
-
+                    Qty:
                     ${
-                        order.landmark
-                            ? "<br>" +
-                              escapeHTML(
-                                  order.landmark
-                              )
-                            : ""
+                      Number(
+                        item.quantity ||
+                        1
+                      )
                     }
 
-                    <br>
+                    |
 
-                    ${escapeHTML(
-                        order.city ||
-                        ""
-                    )}
+                    Price:
+                    ${
+                      formatPrice(
+                        item.price
+                      )
+                    }
 
-                    ,
-
-                    ${escapeHTML(
-                        order.state ||
-                        ""
-                    )}
-
-                    -
-
-                    ${escapeHTML(
-                        order.pincode ||
-                        ""
-                    )}
-
-                    <br>
-
-                    ${escapeHTML(
-                        order.country ||
-                        "India"
-                    )}
-
-                </p>
-
-            </section>
+                  </div>
 
 
-            <!-- ORDER -->
-
-            <section class="section">
-
-                <h3>
-                    Order
-                </h3>
-
-                <div class="items">
-
-                    ${itemsHTML}
-
-                </div>
-
-                <div class="amount-box">
+                  <div class="item-meta">
 
                     Total:
-                    ${formatPrice(
-                        order.total
-                    )}
+                    ${
+                      formatPrice(
+                        item.lineTotal
+                      )
+                    }
+
+                  </div>
 
                 </div>
 
+              </div>
 
-                <p>
+            `
 
-                    <strong>
-                        Payment:
-                    </strong>
+          )
 
-                    <span
-                        class="${paymentClass}"
-                    >
+          .join("")
 
-                        ${escapeHTML(
-                            order.paymentStatus ||
-                            "UNKNOWN"
-                        )}
-
-                    </span>
-
-                </p>
+      : "";
 
 
-                <p>
-
-                    <strong>
-                        Method:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.paymentMethod ||
-                        "—"
-                    )}
-
-                </p>
+  let actionHTML =
+    "";
 
 
-                ${
-                    order.trackingNumber
-                        ? `
-                            <p>
+  // =================================================
+  // NEW ORDER
+  // =================================================
 
-                                <strong>
-                                    Tracking ID:
-                                </strong>
+  if (
+    order.orderStatus ===
+    "NEW"
+  ) {
 
-                                ${escapeHTML(
-                                    order.trackingNumber
-                                )}
+    actionHTML = `
 
-                            </p>
-                        `
-                        : ""
-                }
+      <div class="admin-actions">
 
-            </section>
-
-
-            <!-- ACTIONS -->
-
-            <section class="section">
-
-                <h3>
-                    Order Action
-                </h3>
-
-                ${actionHTML}
-
-                ${trackingHTML}
-
-                ${notificationHTML}
-
-            </section>
+        <button
+          type="button"
+          class="accept-btn"
+          data-action="accept"
+        >
+          Accept Order
+        </button>
 
 
-        </div>
+        <button
+          type="button"
+          class="cancel-btn"
+          data-action="cancel"
+        >
+          Cancel Order
+        </button>
+
+      </div>
 
     `;
 
-
-    // =================================================
-    // ACCEPT BUTTON
-    // =================================================
-
-    const acceptButton =
-        card.querySelector(
-            '[data-action="accept"]'
-        );
-
-    acceptButton?.addEventListener(
-        "click",
-        () => {
-
-            openAcceptModal(
-                order
-            );
-        }
-    );
+  }
 
 
-    // =================================================
-    // CANCEL BUTTON
-    // =================================================
+  // =================================================
+  // SHIPPING UPDATE
+  // =================================================
 
-    const cancelButton =
-        card.querySelector(
-            '[data-action="cancel"]'
-        );
+  else if (
 
-    cancelButton?.addEventListener(
-        "click",
-        () => {
+    ![
+      "CANCELLED",
+      "DELIVERED"
+    ].includes(
+      order.orderStatus
+    )
 
-            openCancelModal(
-                order
-            );
-        }
-    );
+  ) {
 
+    const options =
 
-    // =================================================
-    // SHIPPING UPDATE
-    // =================================================
+      NEXT_STATUSES
 
-    const saveButton =
-        card.querySelector(
-            '[data-action="save"]'
-        );
+        .map(
 
-    if (
-        saveButton
-    ) {
+          (status) => `
 
-        const statusSelect =
-            card.querySelector(
-                '[data-field="status"]'
-            );
+            <option
+              value="${escAttr(
+                status
+              )}"
 
-        const courierInput =
-            card.querySelector(
-                ".courier-input"
-            );
+              ${
+                order.orderStatus ===
+                status
+                  ? "selected"
+                  : ""
+              }
+            >
 
-        const trackingInput =
-            card.querySelector(
-                ".tracking-input"
-            );
+              ${
+                status
+              }
 
+            </option>
 
-        saveButton.addEventListener(
-            "click",
-            async () => {
+          `
 
-                try {
+        )
 
-                    saveButton.disabled =
-                        true;
-
-                    saveButton.textContent =
-                        "Saving...";
+        .join("");
 
 
-                    await updateDoc(
+    actionHTML = `
 
-                        doc(
-                            db,
-                            "orders",
-                            order.firebaseId
-                        ),
+      <div class="shipping-box">
 
-                        {
+        <select
+          class="status-select"
+          data-field="status"
+        >
 
-                            orderStatus:
-                                statusSelect.value,
+          <option
+            value="${escAttr(
+              order.orderStatus ||
+              ""
+            )}"
+            selected
+          >
 
-                            courier:
-                                courierInput.value.trim(),
-
-                            trackingNumber:
-                                trackingInput.value.trim(),
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    alert(
-                        "Order updated successfully."
-                    );
-
-
-                    await loadOrders();
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Order update error:",
-                        error
-                    );
-
-                    alert(
-                        "Order update failed:\n" +
-                        error.message
-                    );
-
-                }
-
-                finally {
-
-                    saveButton.disabled =
-                        false;
-
-                    saveButton.textContent =
-                        "Save Order Update";
-                }
+            ${
+              esc(
+                order.orderStatus ||
+                "UNKNOWN"
+              )
             }
+
+          </option>
+
+          ${options}
+
+        </select>
+
+
+        <input
+          type="text"
+          class="courier-input"
+          placeholder="Courier name"
+          value="${escAttr(
+            order.courier ||
+            ""
+          )}"
+        >
+
+
+        <input
+          type="text"
+          class="tracking-input"
+          placeholder="Tracking number"
+          value="${escAttr(
+            order.trackingNumber ||
+            ""
+          )}"
+        >
+
+
+        <button
+          type="button"
+          class="save-btn"
+          data-action="save"
+        >
+          Save Order Update
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
+
+  // =================================================
+  // TRACKING
+  // =================================================
+
+  const trackingHTML =
+
+    order.trackingUrl
+
+      ? `
+
+        <div class="notification-box">
+
+          <strong>
+            Tracking Link
+          </strong>
+
+
+          <a
+            class="tracking-link"
+            href="${escAttr(
+              order.trackingUrl
+            )}"
+            target="_blank"
+            rel="noopener"
+          >
+
+            ${esc(
+              order.trackingUrl
+            )}
+
+          </a>
+
+        </div>
+
+      `
+
+      : "";
+
+
+  // =================================================
+  // NOTIFICATION
+  // =================================================
+
+  const notificationHTML =
+
+    order.notificationMessage
+
+      ? `
+
+        <div class="notification-box">
+
+          <strong>
+            Customer Message
+          </strong>
+
+
+          <div>
+
+            ${
+              esc(
+                order.notificationMessage
+              ).replace(
+                /\n/g,
+                "<br>"
+              )
+            }
+
+          </div>
+
+        </div>
+
+      `
+
+      : "";
+
+
+  // =================================================
+  // CARD HTML
+  // =================================================
+
+  card.innerHTML = `
+
+    <div class="order-header">
+
+      <div>
+
+        <div class="order-id">
+
+          ${esc(
+            order.orderId ||
+            "No Order ID"
+          )}
+
+        </div>
+
+
+        <div class="order-date">
+
+          ${
+            formatDate(
+              order.createdAt
+            )
+          }
+
+        </div>
+
+      </div>
+
+
+      <div class="order-status">
+
+        ${
+          esc(
+            order.orderStatus ||
+            "UNKNOWN"
+          )
+        }
+
+      </div>
+
+    </div>
+
+
+    <div class="order-grid">
+
+
+      <!-- CUSTOMER -->
+
+      <section class="section">
+
+        <h3>
+          Customer
+        </h3>
+
+
+        <p>
+
+          <strong>
+            Name:
+          </strong>
+
+          ${
+            esc(
+              order.customerName ||
+              "—"
+            )
+          }
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Email:
+          </strong>
+
+          ${
+            esc(
+              order.email ||
+              "—"
+            )
+          }
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Phone:
+          </strong>
+
+          ${
+            esc(
+              order.phone ||
+              "—"
+            )
+          }
+
+        </p>
+
+
+        <h3>
+          Delivery Address
+        </h3>
+
+
+        <p>
+
+          ${
+            esc(
+              order.address ||
+              "—"
+            )
+          }
+
+
+          ${
+            order.landmark
+
+              ? "<br>" +
+                esc(
+                  order.landmark
+                )
+
+              : ""
+          }
+
+
+          <br>
+
+
+          ${
+            esc(
+              order.city ||
+              ""
+            )
+          }
+
+          ,
+
+          ${
+            esc(
+              order.state ||
+              ""
+            )
+          }
+
+          -
+
+          ${
+            esc(
+              order.pincode ||
+              ""
+            )
+          }
+
+
+          <br>
+
+
+          ${
+            esc(
+              order.country ||
+              "India"
+            )
+          }
+
+        </p>
+
+      </section>
+
+
+      <!-- ORDER -->
+
+      <section class="section">
+
+        <h3>
+          Order
+        </h3>
+
+
+        <div class="items">
+
+          ${itemsHTML}
+
+        </div>
+
+
+        <div class="amount-box">
+
+          Total:
+          ${
+            formatPrice(
+              order.total
+            )
+          }
+
+        </div>
+
+
+        <p>
+
+          <strong>
+            Payment:
+          </strong>
+
+
+          <span
+            class="${paymentClass(
+              order.paymentStatus
+            )}"
+          >
+
+            ${
+              esc(
+                order.paymentStatus ||
+                "UNKNOWN"
+              )
+            }
+
+          </span>
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Method:
+          </strong>
+
+          ${
+            esc(
+              order.paymentMethod ||
+              "—"
+            )
+          }
+
+        </p>
+
+
+        ${
+          order.trackingNumber
+
+            ? `
+
+              <p>
+
+                <strong>
+                  Tracking ID:
+                </strong>
+
+                ${
+                  esc(
+                    order.trackingNumber
+                  )
+                }
+
+              </p>
+
+            `
+
+            : ""
+        }
+
+      </section>
+
+
+      <!-- ACTION -->
+
+      <section class="section">
+
+        <h3>
+          Order Action
+        </h3>
+
+
+        ${actionHTML}
+
+
+        ${trackingHTML}
+
+
+        ${notificationHTML}
+
+      </section>
+
+
+    </div>
+
+  `;
+
+
+  // =================================================
+  // ACCEPT
+  // =================================================
+
+  card
+    .querySelector(
+      '[data-action="accept"]'
+    )
+    ?.addEventListener(
+
+      "click",
+
+      () => {
+
+        openAcceptModal(
+          order
         );
-    }
+
+      }
+
+    );
 
 
-    return card;
+  // =================================================
+  // CANCEL
+  // =================================================
+
+  card
+    .querySelector(
+      '[data-action="cancel"]'
+    )
+    ?.addEventListener(
+
+      "click",
+
+      () => {
+
+        openCancelModal(
+          order
+        );
+
+      }
+
+    );
+
+
+  // =================================================
+  // SAVE SHIPPING UPDATE
+  // =================================================
+
+  const saveButton =
+    card.querySelector(
+      '[data-action="save"]'
+    );
+
+
+  if (
+    saveButton
+  ) {
+
+    const statusSelect =
+      card.querySelector(
+        '[data-field="status"]'
+      );
+
+
+    const courierInput =
+      card.querySelector(
+        ".courier-input"
+      );
+
+
+    const trackingInput =
+      card.querySelector(
+        ".tracking-input"
+      );
+
+
+    saveButton.addEventListener(
+      "click",
+      async () => {
+
+        saveButton.disabled =
+          true;
+
+
+        saveButton.textContent =
+          "Saving...";
+
+
+        try {
+
+          await updateDoc(
+
+            doc(
+              db,
+              "orders",
+              order.firebaseId
+            ),
+
+            {
+
+              orderStatus:
+                statusSelect.value,
+
+              courier:
+                courierInput.value.trim(),
+
+              trackingNumber:
+                trackingInput.value.trim(),
+
+              updatedAt:
+                serverTimestamp()
+
+            }
+
+          );
+
+
+          alert(
+            "Order updated successfully."
+          );
+
+
+          await loadOrders();
+
+        }
+
+        catch (
+          error
+        ) {
+
+          console.error(
+            "Order update error:",
+            error
+          );
+
+
+          alert(
+            "Order update failed:\n" +
+            error.message
+          );
+
+        }
+
+        finally {
+
+          saveButton.disabled =
+            false;
+
+
+          saveButton.textContent =
+            "Save Order Update";
+
+        }
+
+      }
+    );
+
+  }
+
+
+  return card;
+
 }
 
 
@@ -2037,160 +3489,182 @@ function createOrderCard(
 // =====================================================
 
 acceptConfirmBtn?.addEventListener(
-    "click",
-    async () => {
+  "click",
+  async () => {
 
-        if (!selectedOrder) {
-            return;
-        }
+    if (
+      !selectedOrder
+    ) {
 
-        const courier =
-            acceptCourier?.value.trim() ||
-            "";
+      return;
 
-        const trackingNumber =
-            acceptTracking?.value.trim() ||
-            "";
-
-
-        if (!courier) {
-
-            alert(
-                "Courier name enter karo."
-            );
-
-            acceptCourier?.focus();
-
-            return;
-        }
-
-
-        if (!trackingNumber) {
-
-            alert(
-                "Tracking ID enter karo."
-            );
-
-            acceptTracking?.focus();
-
-            return;
-        }
-
-
-        try {
-
-            acceptConfirmBtn.disabled =
-                true;
-
-            acceptConfirmBtn.textContent =
-                "Confirming...";
-
-
-            const trackingUrl =
-                TRACK_BASE_URL +
-                encodeURIComponent(
-                    selectedOrder.orderId
-                );
-
-
-            const orderForMessage = {
-
-                ...selectedOrder,
-
-                courier:
-                    courier,
-
-                trackingNumber:
-                    trackingNumber
-            };
-
-
-            const message =
-                makeConfirmationMessage(
-                    orderForMessage,
-                    trackingUrl
-                );
-
-
-            await updateDoc(
-
-                doc(
-                    db,
-                    "orders",
-                    selectedOrder.firebaseId
-                ),
-
-                {
-
-                    orderStatus:
-                        "ACCEPTED",
-
-                    courier:
-                        courier,
-
-                    trackingNumber:
-                        trackingNumber,
-
-                    trackingUrl:
-                        trackingUrl,
-
-                    notificationType:
-                        "ORDER_CONFIRMED",
-
-                    notificationTitle:
-                        "Order Confirmed",
-
-                    notificationMessage:
-                        message,
-
-                    notificationCreatedAt:
-                        serverTimestamp(),
-
-                    notificationSent:
-                        false,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            closeAcceptModal();
-
-
-            alert(
-                "Order confirmed successfully."
-            );
-
-
-            await loadOrders();
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Accept order error:",
-                error
-            );
-
-            alert(
-                "Order accept nahi ho paya:\n" +
-                error.message
-            );
-
-        }
-
-        finally {
-
-            acceptConfirmBtn.disabled =
-                false;
-
-            acceptConfirmBtn.textContent =
-                "Confirm Order";
-        }
     }
+
+
+    const courier =
+      acceptCourier?.value.trim() ||
+      "";
+
+
+    const trackingNumber =
+      acceptTracking?.value.trim() ||
+      "";
+
+
+    if (
+      !courier
+    ) {
+
+      alert(
+        "Courier name enter karo."
+      );
+
+
+      acceptCourier?.focus();
+
+
+      return;
+
+    }
+
+
+    if (
+      !trackingNumber
+    ) {
+
+      alert(
+        "Tracking ID enter karo."
+      );
+
+
+      acceptTracking?.focus();
+
+
+      return;
+
+    }
+
+
+    acceptConfirmBtn.disabled =
+      true;
+
+
+    acceptConfirmBtn.textContent =
+      "Confirming...";
+
+
+    try {
+
+      const trackingUrl =
+
+        TRACK_BASE_URL +
+
+        encodeURIComponent(
+          selectedOrder.orderId
+        );
+
+
+      const message =
+
+        makeConfirmationMessage(
+
+          {
+            ...selectedOrder,
+
+            courier,
+
+            trackingNumber
+
+          },
+
+          trackingUrl
+
+        );
+
+
+      await updateDoc(
+
+        doc(
+          db,
+          "orders",
+          selectedOrder.firebaseId
+        ),
+
+        {
+
+          orderStatus:
+            "ACCEPTED",
+
+          courier,
+
+          trackingNumber,
+
+          trackingUrl,
+
+          notificationType:
+            "ORDER_CONFIRMED",
+
+          notificationTitle:
+            "Order Confirmed",
+
+          notificationMessage:
+            message,
+
+          notificationCreatedAt:
+            serverTimestamp(),
+
+          notificationSent:
+            false,
+
+          updatedAt:
+            serverTimestamp()
+
+        }
+
+      );
+
+
+      closeAcceptModal();
+
+
+      alert(
+        "Order confirmed successfully."
+      );
+
+
+      await loadOrders();
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "Accept order error:",
+        error
+      );
+
+
+      alert(
+        "Order accept nahi ho paya:\n" +
+        error.message
+      );
+
+    }
+
+    finally {
+
+      acceptConfirmBtn.disabled =
+        false;
+
+
+      acceptConfirmBtn.textContent =
+        "Confirm Order";
+
+    }
+
+  }
 );
 
 
@@ -2199,122 +3673,143 @@ acceptConfirmBtn?.addEventListener(
 // =====================================================
 
 cancelConfirmBtn?.addEventListener(
-    "click",
-    async () => {
+  "click",
+  async () => {
 
-        if (!selectedOrder) {
-            return;
-        }
+    if (
+      !selectedOrder
+    ) {
 
-        const reason =
-            cancelReason?.value.trim() ||
-            "";
+      return;
 
-
-        if (!reason) {
-
-            alert(
-                "Cancellation reason enter karo."
-            );
-
-            cancelReason?.focus();
-
-            return;
-        }
-
-
-        try {
-
-            cancelConfirmBtn.disabled =
-                true;
-
-            cancelConfirmBtn.textContent =
-                "Cancelling...";
-
-
-            const message =
-                makeCancellationMessage(
-                    selectedOrder,
-                    reason
-                );
-
-
-            await updateDoc(
-
-                doc(
-                    db,
-                    "orders",
-                    selectedOrder.firebaseId
-                ),
-
-                {
-
-                    orderStatus:
-                        "CANCELLED",
-
-                    cancelReason:
-                        reason,
-
-                    cancelledAt:
-                        serverTimestamp(),
-
-                    notificationType:
-                        "ORDER_CANCELLED",
-
-                    notificationTitle:
-                        "Order Cancelled",
-
-                    notificationMessage:
-                        message,
-
-                    notificationCreatedAt:
-                        serverTimestamp(),
-
-                    notificationSent:
-                        false,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            closeCancelModal();
-
-
-            alert(
-                "Order cancelled successfully."
-            );
-
-
-            await loadOrders();
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Cancel order error:",
-                error
-            );
-
-            alert(
-                "Order cancel nahi ho paya:\n" +
-                error.message
-            );
-
-        }
-
-        finally {
-
-            cancelConfirmBtn.disabled =
-                false;
-
-            cancelConfirmBtn.textContent =
-                "Cancel Order";
-        }
     }
+
+
+    const reason =
+      cancelReason?.value.trim() ||
+      "";
+
+
+    if (
+      !reason
+    ) {
+
+      alert(
+        "Cancellation reason enter karo."
+      );
+
+
+      cancelReason?.focus();
+
+
+      return;
+
+    }
+
+
+    cancelConfirmBtn.disabled =
+      true;
+
+
+    cancelConfirmBtn.textContent =
+      "Cancelling...";
+
+
+    try {
+
+      const message =
+        makeCancellationMessage(
+
+          selectedOrder,
+
+          reason
+
+        );
+
+
+      await updateDoc(
+
+        doc(
+          db,
+          "orders",
+          selectedOrder.firebaseId
+        ),
+
+        {
+
+          orderStatus:
+            "CANCELLED",
+
+          cancelReason:
+            reason,
+
+          cancelledAt:
+            serverTimestamp(),
+
+          notificationType:
+            "ORDER_CANCELLED",
+
+          notificationTitle:
+            "Order Cancelled",
+
+          notificationMessage:
+            message,
+
+          notificationCreatedAt:
+            serverTimestamp(),
+
+          notificationSent:
+            false,
+
+          updatedAt:
+            serverTimestamp()
+
+        }
+
+      );
+
+
+      closeCancelModal();
+
+
+      alert(
+        "Order cancelled successfully."
+      );
+
+
+      await loadOrders();
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "Cancel order error:",
+        error
+      );
+
+
+      alert(
+        "Order cancel nahi ho paya:\n" +
+        error.message
+      );
+
+    }
+
+    finally {
+
+      cancelConfirmBtn.disabled =
+        false;
+
+
+      cancelConfirmBtn.textContent =
+        "Cancel Order";
+
+    }
+
+  }
 );
 
 
@@ -2323,43 +3818,48 @@ cancelConfirmBtn?.addEventListener(
 // =====================================================
 
 acceptCloseBtn?.addEventListener(
-    "click",
-    closeAcceptModal
+  "click",
+  closeAcceptModal
 );
 
+
 cancelCloseBtn?.addEventListener(
-    "click",
-    closeCancelModal
+  "click",
+  closeCancelModal
 );
 
 
 acceptModal?.addEventListener(
-    "click",
-    (event) => {
+  "click",
+  (event) => {
 
-        if (
-            event.target ===
-            acceptModal
-        ) {
+    if (
+      event.target ===
+      acceptModal
+    ) {
 
-            closeAcceptModal();
-        }
+      closeAcceptModal();
+
     }
+
+  }
 );
 
 
 cancelModal?.addEventListener(
-    "click",
-    (event) => {
+  "click",
+  (event) => {
 
-        if (
-            event.target ===
-            cancelModal
-        ) {
+    if (
+      event.target ===
+      cancelModal
+    ) {
 
-            closeCancelModal();
-        }
+      closeCancelModal();
+
     }
+
+  }
 );
 
 
@@ -2368,44 +3868,56 @@ cancelModal?.addEventListener(
 // =====================================================
 
 onAuthStateChanged(
-    auth,
-    async (user) => {
+  auth,
+  async (user) => {
 
-        if (!user) {
+    if (
+      !user
+    ) {
 
-            alert(
-                "Please login as admin."
-            );
-
-            window.location.href =
-                "login.html";
-
-            return;
-        }
+      alert(
+        "Please login as admin."
+      );
 
 
-        if (
-            !isAdmin(user)
-        ) {
-
-            alert(
-                "Access denied. Admin account required."
-            );
-
-            window.location.href =
-                "index.html";
-
-            return;
-        }
+      window.location.href =
+        "login.html";
 
 
-        // Orders load
-        await loadOrders();
-
-        // Stock products load
-        await loadProducts();
+      return;
 
     }
+
+
+    if (
+      !isAdmin(
+        user
+      )
+    ) {
+
+      alert(
+        "Access denied. Admin account required."
+      );
+
+
+      window.location.href =
+        "index.html";
+
+
+      return;
+
+    }
+
+
+    await loadOrders();
+
+
+    await loadProducts();
+
+
+    await loadProductManager();
+
+  }
 );
 
 
@@ -2414,30 +3926,43 @@ onAuthStateChanged(
 // =====================================================
 
 logoutBtn?.addEventListener(
-    "click",
-    async () => {
+  "click",
+  async () => {
 
-        try {
+    try {
 
-            await signOut(
-                auth
-            );
+      await signOut(
+        auth
+      );
 
-            window.location.href =
-                "login.html";
 
-        }
+      window.location.href =
+        "login.html";
 
-        catch (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
-            alert(
-                "Logout failed."
-            );
-        }
     }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+
+      alert(
+        "Logout failed."
+      );
+
+    }
+
+  }
 );
+
+
+// =====================================================
+// INITIAL FORM STATE
+// =====================================================
+
+resetProductForm();
