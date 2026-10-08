@@ -1,366 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Payment Status | AYONIZA
-    </title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f3ef;
-            font-family: Arial, sans-serif;
-            color: #222;
-        }
-
-        .payment-result-card {
-            width: min(92%, 480px);
-            background: #fff;
-            border-radius: 18px;
-            padding: 34px 26px;
-            text-align: center;
-            box-shadow:
-                0 12px 35px
-                rgba(0,0,0,.08);
-        }
-
-        .icon {
-            font-size: 58px;
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            margin: 0 0 10px;
-            font-size: 28px;
-        }
-
-        p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .order-id {
-            margin-top: 20px;
-            padding: 12px;
-            background: #f8f3ef;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        .btn {
-            display: inline-block;
-            margin-top: 22px;
-            padding: 12px 22px;
-            border-radius: 8px;
-            text-decoration: none;
-            background: #7c243c;
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .loading {
-            color: #777;
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AYONIZA | Payment Status</title>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#faf7f3;
+      font-family:Arial,Helvetica,sans-serif;
+      color:#222;
+      padding:20px;
+    }
+    .box{
+      width:min(520px,100%);
+      background:#fff;
+      border-radius:20px;
+      padding:32px 24px;
+      text-align:center;
+      box-shadow:0 12px 40px rgba(0,0,0,.08);
+    }
+    .icon{
+      font-size:54px;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:28px;
+    }
+    p{
+      color:#666;
+      line-height:1.6;
+      margin:8px 0;
+    }
+    .order-id{
+      margin:18px 0;
+      padding:12px;
+      background:#f6f1ec;
+      border-radius:10px;
+      font-weight:700;
+      word-break:break-word;
+    }
+    .btn{
+      display:inline-block;
+      margin-top:18px;
+      padding:12px 20px;
+      border-radius:10px;
+      text-decoration:none;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      background:#222;
+      color:#fff;
+    }
+    .hidden{display:none}
+  </style>
 </head>
-
-
 <body>
+  <div class="box">
+    <div class="icon" id="statusIcon">⏳</div>
+    <h1 id="statusTitle">Checking payment...</h1>
+    <p id="statusMessage">Please wait while we verify your PhonePe payment.</p>
+    <div class="order-id" id="orderIdBox"></div>
+    <a class="btn hidden" id="shopBtn" href="https://ayoniza.shop/">Continue Shopping</a>
+    <button class="btn hidden" id="retryBtn" type="button">Check Payment Again</button>
+  </div>
 
-    <div
-        class="payment-result-card"
-        id="paymentResult"
-    >
+  <script type="module">
+    import {
+      getApps,
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-        <div class="icon">
-            ⏳
-        </div>
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        <h1>
-            Checking Payment...
-        </h1>
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        <p class="loading">
-            Please wait while we verify your PhonePe payment.
-        </p>
+    import { firebaseConfig } from "./firebase-config.js";
 
-    </div>
+    const PHONEPE_WORKER_URL =
+      "https://ayoniza-payment.ayoniza-support.workers.dev";
 
+    const app =
+      getApps().length
+        ? getApps()[0]
+        : initializeApp(firebaseConfig);
 
-<script>
+    const auth =
+      getAuth(app);
 
-const WORKER_URL =
-    "https://ayoniza-payment.ayoniza-support.workers.dev";
+    const db =
+      getFirestore(app);
 
+    const statusIcon =
+      document.getElementById("statusIcon");
 
-const params =
-    new URLSearchParams(
+    const statusTitle =
+      document.getElementById("statusTitle");
+
+    const statusMessage =
+      document.getElementById("statusMessage");
+
+    const orderIdBox =
+      document.getElementById("orderIdBox");
+
+    const shopBtn =
+      document.getElementById("shopBtn");
+
+    const retryBtn =
+      document.getElementById("retryBtn");
+
+    const params =
+      new URLSearchParams(
         window.location.search
+      );
+
+    const merchantOrderId =
+      params.get("orderId") ||
+      params.get("merchantOrderId") ||
+      "";
+
+    orderIdBox.textContent =
+      merchantOrderId
+        ? `Payment Order ID: ${merchantOrderId}`
+        : "Payment Order ID not found";
+
+    let currentUser = null;
+    let authResolved = false;
+    let checking = false;
+
+    onAuthStateChanged(
+      auth,
+      (user) => {
+        currentUser = user;
+        authResolved = true;
+      }
     );
 
-
-const orderId =
-    params.get(
-        "orderId"
-    );
-
-
-const resultEl =
-    document.getElementById(
-        "paymentResult"
-    );
-
-
-async function checkPayment() {
-
-    if (!orderId) {
-
-        resultEl.innerHTML = `
-
-            <div class="icon">
-                ❌
-            </div>
-
-            <h1>
-                Invalid Order
-            </h1>
-
-            <p>
-                Order ID was not found.
-            </p>
-
-            <a
-                class="btn"
-                href="index.html"
-            >
-                Back to Website
-            </a>
-
-        `;
-
-        return;
+    function showBasicState(
+      icon,
+      title,
+      message,
+      showShop = false,
+      showRetry = false
+    ) {
+      statusIcon.textContent = icon;
+      statusTitle.textContent = title;
+      statusMessage.textContent = message;
+      shopBtn.classList.toggle(
+        "hidden",
+        !showShop
+      );
+      retryBtn.classList.toggle(
+        "hidden",
+        !showRetry
+      );
     }
 
+    function isSuccessfulState(state) {
+      const normalized =
+        String(
+          state || ""
+        ).toUpperCase();
 
-    try {
+      return [
+        "COMPLETED",
+        "SUCCESS",
+        "PAID"
+      ].includes(normalized);
+    }
 
-        const response =
-            await fetch(
+    function isFailedState(state) {
+      const normalized =
+        String(
+          state || ""
+        ).toUpperCase();
 
-                `${WORKER_URL}/payment-status?merchantOrderId=${encodeURIComponent(
-                    orderId
-                )}`
+      return [
+        "FAILED",
+        "FAILURE",
+        "CANCELLED",
+        "CANCELED"
+      ].includes(normalized);
+    }
 
-            );
+    async function waitForAuth() {
+      for (
+        let i = 0;
+        i < 40;
+        i++
+      ) {
+        if (authResolved) {
+          return currentUser;
+        }
 
+        await new Promise(
+          (resolve) =>
+            setTimeout(resolve, 250)
+        );
+      }
 
-        const data =
-            await response.json();
+      return currentUser;
+    }
 
+    function amountMatches(
+      reportedAmount,
+      expectedAmount
+    ) {
+      if (
+        reportedAmount === undefined ||
+        reportedAmount === null ||
+        reportedAmount === ""
+      ) {
+        return true;
+      }
 
-        console.log(
-            "PhonePe status:",
-            data
+      const reported =
+        Number(reportedAmount);
+
+      const expected =
+        Number(expectedAmount);
+
+      if (
+        !Number.isFinite(reported) ||
+        !Number.isFinite(expected)
+      ) {
+        return false;
+      }
+
+      return (
+        reported === expected ||
+        reported === expected * 100
+      );
+    }
+
+    async function checkPayment() {
+      if (checking) {
+        return;
+      }
+
+      checking = true;
+      retryBtn.classList.add("hidden");
+
+      if (!merchantOrderId) {
+        showBasicState(
+          "❌",
+          "Payment information missing",
+          "We could not identify this payment attempt.",
+          true,
+          false
+        );
+        checking = false;
+        return;
+      }
+
+      const rawDraft =
+        localStorage.getItem(
+          "ayonizaPendingOrderData"
         );
 
+      let draft = null;
+
+      try {
+        draft = rawDraft
+          ? JSON.parse(rawDraft)
+          : null;
+      } catch (error) {
+        console.error(
+          "Pending order draft parse error:",
+          error
+        );
+      }
+
+      const savedOrderId =
+        localStorage.getItem(
+          "ayonizaPendingPaymentOrderId"
+        );
+
+      if (
+        !draft ||
+        draft.orderId !== merchantOrderId ||
+        savedOrderId !== merchantOrderId
+      ) {
+        showBasicState(
+          "❌",
+          "Payment order not found",
+          "The payment draft could not be matched with this payment. No order has been placed.",
+          true,
+          false
+        );
+        checking = false;
+        return;
+      }
+
+      const user =
+        await waitForAuth();
+
+      if (!user) {
+        showBasicState(
+          "🔐",
+          "Login required",
+          "Please log in again so we can safely create your order after successful payment.",
+          false,
+          true
+        );
+        checking = false;
+        return;
+      }
+
+      if (
+        user.uid !== draft.userId
+      ) {
+        showBasicState(
+          "❌",
+          "Account mismatch",
+          "This payment belongs to a different account. No order has been placed.",
+          true,
+          false
+        );
+        checking = false;
+        return;
+      }
+
+      try {
+        const response =
+          await fetch(
+            `${PHONEPE_WORKER_URL}/payment-status?merchantOrderId=${encodeURIComponent(merchantOrderId)}`,
+            {
+              method: "GET",
+              cache: "no-store"
+            }
+          );
+
+        let data = {};
+
+        try {
+          data =
+            await response.json();
+        } catch (parseError) {
+          console.error(
+            "Payment status JSON error:",
+            parseError
+          );
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error ||
+            data?.message ||
+            "Payment status could not be checked."
+          );
+        }
 
         const state =
-            String(
-                data?.state ||
-                data?.status ||
-                ""
-            ).toUpperCase();
-
-
-        // =========================================
-        // SUCCESS
-        // =========================================
+          String(
+            data?.state ||
+            data?.paymentState ||
+            data?.status ||
+            ""
+          ).toUpperCase();
 
         if (
-            state ===
-            "COMPLETED" ||
-            state ===
-            "SUCCESS"
+          data?.merchantOrderId &&
+          String(data.merchantOrderId) !==
+            merchantOrderId
         ) {
-
-            resultEl.innerHTML = `
-
-                <div class="icon">
-                    ✅
-                </div>
-
-                <h1>
-                    Payment Successful
-                </h1>
-
-                <p>
-                    Your payment has been received successfully.
-                </p>
-
-                <div class="order-id">
-                    Order ID:
-                    ${orderId}
-                </div>
-
-                <a
-                    class="btn"
-                    href="track-order.html?orderId=${encodeURIComponent(
-                        orderId
-                    )}"
-                >
-                    Track Order
-                </a>
-
-            `;
-
-            return;
+          throw new Error(
+            "Payment order ID verification failed."
+          );
         }
-
-
-        // =========================================
-        // FAILED
-        // =========================================
 
         if (
-            state ===
-            "FAILED"
+          !amountMatches(
+            data?.amount,
+            draft.total
+          )
         ) {
-
-            resultEl.innerHTML = `
-
-                <div class="icon">
-                    ❌
-                </div>
-
-                <h1>
-                    Payment Failed
-                </h1>
-
-                <p>
-                    Your PhonePe payment was not completed.
-                    Please try again.
-                </p>
-
-                <div class="order-id">
-                    Order ID:
-                    ${orderId}
-                </div>
-
-                <a
-                    class="btn"
-                    href="index.html"
-                >
-                    Try Again
-                </a>
-
-            `;
-
-            return;
+          throw new Error(
+            "Payment amount verification failed."
+          );
         }
 
+        // =================================================
+        // PAYMENT SUCCESS
+        // ONLY NOW CREATE FIRESTORE ORDER
+        // =================================================
 
-        // =========================================
+        if (
+          data?.success === true &&
+          isSuccessfulState(state)
+        ) {
+          const orderRef =
+            doc(
+              db,
+              "orders",
+              merchantOrderId
+            );
+
+          const existing =
+            await getDoc(
+              orderRef
+            );
+
+          if (
+            !existing.exists()
+          ) {
+            const finalOrder = {
+              ...draft,
+
+              paymentProvider:
+                "PHONEPE",
+
+              paymentMethod:
+                "PHONEPE",
+
+              paymentStatus:
+                "PAID",
+
+              paymentState:
+                state,
+
+              phonePeOrderId:
+                data?.phonePeOrderId ||
+                "",
+
+              orderStatus:
+                "NEW",
+
+              createdAt:
+                serverTimestamp(),
+
+              paymentVerifiedAt:
+                serverTimestamp(),
+
+              updatedAt:
+                serverTimestamp()
+            };
+
+            await setDoc(
+              orderRef,
+              finalOrder
+            );
+          }
+
+          const source =
+            localStorage.getItem(
+              "ayonizaPendingPaymentSource"
+            );
+
+          if (
+            source === "cart"
+          ) {
+            localStorage.removeItem(
+              "ayonizaCart"
+            );
+          }
+
+          localStorage.setItem(
+            "ayonizaLastOrderId",
+            merchantOrderId
+          );
+
+          localStorage.removeItem(
+            "ayonizaPendingOrderData"
+          );
+
+          localStorage.removeItem(
+            "ayonizaPendingPaymentOrderId"
+          );
+
+          localStorage.removeItem(
+            "ayonizaPendingPaymentSource"
+          );
+
+          showBasicState(
+            "✅",
+            "Payment successful",
+            "Your payment has been verified and your order has been placed successfully.",
+            true,
+            false
+          );
+
+          checking = false;
+          return;
+        }
+
+        // =================================================
+        // PAYMENT FAILED / CANCELLED
+        // =================================================
+
+        if (
+          isFailedState(state) ||
+          data?.success === false
+        ) {
+          localStorage.removeItem(
+            "ayonizaPendingOrderData"
+          );
+
+          localStorage.removeItem(
+            "ayonizaPendingPaymentOrderId"
+          );
+
+          localStorage.removeItem(
+            "ayonizaPendingPaymentSource"
+          );
+
+          showBasicState(
+            "❌",
+            "Payment failed",
+            "Payment was not completed. No order has been placed.",
+            true,
+            true
+          );
+
+          checking = false;
+          return;
+        }
+
+        // =================================================
         // PENDING
-        // =========================================
+        // =================================================
 
-        resultEl.innerHTML = `
-
-            <div class="icon">
-                ⏳
-            </div>
-
-            <h1>
-                Payment Pending
-            </h1>
-
-            <p>
-                We are still checking your payment status.
-            </p>
-
-            <div class="order-id">
-                Order ID:
-                ${orderId}
-            </div>
-
-            <a
-                class="btn"
-                href="track-order.html?orderId=${encodeURIComponent(
-                    orderId
-                )}"
-            >
-                Track Order
-            </a>
-
-        `;
-
-    }
-
-    catch (error) {
-
+        showBasicState(
+          "⏳",
+          "Payment pending",
+          "PhonePe has not confirmed the payment yet. No order has been placed. Please wait and check again.",
+          false,
+          true
+        );
+      }
+      catch (error) {
         console.error(
-            "Payment result error:",
-            error
+          "Payment verification error:",
+          error
         );
 
+        showBasicState(
+          "⚠️",
+          "Could not verify payment",
+          error?.message ||
+            "Please check your payment status again.",
+          false,
+          true
+        );
+      }
 
-        resultEl.innerHTML = `
-
-            <div class="icon">
-                ⚠️
-            </div>
-
-            <h1>
-                Verification Error
-            </h1>
-
-            <p>
-                We could not verify the payment right now.
-                Please contact AYONIZA support.
-            </p>
-
-            <div class="order-id">
-                Order ID:
-                ${orderId}
-            </div>
-
-            <a
-                class="btn"
-                href="index.html"
-            >
-                Back to Website
-            </a>
-
-        `;
-
+      checking = false;
     }
 
-}
+    retryBtn.addEventListener(
+      "click",
+      () => {
+        void checkPayment();
+      }
+    );
 
+    // Check immediately.
+    void checkPayment();
 
-checkPayment();
+    // For delayed PhonePe confirmations,
+    // retry automatically a few times.
+    let attempts = 0;
 
-</script>
+    const timer =
+      setInterval(
+        async () => {
+          attempts++;
 
+          if (
+            attempts > 5
+          ) {
+            clearInterval(timer);
+            return;
+          }
+
+          if (
+            !checking &&
+            !shopBtn.classList.contains("hidden")
+          ) {
+            return;
+          }
+
+          await checkPayment();
+        },
+        5000
+      );
+  </script>
 </body>
-
 </html>
