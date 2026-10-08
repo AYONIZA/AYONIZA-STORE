@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>AYONIZA Admin Orders</title>
+    <title>AYONIZA Admin Panel</title>
 
     <style>
 
@@ -497,7 +497,228 @@
             font-weight: 600;
         }
 
+
+
+        /* =====================================================
+           PRODUCT MANAGEMENT
+           ===================================================== */
+
+        .product-management-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
+        }
+
+        .product-management-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .product-management-header h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+        }
+
+        .product-management-header p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .product-form {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .product-form-title {
+            margin: 0 0 15px;
+            font-size: 17px;
+        }
+
+        .product-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .product-form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .product-form-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .product-form-field label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .product-form-field input,
+        .product-form-field select,
+        .product-form-field textarea {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            font: inherit;
+        }
+
+        .product-form-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .product-listed-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 4px;
+        }
+
+        .product-listed-row input {
+            width: auto;
+        }
+
+        .product-form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .product-list-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .product-manage-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .product-manage-top {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .product-manage-image {
+            width: 76px;
+            height: 76px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .product-manage-name {
+            margin: 0 0 5px;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+
+        .product-manage-meta {
+            margin: 3px 0;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .product-list-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .product-list-status.listed {
+            background: #e6f7eb;
+            color: #1c6b2b;
+        }
+
+        .product-list-status.unlisted {
+            background: #f2f2f2;
+            color: #666;
+        }
+
+        .product-manage-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .product-manage-actions button {
+            border: 0;
+            padding: 9px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .product-edit-btn {
+            background: #111;
+            color: #fff;
+        }
+
+        .product-toggle-btn {
+            background: #f2f2f2;
+            color: #222;
+        }
+
+        .product-delete-btn {
+            background: #b42318;
+            color: #fff;
+        }
+
+        .product-manage-actions button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .product-admin-message {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f2f7f3;
+            color: #1c6b2b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .product-manager-empty {
+            grid-column: 1 / -1;
+            background: #fff;
+            border: 1px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+        }
+
         @media (max-width: 850px) {
+
+            .product-list-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
 
             .stats {
                 grid-template-columns: repeat(2, 1fr);
@@ -509,6 +730,15 @@
         }
 
         @media (max-width: 550px) {
+
+            .product-list-grid,
+            .product-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-form-field.full {
+                grid-column: auto;
+            }
 
             .stats {
                 grid-template-columns: 1fr;
@@ -529,7 +759,7 @@
 <header class="topbar">
 
     <h1>
-        AYONIZA Admin Orders
+        AYONIZA Admin Panel
     </h1>
 
     <button id="logoutBtn">
@@ -581,6 +811,142 @@
 
 </main>
 
+
+
+
+
+    <!-- =====================================================
+         PRODUCT MANAGEMENT
+    ====================================================== -->
+
+    <section class="product-management-section">
+
+        <div class="product-management-header">
+            <div>
+                <h2>Product Management</h2>
+                <p>Add, edit, list/unlist and delete products from the admin panel.</p>
+            </div>
+            <button
+                type="button"
+                id="refreshProductListBtn"
+                class="save-btn">
+                Refresh Products
+            </button>
+        </div>
+
+        <div
+            id="productAdminMessage"
+            class="product-admin-message"
+            hidden>
+        </div>
+
+        <form id="productForm" class="product-form">
+            <h3 id="productFormTitle" class="product-form-title">Add New Product</h3>
+
+            <input type="hidden" id="editingProductId" value="">
+
+            <div class="product-form-grid">
+
+                <div class="product-form-field">
+                    <label for="productNameInput">Product Name</label>
+                    <input
+                        type="text"
+                        id="productNameInput"
+                        required
+                        placeholder="e.g. Pearl Drop Earrings">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productPriceInput">Price (₹)</label>
+                    <input
+                        type="number"
+                        id="productPriceInput"
+                        min="0"
+                        step="1"
+                        required
+                        placeholder="199">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productCategoryInput">Category</label>
+                    <select id="productCategoryInput" required>
+                        <option value="earrings">Earrings</option>
+                        <option value="bracelets">Bracelets</option>
+                        <option value="sets">Jewellery Sets</option>
+                        <option value="kamarbandh">Kamarbandh</option>
+                        <option value="necklaces">Necklaces</option>
+                        <option value="hathphool">Hathphool</option>
+                        <option value="hair-accessories">Hair Accessories</option>
+                        <option value="anklets">Anklets</option>
+                        <option value="rings">Rings</option>
+                    </select>
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productDiscountInput">Discount (%)</label>
+                    <input
+                        type="number"
+                        id="productDiscountInput"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="0">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productStockInput">Stock</label>
+                    <input
+                        type="number"
+                        id="productStockInput"
+                        min="0"
+                        step="1"
+                        value="0"
+                        required>
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productImageInput">Image URL / Path</label>
+                    <input
+                        type="text"
+                        id="productImageInput"
+                        required
+                        placeholder="assets/earring-new.jpg or full image URL">
+                </div>
+
+                <div class="product-form-field full">
+                    <label for="productDescriptionInput">Description</label>
+                    <textarea
+                        id="productDescriptionInput"
+                        placeholder="Write a short product description"></textarea>
+                </div>
+
+                <div class="product-form-field full">
+                    <label>Website Status</label>
+                    <div class="product-listed-row">
+                        <input type="checkbox" id="productListedInput" checked>
+                        <label for="productListedInput">List this product on the website</label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="product-form-actions">
+                <button type="submit" class="save-btn" id="productSubmitBtn">
+                    Add Product
+                </button>
+                <button type="button" class="modal-close" id="productCancelEditBtn" hidden>
+                    Cancel Edit
+                </button>
+            </div>
+        </form>
+
+        <div id="productListContainer" class="product-list-grid">
+            <div class="product-manager-empty">
+                Loading products...
+            </div>
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
