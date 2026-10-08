@@ -4,16 +4,20 @@ import { firebaseConfig } from "./firebase-config.js";
 
 // =====================================================
 // FIREBASE
-// Firestore bhaari hai, isliye sirf zarurat par load hota hai.
 // =====================================================
 
 const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 let fsPromise;
+
 const fs = () =>
-  (fsPromise ||= import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    .then((m) => ({ m, db: m.getFirestore(app) })));
+  (fsPromise ||= import(
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+  ).then((m) => ({
+    m,
+    db: m.getFirestore(app)
+  })));
 
 let currentUser = null;
 
@@ -152,7 +156,6 @@ function initApp() {
 
   // ===================================================
   // CARD DECORATION
-  // discount + stock labels
   // ===================================================
 
   function decorate(card) {
@@ -1004,7 +1007,9 @@ function initApp() {
           d.state || "",
 
         pin:
-          d.pincode || "",
+          d.pin ||
+          d.pincode ||
+          "",
 
         country:
           d.country ||
@@ -1014,7 +1019,7 @@ function initApp() {
     } catch (error) {
 
       console.error(
-        "Customer profile read error:",
+        "Profile load error:",
         error
       );
 
@@ -1022,144 +1027,374 @@ function initApp() {
     }
   }
 
-  function goToStep(n) {
+  // ===================================================
+  // CHECKOUT HELPERS
+  // ===================================================
 
-    currentStep =
-      n;
+  function getCheckoutData() {
 
-    [
-      checkoutForm,
-      confirmStep,
-      paymentStep
-    ].forEach(
-      (el, i) =>
-        el &&
-        (el.hidden =
-          i + 1 !== n)
-    );
+    if (!checkoutForm)
+      return null;
 
-    if (checkoutBack) {
+    return {
 
-      checkoutBack.hidden =
-        n === 1;
+      name:
+        checkoutForm.custName?.value.trim() || "",
+
+      mobile:
+        checkoutForm.custMobile?.value.trim() || "",
+
+      address:
+        checkoutForm.custAddress?.value.trim() || "",
+
+      landmark:
+        checkoutForm.custLandmark?.value.trim() || "",
+
+      city:
+        checkoutForm.custCity?.value.trim() || "",
+
+      state:
+        checkoutForm.custState?.value.trim() || "",
+
+      pin:
+        checkoutForm.custPin?.value.trim() || "",
+
+      country:
+        checkoutForm.custCountry?.value.trim() ||
+        "India"
+    };
+  }
+
+
+  function saveCustomerInfo(info) {
+
+    try {
+
+      localStorage.setItem(
+        CUSTOMER_INFO_KEY,
+        JSON.stringify(info)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Customer info save error:",
+        error
+      );
+    }
+  }
+
+
+  function validateCustomerInfo(info) {
+
+    if (!info.name) {
+
+      return {
+        ok: false,
+        message: "Please enter your full name."
+      };
     }
 
-    if (checkoutTitle) {
+    if (!info.mobile) {
+
+      return {
+        ok: false,
+        message: "Please enter your mobile number."
+      };
+    }
+
+    const mobile =
+      info.mobile.replace(/\D/g, "");
+
+    if (
+      mobile.length !== 10
+    ) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter a valid 10-digit mobile number."
+      };
+    }
+
+    if (!info.address) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter your complete address."
+      };
+    }
+
+    if (!info.city) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter your city."
+      };
+    }
+
+    if (!info.state) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter your state."
+      };
+    }
+
+    if (!info.pin) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter your PIN code."
+      };
+    }
+
+    const pin =
+      info.pin.replace(/\D/g, "");
+
+    if (
+      pin.length !== 6
+    ) {
+
+      return {
+        ok: false,
+        message:
+          "Please enter a valid 6-digit PIN code."
+      };
+    }
+
+    return {
+      ok: true
+    };
+  }
+
+
+  function getCheckoutTotal() {
+
+    return checkoutItems.reduce(
+      (sum, item) =>
+        sum +
+        (
+          Number(item.price) || 0
+        ) *
+        (
+          Number(item.qty) || 1
+        ),
+      0
+    );
+  }
+
+
+  // FIX: ab Confirm step (confirmOrderSummary / confirmOrderTotal)
+  // aur Payment step (orderSummary / orderTotal) dono me summary dikhti hai.
+  function renderOrderSummary() {
+
+    const summaries =
+      [
+        $("orderSummary"),
+        $("confirmOrderSummary")
+      ].filter(Boolean);
+
+    const totals =
+      [
+        $("orderTotal"),
+        $("confirmOrderTotal")
+      ].filter(Boolean);
+
+    if (!summaries.length)
+      return;
+
+    summaries.forEach(
+      (summary) => {
+
+        summary.innerHTML = "";
+
+        checkoutItems.forEach(
+          (item) => {
+
+            const row =
+              document.createElement(
+                "div"
+              );
+
+            row.className =
+              "order-summary-item";
+
+            row.innerHTML = `
+              <div style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                padding:10px 0;
+                border-bottom:1px solid #eee;
+              ">
+
+                <img
+                  src="${esc(item.image || "")}"
+                  alt="${esc(item.name || "")}"
+                  style="
+                    width:55px;
+                    height:55px;
+                    object-fit:cover;
+                    border-radius:8px;
+                    border:1px solid #eee;
+                  "
+                >
+
+                <div style="flex:1;">
+
+                  <div style="
+                    font-size:14px;
+                    font-weight:600;
+                  ">
+                    ${esc(item.name)}
+                  </div>
+
+                  <div style="
+                    font-size:13px;
+                    color:#777;
+                    margin-top:4px;
+                  ">
+                    Qty: ${Number(item.qty) || 1}
+                  </div>
+
+                </div>
+
+                <strong>
+                  ${rupees(
+                    (
+                      Number(item.price) || 0
+                    ) *
+                    (
+                      Number(item.qty) || 1
+                    )
+                  )}
+                </strong>
+
+              </div>
+            `;
+
+            summary.appendChild(
+              row
+            );
+          }
+        );
+      }
+    );
+
+    const total =
+      getCheckoutTotal();
+
+    totals.forEach(
+      (el) => {
+
+        el.textContent =
+          rupees(total);
+      }
+    );
+  }
+
+
+  function updateCheckoutStep(
+    step
+  ) {
+
+    currentStep =
+      Number(step);
+
+    if (
+      checkoutForm
+    ) {
+
+      checkoutForm.hidden =
+        currentStep !== 1;
+    }
+
+    if (
+      confirmStep
+    ) {
+
+      confirmStep.hidden =
+        currentStep !== 2;
+    }
+
+    if (
+      paymentStep
+    ) {
+
+      paymentStep.hidden =
+        currentStep !== 3;
+    }
+
+    // FIX: Back arrow step 1 par hidden, step 2/3 par visible
+    if (
+      checkoutBack
+    ) {
+
+      checkoutBack.hidden =
+        currentStep === 1;
+    }
+
+    if (
+      checkoutTitle
+    ) {
 
       checkoutTitle.textContent =
-        STEP_TITLES[n] ||
-        "";
+        STEP_TITLES[
+          currentStep
+        ] ||
+        "Checkout";
     }
 
     stepItems.forEach(
       (item) => {
 
-        const s =
+        const itemStep =
           Number(
             item.dataset.step
           );
 
         item.classList.toggle(
-          "done",
-          s < n
+          "active",
+          itemStep === currentStep
         );
 
         item.classList.toggle(
-          "active",
-          s === n
+          "completed",
+          itemStep < currentStep
         );
       }
     );
-
-    checkoutModal?.scrollTo?.({
-      top: 0
-    });
   }
 
-  async function openCheckout(
+
+  function openCheckout(
     items,
-    source
+    source = "cart"
   ) {
 
-    if (
-      !items?.length ||
-      !checkoutForm
-    )
-      return;
-
-    const user =
-      await requireUser(
-        "Please login before checkout."
-      );
-
-    if (!user)
-      return;
-
-    const normalized =
-      items.map(
-        (i) => ({
-
-          id: String(
-            i.id || ""
-          ),
-
-          name: String(
-            i.name || ""
-          ),
-
-          price:
-            Number(
-              i.price
-            ) || 0,
-
-          image: String(
-            i.image || ""
-          ),
-
-          qty:
-            Number(
-              i.qty
-            ) || 1
-
-        })
-      );
-
-    const check =
-      await validateStock(
-        normalized
-      );
-
-    if (!check.ok) {
-
-      return alert(
-        check.message
-      );
-    }
-
     checkoutItems =
-      normalized;
+      Array.isArray(items)
+        ? items
+        : [];
 
     checkoutSource =
       source;
 
-    fillForm(
-      loadSavedInfo(),
-      false
-    );
+    if (
+      !checkoutItems.length
+    ) {
 
-    loadProfile(
-      user
-    ).then(
-      (p) =>
-        fillForm(
-          p,
-          true
-        )
-    );
+      alert(
+        "Your cart is empty."
+      );
 
-    goToStep(1);
-
-    closeCart();
+      return;
+    }
 
     checkoutOverlay?.classList.add(
       "active"
@@ -1169,11 +1404,57 @@ function initApp() {
       "open"
     );
 
+    checkoutOverlay?.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
     checkoutModal?.setAttribute(
       "aria-hidden",
       "false"
     );
+
+    currentStep = 1;
+
+    updateCheckoutStep(
+      1
+    );
+
+    renderOrderSummary();
+
+    const saved =
+      loadSavedInfo();
+
+    if (saved) {
+
+      fillForm(
+        saved,
+        true
+      );
+    }
+
+    getUser().then(
+      async (user) => {
+
+        if (!user)
+          return;
+
+        const profile =
+          await loadProfile(
+            user
+          );
+
+        if (profile) {
+
+          fillForm(
+            profile,
+            true
+          );
+        }
+      }
+    );
   }
+
 
   function closeCheckout() {
 
@@ -1185,208 +1466,288 @@ function initApp() {
       "open"
     );
 
+    checkoutOverlay?.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
     checkoutModal?.setAttribute(
       "aria-hidden",
       "true"
     );
+
+    currentStep = 1;
+
+    updateCheckoutStep(
+      1
+    );
   }
 
-  function renderSummary(
-    container,
-    totalEl
-  ) {
-
-    if (!container)
-      return;
-
-    let total =
-      0;
-
-    const frag =
-      document.createDocumentFragment();
-
-    checkoutItems.forEach(
-      (item) => {
-
-        const line =
-          Number(item.price) *
-          Number(item.qty);
-
-        total +=
-          line;
-
-        const row =
-          document.createElement(
-            "div"
-          );
-
-        row.className =
-          "order-summary-row";
-
-        row.innerHTML = `
-          <span>
-            ${esc(item.name)}
-            x${item.qty}
-          </span>
-
-          <span>
-            ${rupees(line)}
-          </span>
-        `;
-
-        frag.appendChild(
-          row
-        );
-      }
-    );
-
-    container.replaceChildren(
-      frag
-    );
-
-    if (totalEl) {
-
-      totalEl.textContent =
-        rupees(total);
-    }
-  }
 
   // ===================================================
-  // STEP 1 -> STEP 2
+  // CHECKOUT OPEN BUTTON
+  // ===================================================
+
+  checkoutBtn?.addEventListener(
+    "click",
+    async () => {
+
+      const user =
+        await requireUser(
+          "Please login or create an account before placing an order."
+        );
+
+      if (!user)
+        return;
+
+      if (!cart.length) {
+
+        alert(
+          "Your cart is empty."
+        );
+
+        return;
+      }
+
+      const stockResult =
+        await validateStock(
+          cart
+        );
+
+      if (!stockResult.ok) {
+
+        alert(
+          stockResult.message
+        );
+
+        return;
+      }
+
+      closeCart();
+
+      openCheckout(
+        cart.map(
+          (item) => ({
+            ...item
+          })
+        ),
+        "cart"
+      );
+    }
+  );
+
+
+  // NOTE: Buy Now aur Add to Cart ka ek hi handler neeche
+  // "PRODUCT BUTTONS" section me hai. Pehle yahan duplicate
+  // handlers the, jisse ek click par item 2 baar add hota tha.
+
+
+  // ===================================================
+  // CHECKOUT FORM SUBMIT
+  // ADDRESS → CONFIRM
   // ===================================================
 
   checkoutForm?.addEventListener(
     "submit",
+    async (e) => {
+
+      e.preventDefault();
+
+      const user =
+        await requireUser(
+          "Please login before placing an order."
+        );
+
+      if (!user)
+        return;
+
+      const info =
+        getCheckoutData();
+
+      const validation =
+        validateCustomerInfo(
+          info
+        );
+
+      if (!validation.ok) {
+
+        alert(
+          validation.message
+        );
+
+        return;
+      }
+
+      const stockResult =
+        await validateStock(
+          checkoutItems
+        );
+
+      if (!stockResult.ok) {
+
+        alert(
+          stockResult.message
+        );
+
+        return;
+      }
+
+      // Sirf tab save hoga jab "Save this information" checked ho
+      if (
+        saveInfoCheckbox?.checked
+      ) {
+
+        saveCustomerInfo(
+          info
+        );
+      }
+
+      // Show confirmation
+      renderOrderSummary();
+
+      // FIX: HTML ke actual ids use kiye (confirmAddressLine, confirmPhoneLine)
+      const confirmName =
+        $("confirmName");
+
+      const confirmAddressLine =
+        $("confirmAddressLine");
+
+      const confirmPhoneLine =
+        $("confirmPhoneLine");
+
+      if (confirmName)
+        confirmName.textContent =
+          info.name;
+
+      if (confirmAddressLine)
+        confirmAddressLine.textContent =
+          [
+            info.address,
+            info.landmark,
+            info.city,
+            info.state,
+            info.pin,
+            info.country
+          ]
+            .filter(Boolean)
+            .join(", ");
+
+      if (confirmPhoneLine)
+        confirmPhoneLine.textContent =
+          info.mobile;
+
+      updateCheckoutStep(
+        2
+      );
+    }
+  );
+
+
+  // ===================================================
+  // CONFIRM → PAYMENT
+  // ===================================================
+
+  // FIX: HTML me button ka id "confirmContinueBtn" hai
+  // (pehle JS "#confirmOrderBtn" dhoondh raha tha, isliye button kaam nahi karta tha)
+  document.addEventListener(
+    "click",
     (e) => {
+
+      const button =
+        e.target.closest(
+          "#confirmContinueBtn, #confirmOrderBtn"
+        );
+
+      if (!button)
+        return;
+
+      e.preventDefault();
+
+      renderOrderSummary();
+
+      updateCheckoutStep(
+        3
+      );
+    }
+  );
+
+
+  // ===================================================
+  // CONFIRM STEP: "Change" LINK
+  // ===================================================
+
+  $("changeAddressBtn")?.addEventListener(
+    "click",
+    () => {
+
+      updateCheckoutStep(
+        1
+      );
+    }
+  );
+
+
+  // ===================================================
+  // BACK BUTTONS
+  // ===================================================
+
+  checkoutBack?.addEventListener(
+    "click",
+    () => {
+
+      if (
+        currentStep > 1
+      ) {
+
+        updateCheckoutStep(
+          currentStep - 1
+        );
+
+      } else {
+
+        closeCheckout();
+      }
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    (e) => {
+
+      const button =
+        e.target.closest(
+          "[data-checkout-back]"
+        );
+
+      if (!button)
+        return;
 
       e.preventDefault();
 
       if (
-        !checkoutForm.checkValidity()
+        currentStep > 1
       ) {
 
-        return checkoutForm.reportValidity();
-      }
-
-      const info =
-        {};
-
-      for (
-        const [
-          field,
-          key
-        ] of Object.entries(
-          FIELDS
-        )
-      ) {
-
-        info[key] =
-          checkoutForm[field]
-            .value
-            .trim();
-      }
-
-      saveInfoCheckbox?.checked
-
-        ? localStorage.setItem(
-            CUSTOMER_INFO_KEY,
-            JSON.stringify(info)
-          )
-
-        : localStorage.removeItem(
-            CUSTOMER_INFO_KEY
-          );
-
-      checkoutForm.dataset.pendingInfo =
-        JSON.stringify(
-          info
-        );
-
-      const set =
-        (
-          id,
-          text
-        ) => {
-
-          const el =
-            $(id);
-
-          if (el)
-            el.textContent =
-              text;
-        };
-
-      set(
-        "confirmName",
-        info.name
-      );
-
-      set(
-        "confirmPhoneLine",
-        info.mobile
-      );
-
-      set(
-        "confirmAddressLine",
-
-        `${info.address}${
-          info.landmark
-            ? ` (${info.landmark})`
-            : ""
-        }, ${
-          info.city
-        }, ${
-          info.state
-        } - ${
-          info.pin
-        }, ${
-          info.country
-        }`
-      );
-
-      renderSummary(
-        $("confirmOrderSummary"),
-        $("confirmOrderTotal")
-      );
-
-      goToStep(2);
-    }
-  );
-
-  $("changeAddressBtn")?.addEventListener(
-    "click",
-    () =>
-      goToStep(1)
-  );
-
-  $("confirmContinueBtn")?.addEventListener(
-    "click",
-    () => {
-
-      renderSummary(
-        $("orderSummary"),
-        $("orderTotal")
-      );
-
-      goToStep(3);
-    }
-  );
-
-  checkoutBack?.addEventListener(
-    "click",
-    () =>
-      goToStep(
-        Math.max(
-          1,
+        updateCheckoutStep(
           currentStep - 1
-        )
-      )
+        );
+      }
+    }
   );
 
+
+  // FIX: HTML me close button ka id "checkoutClose" hai
   $("checkoutClose")?.addEventListener(
     "click",
     closeCheckout
   );
+
+  $("closeCheckoutBtn")?.addEventListener(
+    "click",
+    closeCheckout
+  );
+
 
   checkoutOverlay?.addEventListener(
     "click",
@@ -1402,877 +1763,750 @@ function initApp() {
     }
   );
 
-  document.addEventListener(
-    "keydown",
-    (e) => {
-
-      if (
-        e.key ===
-        "Escape"
-      ) {
-
-        closeCart();
-        closeCheckout();
-      }
-    }
-  );
-
-  checkoutBtn?.addEventListener(
-    "click",
-    async () => {
-
-      if (
-        cart.length
-      ) {
-
-        await openCheckout(
-          cart,
-          "cart"
-        );
-      }
-    }
-  );
 
   // ===================================================
-  // STEP 3 : PAY NOW
-  // RAZORPAY
+  // RAZORPAY PAYMENT
+  // ===================================================
+
+  async function startRazorpayPayment() {
+
+    const user =
+      await requireUser(
+        "Please login before making payment."
+      );
+
+    if (!user)
+      return;
+
+    if (
+      !checkoutItems.length
+    ) {
+
+      alert(
+        "No products selected."
+      );
+
+      return;
+    }
+
+    const info =
+      getCheckoutData();
+
+    const validation =
+      validateCustomerInfo(
+        info
+      );
+
+    if (!validation.ok) {
+
+      alert(
+        validation.message
+      );
+
+      updateCheckoutStep(
+        1
+      );
+
+      return;
+    }
+
+    const stockResult =
+      await validateStock(
+        checkoutItems
+      );
+
+    if (!stockResult.ok) {
+
+      alert(
+        stockResult.message
+      );
+
+      return;
+    }
+
+    const total =
+      getCheckoutTotal();
+
+    if (
+      !Number.isFinite(total) ||
+      total <= 0
+    ) {
+
+      alert(
+        "Invalid order amount."
+      );
+
+      return;
+    }
+
+    // -----------------------------------------------
+    // LOAD RAZORPAY CHECKOUT
+    // -----------------------------------------------
+
+    placeOrderBtn.disabled =
+      true;
+
+    placeOrderBtn.textContent =
+      "Opening Payment...";
+
+    const razorpayLoaded =
+      await loadRazorpayCheckout();
+
+    if (
+      !razorpayLoaded ||
+      !window.Razorpay
+    ) {
+
+      placeOrderBtn.disabled =
+        false;
+
+      placeOrderBtn.textContent =
+        "Pay Now";
+
+      alert(
+        "Razorpay payment system could not be loaded. Please check your internet connection and try again."
+      );
+
+      return;
+    }
+
+    try {
+
+      // ---------------------------------------------
+      // CREATE RAZORPAY ORDER
+      // ---------------------------------------------
+
+      const createOrderResponse =
+        await fetch(
+          `${RAZORPAY_WORKER_URL}/create-order`,
+          {
+
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+                amount:
+                  total
+              })
+          }
+        );
+
+      let orderData =
+        {};
+
+      try {
+
+        orderData =
+          await createOrderResponse.json();
+
+      } catch {
+
+        throw new Error(
+          "Invalid response from payment server."
+        );
+      }
+
+      if (
+        !createOrderResponse.ok ||
+        !orderData?.success ||
+        !orderData?.order?.id ||
+        !orderData?.keyId
+      ) {
+
+        throw new Error(
+          orderData?.message ||
+          "Unable to create Razorpay order."
+        );
+      }
+
+      const razorpayOrderId =
+        orderData.order.id;
+
+      // ---------------------------------------------
+      // PAYMENT DRAFT
+      // ---------------------------------------------
+
+      const paymentDraft = {
+
+        customerUid:
+          user.uid,
+
+        customerName:
+          info.name,
+
+        email:
+          user.email || "",
+
+        phone:
+          info.mobile,
+
+        address:
+          info.address,
+
+        landmark:
+          info.landmark || "",
+
+        city:
+          info.city,
+
+        state:
+          info.state,
+
+        pincode:
+          info.pin,
+
+        country:
+          info.country || "India",
+
+        items:
+          checkoutItems.map(
+            (i) => ({
+
+              productId:
+                i.id,
+
+              productName:
+                i.name,
+
+              price:
+                Number(i.price) || 0,
+
+              quantity:
+                Number(i.qty) || 1,
+
+              image:
+                i.image || "",
+
+              lineTotal:
+                (
+                  Number(i.price) || 0
+                ) *
+                (
+                  Number(i.qty) || 1
+                )
+
+            })
+          ),
+
+        total:
+          total,
+
+        gstIncluded:
+          true,
+
+        paymentMethod:
+          "RAZORPAY",
+
+        paymentProvider:
+          "RAZORPAY",
+
+        paymentStatus:
+          "PENDING",
+
+        orderStatus:
+          "PAYMENT_PENDING",
+
+        checkoutSource:
+          checkoutSource,
+
+        razorpayOrderId:
+          razorpayOrderId,
+
+        createdAt:
+          Date.now()
+      };
+
+      localStorage.setItem(
+        PENDING_PAYMENT_KEY,
+        JSON.stringify(
+          paymentDraft
+        )
+      );
+
+      // ---------------------------------------------
+      // RAZORPAY CHECKOUT OPTIONS
+      // ---------------------------------------------
+
+      const options = {
+
+        key:
+          orderData.keyId,
+
+        amount:
+          orderData.order.amount,
+
+        currency:
+          orderData.order.currency ||
+          "INR",
+
+        name:
+          "AYONIZA",
+
+        description:
+          "AYONIZA Jewellery Order",
+
+        order_id:
+          razorpayOrderId,
+
+        // -------------------------------------------
+        // UPI ENABLED
+        // -------------------------------------------
+
+        method: {
+
+          upi: true,
+
+          card: true,
+
+          netbanking: true,
+
+          wallet: true
+        },
+
+        prefill: {
+
+          name:
+            info.name,
+
+          email:
+            user.email || "",
+
+          contact:
+            info.mobile
+        },
+
+        notes: {
+
+          customer_uid:
+            user.uid,
+
+          checkout_source:
+            checkoutSource
+        },
+
+        theme: {
+
+          color:
+            "#111111"
+        },
+
+        // -------------------------------------------
+        // PAYMENT SUCCESS
+        // -------------------------------------------
+
+        handler:
+          async function (
+            response
+          ) {
+
+            try {
+
+              placeOrderBtn.disabled =
+                true;
+
+              placeOrderBtn.textContent =
+                "Verifying Payment...";
+
+              // -------------------------------------
+              // VERIFY PAYMENT
+              // -------------------------------------
+
+              const verifyResponse =
+                await fetch(
+                  `${RAZORPAY_WORKER_URL}/verify-payment`,
+                  {
+
+                    method:
+                      "POST",
+
+                    headers: {
+
+                      "Content-Type":
+                        "application/json"
+                    },
+
+                    body:
+                      JSON.stringify({
+
+                        razorpay_order_id:
+                          response.razorpay_order_id,
+
+                        razorpay_payment_id:
+                          response.razorpay_payment_id,
+
+                        razorpay_signature:
+                          response.razorpay_signature
+                      })
+                  }
+                );
+
+              let verifyData =
+                {};
+
+              try {
+
+                verifyData =
+                  await verifyResponse.json();
+
+              } catch {
+
+                throw new Error(
+                  "Invalid payment verification response."
+                );
+              }
+
+              // -------------------------------------
+              // PAYMENT NOT VERIFIED
+              // -------------------------------------
+
+              if (
+                !verifyResponse.ok ||
+                !verifyData?.success ||
+                verifyData?.paymentStatus !==
+                  "PAID"
+              ) {
+
+                throw new Error(
+                  verifyData?.message ||
+                  "Payment verification failed."
+                );
+              }
+
+              // -------------------------------------
+              // PAYMENT VERIFIED
+              // -------------------------------------
+
+              paymentDraft.razorpayPaymentId =
+                response.razorpay_payment_id;
+
+              paymentDraft.razorpaySignature =
+                response.razorpay_signature;
+
+              paymentDraft.paymentStatus =
+                "PAID";
+
+              paymentDraft.orderStatus =
+                "PLACED";
+
+              paymentDraft.verifiedAt =
+                Date.now();
+
+              localStorage.setItem(
+                PENDING_PAYMENT_KEY,
+                JSON.stringify(
+                  paymentDraft
+                )
+              );
+
+              // -------------------------------------
+              // CREATE FIREBASE ORDER
+              // -------------------------------------
+
+              const {
+                m,
+                db
+              } = await fs();
+
+              const orderRef =
+                m.doc(
+                  m.collection(
+                    db,
+                    "orders"
+                  )
+                );
+
+              await m.setDoc(
+                orderRef,
+                {
+
+                  orderId:
+                    orderRef.id,
+
+                  userId:
+                    user.uid,
+
+                  customerName:
+                    info.name,
+
+                  email:
+                    user.email || "",
+
+                  phone:
+                    info.mobile,
+
+                  address:
+                    info.address,
+
+                  landmark:
+                    info.landmark || "",
+
+                  city:
+                    info.city,
+
+                  state:
+                    info.state,
+
+                  pincode:
+                    info.pin,
+
+                  country:
+                    info.country ||
+                    "India",
+
+                  items:
+
+                    checkoutItems.map(
+                      (item) => ({
+
+                        productId:
+                          item.id || "",
+
+                        productName:
+                          item.name || "",
+
+                        price:
+                          Number(
+                            item.price
+                          ) || 0,
+
+                        quantity:
+                          Number(
+                            item.qty
+                          ) || 1,
+
+                        image:
+                          item.image || "",
+
+                        lineTotal:
+                          (
+                            Number(
+                              item.price
+                            ) || 0
+                          ) *
+                          (
+                            Number(
+                              item.qty
+                            ) || 1
+                          )
+
+                      })
+                    ),
+
+                  total:
+                    total,
+
+                  gstIncluded:
+                    true,
+
+                  paymentMethod:
+                    "RAZORPAY",
+
+                  paymentProvider:
+                    "RAZORPAY",
+
+                  paymentStatus:
+                    "PAID",
+
+                  orderStatus:
+                    "PLACED",
+
+                  razorpayOrderId:
+                    response.razorpay_order_id,
+
+                  razorpayPaymentId:
+                    response.razorpay_payment_id,
+
+                  razorpaySignature:
+                    response.razorpay_signature,
+
+                  checkoutSource:
+                    checkoutSource,
+
+                  createdAt:
+                    m.serverTimestamp()
+                }
+              );
+
+              // -------------------------------------
+              // CLEAR PENDING PAYMENT
+              // -------------------------------------
+
+              localStorage.removeItem(
+                PENDING_PAYMENT_KEY
+              );
+
+              // -------------------------------------
+              // CLEAR CART
+              // (sirf tab jab order cart se bana ho)
+              // -------------------------------------
+
+              if (
+                checkoutSource ===
+                "cart"
+              ) {
+
+                cart = [];
+
+                renderCart();
+              }
+
+              // -------------------------------------
+              // CLOSE CHECKOUT
+              // -------------------------------------
+
+              closeCheckout();
+
+              // -------------------------------------
+              // SUCCESS
+              // -------------------------------------
+
+              alert(
+                "Payment successful! Your order has been placed."
+              );
+
+              // -------------------------------------
+              // ORDER SUCCESS PAGE
+              // -------------------------------------
+
+              window.location.href =
+                `order-success.html?orderId=${encodeURIComponent(
+                  orderRef.id
+                )}`;
+
+            } catch (error) {
+
+              console.error(
+                "Razorpay payment verification/order error:",
+                error
+              );
+
+              alert(
+                "Payment received, but order confirmation could not be completed.\n\n" +
+                "Please contact AYONIZA support with your Razorpay Payment ID:\n" +
+                (
+                  response?.razorpay_payment_id ||
+                  "Not available"
+                )
+              );
+
+            } finally {
+
+              placeOrderBtn.disabled =
+                false;
+
+              placeOrderBtn.textContent =
+                "Pay Now";
+            }
+          },
+
+        // -------------------------------------------
+        // CHECKOUT CLOSED
+        // -------------------------------------------
+
+        modal: {
+
+          ondismiss:
+            function () {
+
+              placeOrderBtn.disabled =
+                false;
+
+              placeOrderBtn.textContent =
+                "Pay Now";
+
+              console.log(
+                "Razorpay Checkout closed by customer."
+              );
+            }
+        }
+      };
+
+      // ---------------------------------------------
+      // CREATE RAZORPAY INSTANCE
+      // ---------------------------------------------
+
+      const razorpay =
+        new window.Razorpay(
+          options
+        );
+
+      // ---------------------------------------------
+      // PAYMENT FAILED
+      // ---------------------------------------------
+
+      razorpay.on(
+        "payment.failed",
+        function (
+          response
+        ) {
+
+          console.error(
+            "Razorpay payment failed:",
+            response
+          );
+
+          placeOrderBtn.disabled =
+            false;
+
+          placeOrderBtn.textContent =
+            "Pay Now";
+
+          alert(
+            response?.error?.description ||
+            "Payment failed. Please try again."
+          );
+        }
+      );
+
+      // ---------------------------------------------
+      // OPEN RAZORPAY CHECKOUT
+      // ---------------------------------------------
+
+      razorpay.open();
+
+    } catch (error) {
+
+      console.error(
+        "Razorpay start payment error:",
+        error
+      );
+
+      placeOrderBtn.disabled =
+        false;
+
+      placeOrderBtn.textContent =
+        "Pay Now";
+
+      alert(
+        error?.message ||
+        "Unable to start payment. Please try again."
+      );
+    }
+  }
+
+
+  // ===================================================
+  // PAY NOW BUTTON
   // ===================================================
 
   placeOrderBtn?.addEventListener(
     "click",
     async () => {
 
-      const user =
-        await requireUser(
-          "Please login before payment."
-        );
+      if (
+        currentStep !== 3
+      ) {
 
-      if (!user)
         return;
-
-      if (
-        !checkoutItems.length
-      ) {
-
-        return alert(
-          "Your cart is empty."
-        );
       }
 
-      let info =
-        {};
-
-      try {
-
-        info =
-          JSON.parse(
-            checkoutForm?.dataset
-              .pendingInfo ||
-            "{}"
-          );
-
-      } catch {
-
-        return alert(
-          "Customer details could not be read."
-        );
-      }
-
-      if (
-        !info.name ||
-        !info.mobile ||
-        !info.address ||
-        !info.city ||
-        !info.state ||
-        !info.pin
-      ) {
-
-        alert(
-          "Please complete your delivery address first."
-        );
-
-        return goToStep(1);
-      }
-
-      // -----------------------------------------------
-      // STOCK CHECK
-      // -----------------------------------------------
-
-      const check =
-        await validateStock(
-          checkoutItems
-        );
-
-      if (!check.ok) {
-
-        return alert(
-          check.message
-        );
-      }
-
-      // -----------------------------------------------
-      // TOTAL
-      // -----------------------------------------------
-
-      const total =
-        checkoutItems.reduce(
-          (s, i) =>
-            s +
-            Number(i.price) *
-            Number(i.qty),
-          0
-        );
-
-      if (
-        !Number.isFinite(total) ||
-        total <= 0
-      ) {
-
-        return alert(
-          "Invalid order amount."
-        );
-      }
-
-      // -----------------------------------------------
-      // BUTTON LOCK
-      // -----------------------------------------------
-
-      placeOrderBtn.disabled =
-        true;
-
-      placeOrderBtn.textContent =
-        "Opening Razorpay...";
-
-      try {
-
-        // ---------------------------------------------
-        // SAVE CUSTOMER PROFILE
-        // ---------------------------------------------
-
-        if (
-          saveInfoCheckbox?.checked
-        ) {
-
-          try {
-
-            const {
-              m,
-              db
-            } = await fs();
-
-            await m.setDoc(
-              m.doc(
-                db,
-                "users",
-                user.uid
-              ),
-
-              {
-
-                uid:
-                  user.uid,
-
-                fullName:
-                  info.name,
-
-                email:
-                  user.email || "",
-
-                phone:
-                  info.mobile,
-
-                address:
-                  info.address,
-
-                landmark:
-                  info.landmark ||
-                  "",
-
-                city:
-                  info.city,
-
-                state:
-                  info.state,
-
-                pincode:
-                  info.pin,
-
-                country:
-                  info.country ||
-                  "India",
-
-                updatedAt:
-                  m.serverTimestamp()
-
-              },
-
-              {
-                merge: true
-              }
-            );
-
-          } catch (error) {
-
-            console.error(
-              "Customer profile save error:",
-              error
-            );
-          }
-        }
-
-        // ---------------------------------------------
-        // LOAD RAZORPAY CHECKOUT
-        // ---------------------------------------------
-
-        const razorpayLoaded =
-          await loadRazorpayCheckout();
-
-        if (!razorpayLoaded) {
-
-          throw new Error(
-            "Razorpay Checkout could not be loaded. Please check your internet connection."
-          );
-        }
-
-        // ---------------------------------------------
-        // CREATE RAZORPAY ORDER
-        // ---------------------------------------------
-
-        placeOrderBtn.textContent =
-          "Creating Payment Order...";
-
-        const createOrderResponse =
-          await fetch(
-            `${RAZORPAY_WORKER_URL}/create-order`,
-            {
-
-              method:
-                "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  amount:
-                    total
-                })
-            }
-          );
-
-        let orderData =
-          {};
-
-        try {
-
-          orderData =
-            await createOrderResponse.json();
-
-        } catch {
-
-          throw new Error(
-            "Invalid response from payment server."
-          );
-        }
-
-        if (
-          !createOrderResponse.ok
-        ) {
-
-          throw new Error(
-            orderData?.message ||
-            "Razorpay order could not be created."
-          );
-        }
-
-        if (
-          !orderData?.success ||
-          !orderData?.order?.id ||
-          !orderData?.keyId
-        ) {
-
-          throw new Error(
-            "Invalid Razorpay order response."
-          );
-        }
-
-        const razorpayOrderId =
-          orderData.order.id;
-
-        // ---------------------------------------------
-        // PAYMENT DRAFT
-        // ---------------------------------------------
-
-        const paymentDraft = {
-
-          razorpayOrderId:
-
-            razorpayOrderId,
-
-          userId:
-            user.uid,
-
-          customerName:
-            info.name,
-
-          email:
-            user.email || "",
-
-          phone:
-            info.mobile,
-
-          address:
-            info.address,
-
-          landmark:
-            info.landmark || "",
-
-          city:
-            info.city,
-
-          state:
-            info.state,
-
-          pincode:
-            info.pin,
-
-          country:
-            info.country ||
-            "India",
-
-          items:
-
-            checkoutItems.map(
-              (i) => ({
-
-                productId:
-                  i.id || "",
-
-                productName:
-                  i.name || "",
-
-                price:
-                  Number(
-                    i.price
-                  ) || 0,
-
-                quantity:
-                  Number(
-                    i.qty
-                  ) || 1,
-
-                image:
-                  i.image || "",
-
-                lineTotal:
-                  (
-                    Number(
-                      i.price
-                    ) || 0
-                  ) *
-                  (
-                    Number(
-                      i.qty
-                    ) || 1
-                  )
-
-              })
-            ),
-
-          total:
-            total,
-
-          gstIncluded:
-            true,
-
-          paymentMethod:
-            "RAZORPAY",
-
-          paymentProvider:
-            "RAZORPAY",
-
-          paymentStatus:
-            "PENDING",
-
-          orderStatus:
-            "PAYMENT_PENDING",
-
-          checkoutSource:
-            checkoutSource,
-
-          createdAt:
-            Date.now()
-        };
-
-        localStorage.setItem(
-          PENDING_PAYMENT_KEY,
-          JSON.stringify(
-            paymentDraft
-          )
-        );
-
-        // ---------------------------------------------
-        // RAZORPAY CHECKOUT OPTIONS
-        // ---------------------------------------------
-
-        const options = {
-
-          key:
-            orderData.keyId,
-
-          amount:
-            orderData.order.amount,
-
-          currency:
-            orderData.order.currency ||
-            "INR",
-
-          name:
-            "AYONIZA",
-
-          description:
-            "AYONIZA Jewellery Order",
-
-          order_id:
-            razorpayOrderId,
-
-          prefill: {
-
-            name:
-              info.name,
-
-            email:
-              user.email || "",
-
-            contact:
-              info.mobile
-
-          },
-
-          notes: {
-
-            customer_uid:
-              user.uid,
-
-            checkout_source:
-              checkoutSource
-
-          },
-
-          theme: {
-
-            color:
-              "#111111"
-
-          },
-
-          // -------------------------------------------
-          // PAYMENT SUCCESS
-          // -------------------------------------------
-
-          handler:
-            async function (
-              response
-            ) {
-
-              try {
-
-                placeOrderBtn.disabled =
-                  true;
-
-                placeOrderBtn.textContent =
-                  "Verifying Payment...";
-
-                // ---------------------------------------
-                // VERIFY PAYMENT
-                // ---------------------------------------
-
-                const verifyResponse =
-                  await fetch(
-                    `${RAZORPAY_WORKER_URL}/verify-payment`,
-                    {
-
-                      method:
-                        "POST",
-
-                      headers: {
-                        "Content-Type":
-                          "application/json"
-                      },
-
-                      body:
-                        JSON.stringify({
-
-                          razorpay_order_id:
-                            response.razorpay_order_id,
-
-                          razorpay_payment_id:
-                            response.razorpay_payment_id,
-
-                          razorpay_signature:
-                            response.razorpay_signature
-
-                        })
-                    }
-                  );
-
-                let verifyData =
-                  {};
-
-                try {
-
-                  verifyData =
-                    await verifyResponse.json();
-
-                } catch {
-
-                  throw new Error(
-                    "Invalid payment verification response."
-                  );
-                }
-
-                // ---------------------------------------
-                // PAYMENT NOT VERIFIED
-                // ---------------------------------------
-
-                if (
-                  !verifyResponse.ok ||
-                  !verifyData?.success ||
-                  verifyData?.paymentStatus !==
-                    "PAID"
-                ) {
-
-                  throw new Error(
-                    verifyData?.message ||
-                    "Payment verification failed."
-                  );
-                }
-
-                // ---------------------------------------
-                // PAYMENT VERIFIED
-                // ---------------------------------------
-
-                paymentDraft.razorpayPaymentId =
-                  response.razorpay_payment_id;
-
-                paymentDraft.razorpaySignature =
-                  response.razorpay_signature;
-
-                paymentDraft.paymentStatus =
-                  "PAID";
-
-                paymentDraft.orderStatus =
-                  "PLACED";
-
-                paymentDraft.verifiedAt =
-                  Date.now();
-
-                localStorage.setItem(
-                  PENDING_PAYMENT_KEY,
-                  JSON.stringify(
-                    paymentDraft
-                  )
-                );
-
-                // ---------------------------------------
-                // CREATE FIREBASE ORDER
-                // ---------------------------------------
-
-                const {
-                  m,
-                  db
-                } = await fs();
-
-                const orderRef =
-                  m.doc(
-                    m.collection(
-                      db,
-                      "orders"
-                    )
-                  );
-
-                await m.setDoc(
-                  orderRef,
-                  {
-
-                    orderId:
-                      orderRef.id,
-
-                    userId:
-                      user.uid,
-
-                    customerName:
-                      info.name,
-
-                    email:
-                      user.email || "",
-
-                    phone:
-                      info.mobile,
-
-                    address:
-                      info.address,
-
-                    landmark:
-                      info.landmark || "",
-
-                    city:
-                      info.city,
-
-                    state:
-                      info.state,
-
-                    pincode:
-                      info.pin,
-
-                    country:
-                      info.country ||
-                      "India",
-
-                    items:
-
-                      checkoutItems.map(
-                        (item) => ({
-
-                          productId:
-                            item.id || "",
-
-                          productName:
-                            item.name || "",
-
-                          price:
-                            Number(
-                              item.price
-                            ) || 0,
-
-                          quantity:
-                            Number(
-                              item.qty
-                            ) || 1,
-
-                          image:
-                            item.image || "",
-
-                          lineTotal:
-                            (
-                              Number(
-                                item.price
-                              ) || 0
-                            ) *
-                            (
-                              Number(
-                                item.qty
-                              ) || 1
-                            )
-
-                        })
-                      ),
-
-                    total:
-                      total,
-
-                    gstIncluded:
-                      true,
-
-                    paymentMethod:
-                      "RAZORPAY",
-
-                    paymentProvider:
-                      "RAZORPAY",
-
-                    paymentStatus:
-                      "PAID",
-
-                    orderStatus:
-                      "PLACED",
-
-                    razorpayOrderId:
-                      response.razorpay_order_id,
-
-                    razorpayPaymentId:
-                      response.razorpay_payment_id,
-
-                    razorpaySignature:
-                      response.razorpay_signature,
-
-                    checkoutSource:
-                      checkoutSource,
-
-                    createdAt:
-                      m.serverTimestamp()
-
-                  }
-                );
-
-                // ---------------------------------------
-                // CLEAR PENDING PAYMENT
-                // ---------------------------------------
-
-                localStorage.removeItem(
-                  PENDING_PAYMENT_KEY
-                );
-
-                // ---------------------------------------
-                // CLEAR CART
-                // ---------------------------------------
-
-                cart = [];
-
-                renderCart();
-
-                // ---------------------------------------
-                // CLOSE CHECKOUT
-                // ---------------------------------------
-
-                closeCheckout();
-
-                // ---------------------------------------
-                // SUCCESS
-                // ---------------------------------------
-
-                alert(
-                  "Payment successful! Your order has been placed."
-                );
-
-                // ---------------------------------------
-                // ORDER SUCCESS PAGE
-                // ---------------------------------------
-
-                window.location.href =
-                  `order-success.html?orderId=${encodeURIComponent(
-                    orderRef.id
-                  )}`;
-
-              } catch (error) {
-
-                console.error(
-                  "Razorpay payment verification/order error:",
-                  error
-                );
-
-                alert(
-                  "Payment received, but order confirmation could not be completed.\n\n" +
-                  "Please contact AYONIZA support with your Razorpay Payment ID:\n" +
-                  (
-                    response?.razorpay_payment_id ||
-                    "Not available"
-                  )
-                );
-
-              } finally {
-
-                placeOrderBtn.disabled =
-                  false;
-
-                placeOrderBtn.textContent =
-                  "Pay Now";
-              }
-            },
-
-          // -------------------------------------------
-          // CHECKOUT CLOSED
-          // -------------------------------------------
-
-          modal: {
-
-            ondismiss:
-              function () {
-
-                placeOrderBtn.disabled =
-                  false;
-
-                placeOrderBtn.textContent =
-                  "Pay Now";
-
-                console.log(
-                  "Razorpay Checkout closed by customer."
-                );
-              }
-          }
-        };
-
-        // ---------------------------------------------
-        // CREATE RAZORPAY INSTANCE
-        // ---------------------------------------------
-
-        const razorpay =
-          new Razorpay(
-            options
-          );
-
-        // ---------------------------------------------
-        // PAYMENT FAILED
-        // ---------------------------------------------
-
-        razorpay.on(
-          "payment.failed",
-          function (
-            response
-          ) {
-
-            console.error(
-              "Razorpay payment failed:",
-              response.error
-            );
-
-            alert(
-              response?.error?.description ||
-              "Payment failed. Please try again."
-            );
-
-            placeOrderBtn.disabled =
-              false;
-
-            placeOrderBtn.textContent =
-              "Pay Now";
-
-            // Payment failed:
-            // Firebase order create nahi hoga.
-
-            localStorage.removeItem(
-              PENDING_PAYMENT_KEY
-            );
-          }
-        );
-
-        // ---------------------------------------------
-        // OPEN RAZORPAY
-        // ---------------------------------------------
-
-        placeOrderBtn.textContent =
-          "Opening Razorpay...";
-
-        razorpay.open();
-
-      } catch (error) {
-
-        console.error(
-          "Razorpay payment initialization error:",
-          error
-        );
-
-        localStorage.removeItem(
-          PENDING_PAYMENT_KEY
-        );
-
-        alert(
-          "Payment could not be started.\n\n" +
-          (
-            error?.message ||
-            "Please try again."
-          )
-        );
-
-      } finally {
-
-        placeOrderBtn.disabled =
-          false;
-
-        placeOrderBtn.textContent =
-          "Pay Now";
-      }
+      await startRazorpayPayment();
     }
   );
 
@@ -2697,6 +2931,7 @@ function initApp() {
           const text = (
 
             (
+
               card.querySelector(
                 "h3"
               )?.textContent ||
@@ -2706,6 +2941,7 @@ function initApp() {
             " " +
 
             (
+
               card.querySelector(
                 ".product-description"
               )?.textContent ||
