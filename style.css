@@ -675,7 +675,7 @@ nav#primaryNav a:hover::after {
   box-shadow: 0 24px 60px -15px rgba(50, 12, 25, 0.18), 0 8px 24px rgba(197, 160, 89, 0.12);
 }
 
-.hero-banner-slider {
+.hero-banner-media {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 4.75;
@@ -684,21 +684,17 @@ nav#primaryNav a:hover::after {
   background: var(--ivory-warm);
 }
 
-.hero-banner-slide {
-  position: absolute;
-  inset: 0;
+.hero-main-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 10%;
-  opacity: 0;
-  transform: scale(1.03);
-  transition: opacity 1.2s ease, transform 1.2s ease;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.hero-banner-slide.active {
-  opacity: 1;
-  transform: scale(1);
+.hero-banner-frame:hover .hero-main-img {
+  transform: scale(1.025);
 }
 
 /* Corner Tag on Slider */
@@ -1552,10 +1548,11 @@ nav#primaryNav a:hover::after {
 
 /* ---------- Customer Reviews / Social Proof ---------- */
 .reviews-grid-section {
-  padding: clamp(4rem, 7vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem);
+  padding: clamp(4.5rem, 7vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem);
   max-width: var(--max-w);
   margin: 0 auto;
   text-align: center;
+  scroll-margin-top: 5rem;
 }
 
 .reviews-stat-banner {
@@ -1567,7 +1564,7 @@ nav#primaryNav a:hover::after {
   padding: 0.5rem 1.4rem;
   border-radius: var(--radius-full);
   margin-bottom: 1.2rem;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 4px 15px rgba(197, 160, 89, 0.08);
 }
 
 .reviews-stars {
@@ -1582,60 +1579,149 @@ nav#primaryNav a:hover::after {
   color: var(--plum-900);
 }
 
+.reviews-subtitle {
+  color: var(--ink-500);
+  max-width: 540px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 .reviews-grid--shots {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 2rem;
-  max-width: 900px;
-  margin: 2.5rem auto 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 860px;
+  margin: 2.8rem auto 0;
+  align-items: stretch;
 }
 
 .review-tile--shot {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-smooth);
+  background: #FFFFFF;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 20px;
+  padding: 1.4rem;
+  box-shadow: 0 10px 30px -10px rgba(45, 15, 27, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  gap: 1.1rem;
 }
 
 .review-tile--shot:hover {
   transform: translateY(-4px);
-  border-color: var(--gold-border);
-  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(197, 160, 89, 0.5);
+  box-shadow: 0 16px 36px -10px rgba(45, 15, 27, 0.12);
 }
 
-.review-screenshot-wrap {
+.review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  border-radius: var(--radius-sm);
+}
+
+.review-stars-row {
+  color: #E2A438;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+}
+
+.review-verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #197A43;
+  background: #EFF9F3;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(25, 122, 67, 0.18);
+}
+
+.review-photo-frame {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 14px;
   overflow: hidden;
   background: #F8F5F2;
-  border: 1px solid var(--line);
-  margin-bottom: 1rem;
+  border: 1px solid rgba(43, 32, 36, 0.08);
 }
 
-.review-screenshot-wrap img {
+.review-photo-frame img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.review-tile--shot:hover .review-photo-frame img {
+  transform: scale(1.03);
+}
+
+.photo-tag {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--plum-900);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.review-bubble-wrap {
+  width: 100%;
+  min-height: 110px;
+  background: #FAF7F2;
+  border: 1px solid rgba(43, 32, 36, 0.06);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-chat-img {
+  max-width: 100%;
+  max-height: 125px;
+  width: auto;
   height: auto;
   object-fit: contain;
   display: block;
+  border-radius: 8px;
 }
 
 .review-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.84rem;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
   color: #25D366;
   font-weight: 600;
+  padding-top: 4px;
+  border-top: 1px solid rgba(43, 32, 36, 0.05);
 }
 
 .review-meta svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 680px) {
+  .reviews-grid--shots {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
 }
 
 /* ---------- VIP Newsletter / Concierge Section ---------- */

@@ -3229,33 +3229,7 @@ function initApp() {
         )
     );
 
-  // ===================================================
-  // HERO SLIDER
-  // ===================================================
 
-  const slider = $("heroBannerSlider");
-  const slides = slider?.querySelectorAll(".hero-banner-slide");
-  const dots = slider?.parentElement?.querySelectorAll(".hero-slider-dot");
-
-  if (slides?.length > 1) {
-    let current = 0;
-    const showSlide = (idx) => {
-      slides[current]?.classList.remove("active");
-      dots?.[current]?.classList.remove("active");
-      current = idx;
-      slides[current]?.classList.add("active");
-      dots?.[current]?.classList.add("active");
-    };
-
-    dots?.forEach((dot, idx) => {
-      dot.addEventListener("click", () => showSlide(idx));
-    });
-
-    setInterval(() => {
-      if (document.hidden) return;
-      showSlide((current + 1) % slides.length);
-    }, 4500);
-  }
 
   // ===================================================
   // INIT
