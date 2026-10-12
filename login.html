@@ -1,61 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | AYONIZA</title>
-<style>
-  :root { --bg:#fbf3f4; --card:#fff; --ink:#3a2530; --muted:#8a7480; --accent:#8c3b5a; --line:#ecd9de; --err:#b3261e; --ok:#1e7a46; }
-  * { box-sizing: border-box; }
-  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:var(--bg); color:var(--ink); font-family:Georgia,"Times New Roman",serif; }
-  .box { width:100%; max-width:400px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:32px 28px; }
-  .brand { display:block; text-align:center; text-decoration:none; color:var(--accent); font-size:26px; letter-spacing:.18em; margin-bottom:4px; }
-  .tag { text-align:center; color:var(--muted); font-size:14px; margin:0 0 24px; }
-  .tabs { display:flex; border-bottom:1px solid var(--line); margin-bottom:20px; }
-  .tab { flex:1; background:none; border:0; padding:10px; font:inherit; font-size:16px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; }
-  .tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-  label { display:block; font-size:14px; margin:14px 0 6px; }
-  input { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; font:inherit; font-size:16px; color:var(--ink); }
-  input:focus, button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
-  .primary { width:100%; margin-top:20px; padding:12px; border:0; border-radius:8px; background:var(--accent); color:#fff; font:inherit; font-size:16px; cursor:pointer; }
-  .primary:disabled { opacity:.6; cursor:wait; }
-  .google { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; background:#fff; font:inherit; font-size:16px; color:var(--ink); cursor:pointer; }
-  .or { text-align:center; color:var(--muted); font-size:14px; margin:16px 0; }
-  .link { display:block; margin:14px auto 0; background:none; border:0; color:var(--accent); font:inherit; font-size:14px; cursor:pointer; text-decoration:underline; }
-  .msg { min-height:20px; margin:14px 0 0; font-size:14px; text-align:center; }
-  .msg.err { color:var(--err); } .msg.ok { color:var(--ok); }
-  .back { display:block; text-align:center; margin-top:18px; color:var(--muted); font-size:14px; text-decoration:none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | AYONIZA — Grace of Sita</title>
+  <meta name="description" content="Sign in or create an account at AYONIZA. Discover timeless, anti-tarnish luxury jewellery handcrafted with modern elegance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAF6F2;
+      --card-bg: #FFFFFF;
+      --plum-900: #2D0F1B;
+      --plum-800: #421627;
+      --plum-700: #5C2037;
+      --plum-soft: #F6EDF1;
+      --gold-dark: #8A6421;
+      --gold-main: #C5A059;
+      --gold-light: #F7F1E6;
+      --gold-line: rgba(197, 160, 89, 0.28);
+      --ink: #261B21;
+      --ink-muted: #7A6973;
+      --line: #E8DEE3;
+      --err: #B3261E;
+      --err-bg: #FDF2F2;
+      --ok: #197A43;
+      --ok-bg: #EFF9F3;
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 24px;
+      --shadow-luxury: 0 25px 70px -15px rgba(45, 15, 27, 0.12), 0 8px 24px -8px rgba(197, 160, 89, 0.08);
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(20px, 4vw, 40px);
+      background: radial-gradient(circle at 50% 20%, #FFF9F3 0%, var(--bg) 60%, #F5ECE8 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient luxury aura */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -20vh;
+      right: -15vw;
+      width: 55vw;
+      height: 55vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -20vh;
+      left: -15vw;
+      width: 55vw;
+      height: 55vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(92, 32, 55, 0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Centered Enhanced Form Card */
+    .auth-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gold-line);
+      box-shadow: var(--shadow-luxury);
+      padding: clamp(28px, 6vw, 42px) clamp(22px, 5vw, 36px);
+      transition: transform 0.3s ease;
+    }
+
+    /* Brand Header */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-link {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .brand-logo-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      color: var(--plum-900);
+      line-height: 1.1;
+      margin-left: 0.22em; /* visually center letter-spacing */
+    }
+
+    .brand-sub {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-top: 4px;
+      margin-left: 0.26em;
+    }
+
+    .brand-sub .sparkle {
+      font-size: 9px;
+      color: var(--gold-main);
+    }
+
+    /* Segmented Tab Switcher (Log in / Sign up) */
+    .tabs-wrapper {
+      background: var(--plum-soft);
+      border-radius: 999px;
+      padding: 4px;
+      display: flex;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+    }
+
+    .tab {
+      flex: 1;
+      background: transparent;
+      border: 0;
+      padding: 9px 16px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+      border-radius: 999px;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab.active {
+      background: #FFFFFF;
+      color: var(--plum-900);
+      box-shadow: 0 3px 12px rgba(45, 15, 27, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--plum-900);
+    }
+
+    /* Google SSO Button */
+    .google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 11px 18px;
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .google:hover {
+      background: #FAF7F8;
+      border-color: #D6C2CC;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(45, 15, 27, 0.07);
+    }
+
+    .google:active {
+      transform: translateY(0);
+    }
+
+    .google svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Luxury Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      margin: 18px 0;
+      color: var(--ink-muted);
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .or-divider span {
+      padding: 0 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--plum-900);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: #9E8D97;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 11px 40px 11px 42px;
+      background: #FCFAFA;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: #B5A4AE;
+      font-weight: 400;
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      background: #FFFFFF;
+      border-color: var(--plum-700);
+      box-shadow: 0 0 0 3px rgba(92, 32, 55, 0.12);
+    }
+
+    .input-wrapper input:focus ~ .input-icon {
+      color: var(--plum-700);
+    }
+
+    /* Password Eye Toggle */
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      padding: 6px;
+      color: #9E8D97;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .password-toggle-btn:hover {
+      color: var(--plum-900);
+    }
+
+    /* Primary Submit Button */
+    .primary {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, var(--plum-800) 0%, var(--plum-900) 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 8px 20px -4px rgba(45, 15, 27, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--plum-700) 0%, var(--plum-800) 100%);
+      box-shadow: 0 12px 26px -4px rgba(45, 15, 27, 0.45);
+      border-color: var(--gold-main);
+    }
+
+    .primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .primary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    /* Forgot Password Button */
+    .link {
+      display: block;
+      margin: 14px auto 0;
+      background: none;
+      border: 0;
+      color: var(--plum-800);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .link:hover {
+      color: var(--gold-dark);
+      text-decoration: underline;
+    }
+
+    /* Status Message Box */
+    .msg {
+      min-height: 20px;
+      margin: 12px 0 4px;
+      font-size: 13px;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      padding: 0;
+      transition: all 0.25s ease;
+    }
+
+    .msg.err {
+      color: var(--err);
+      background: var(--err-bg);
+      border: 1px solid rgba(179, 38, 30, 0.2);
+      padding: 9px 12px;
+      font-weight: 500;
+    }
+
+    .msg.ok {
+      color: var(--ok);
+      background: var(--ok-bg);
+      border: 1px solid rgba(25, 122, 67, 0.2);
+      padding: 9px 12px;
+      font-weight: 600;
+    }
+
+    /* Return to Store Link */
+    .back-link-wrap {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .back:hover {
+      color: var(--plum-900);
+      transform: translateX(-3px);
+    }
+  </style>
 </head>
 <body>
-<main class="box">
-  <a class="brand" href="index.html">AYONIZA</a>
-  <p class="tag">Grace of Sita</p>
 
-  <div class="tabs" role="tablist">
-    <button class="tab active" type="button" data-mode="login">Log in</button>
-    <button class="tab" type="button" data-mode="signup">Sign up</button>
-  </div>
-
-  <button class="google" id="googleBtn" type="button">Continue with Google</button>
-  <p class="or">or use your email</p>
-
-  <form id="authForm" novalidate>
-    <div id="nameField" hidden>
-      <label for="fullname">Full name</label>
-      <input id="fullname" name="fullname" type="text" autocomplete="name">
+  <main class="auth-card">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <a class="brand-logo-link" href="index.html" aria-label="AYONIZA Home">
+        <span class="brand-name">AYONIZA</span>
+        <span class="brand-sub">
+          <span class="sparkle">✦</span>
+          <span>Grace of Sita</span>
+          <span class="sparkle">✦</span>
+        </span>
+      </a>
     </div>
-    <label for="email">Email</label>
-    <input id="email" name="email" type="email" autocomplete="email" required>
-    <label for="password">Password</label>
-    <input id="password" name="password" type="password" autocomplete="current-password" required>
-    <button class="primary" id="submitBtn" type="submit">Log in</button>
-  </form>
 
-  <button class="link" id="forgotBtn" type="button">Forgot password?</button>
-  <p class="msg" id="authMsg" role="status"></p>
-  <a class="back" href="index.html">Back to shop</a>
-</main>
-<script type="module" src="auth.js"></script>
+    <!-- Segmented Mode Tabs -->
+    <div class="tabs-wrapper" role="tablist" aria-label="Account Action">
+      <button class="tab active" type="button" data-mode="login" role="tab" aria-selected="true">
+        <span>Log in</span>
+      </button>
+      <button class="tab" type="button" data-mode="signup" role="tab" aria-selected="false">
+        <span>Create account</span>
+      </button>
+    </div>
+
+    <!-- Google Button -->
+    <button class="google" id="googleBtn" type="button">
+      <svg viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+      </svg>
+      <span>Continue with Google</span>
+    </button>
+
+    <div class="or-divider">
+      <span>or with email</span>
+    </div>
+
+    <!-- Email Authentication Form -->
+    <form id="authForm" novalidate>
+      <div class="form-group" id="nameField" hidden>
+        <label for="fullname">Full name</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input id="fullname" name="fullname" type="text" autocomplete="name" placeholder="Priya Sharma">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </span>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+          <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" id="eyeIcon">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="primary" id="submitBtn" type="submit">
+        <span>Log in</span>
+      </button>
+    </form>
+
+    <button class="link" id="forgotBtn" type="button">Forgot password?</button>
+    <p class="msg" id="authMsg" role="status"></p>
+
+    <div class="back-link-wrap">
+      <a class="back" href="index.html">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span>Return to shop</span>
+      </a>
+    </div>
+  </main>
+
+  <script>
+    // Password visibility toggle helper
+    const toggleBtn = document.getElementById("togglePasswordBtn");
+    const pwdInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener("click", () => {
+        const isPassword = pwdInput.type === "password";
+        pwdInput.type = isPassword ? "text" : "password";
+        if (eyeIcon) {
+          eyeIcon.innerHTML = isPassword
+            ? '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>'
+            : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+        }
+      });
+    }
+  </script>
+  <script type="module" src="auth.js"></script>
 </body>
 </html>

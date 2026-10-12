@@ -63,7 +63,6 @@
       <a href="category.html?cat=necklaces">Necklaces</a>
       <a href="category.html?cat=sets">Jewellery sets</a>
       <a href="#about">Our story</a>
-      <a href="login.html" id="authLinkMobile" class="mobile-auth-link">Login / Account</a>
     </nav>
 
     <div class="nav-actions">
@@ -79,6 +78,13 @@
             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
       </a>
+      <a href="login.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account"
+        title="Login / Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </a>
       <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button"
         aria-label="Open shopping cart">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
@@ -88,7 +94,6 @@
         </svg>
         <span class="cart-badge" id="cartCount">0</span>
       </button>
-      <a class="auth-btn" id="authLink" href="login.html" style="display:none !important;" hidden>Login</a>
     </div>
   </header>
 
@@ -634,44 +639,68 @@
     <section id="about" class="about" aria-label="Brand Philosophy">
       <div class="about-editorial-wrap">
         <div class="about-editorial-content">
-          <p class="small-title">Our Philosophy &amp; Roots</p>
-          <h2>The Grace of <span>Sita.</span></h2>
+          <div class="about-badge">
+            <span class="about-badge-sparkle">✦</span>
+            <span>About Ayoniza</span>
+            <span class="about-badge-sparkle">✦</span>
+          </div>
+          <h2 class="about-heading">Grace of <span class="gold-italic">Sita</span></h2>
           <p class="about-lead-text">
-            AYONIZA was born from a desire to celebrate the quiet majesty, poise, and dignified radiance embodied by
-            Sita.
+            AYONIZA is a jewellery brand created for women and girls who love timeless elegance with a modern touch.
           </p>
           <p class="about-body-text">
-            We believe that jewellery is never merely an adornment — it is an intimate expression of individuality and
-            serene confidence. Every piece in our collection blends time-honoured Indian grace with featherweight modern
-            craftsmanship.
+            We believe jewellery is more than an accessory. It is a beautiful expression of personality, confidence and grace.
           </p>
-          <a class="btn primary" href="category.html?cat=all">
-            Explore Curated Pieces
-          </a>
-        </div>
 
-        <div class="about-features-list">
-          <div class="about-feature-item">
-            <div class="about-feature-icon">✦</div>
-            <div class="about-feature-text">
-              <strong>Inspired by Timeless Dignity</strong>
-              <p>Rooted in timeless aesthetics that never fade with fleeting trends.</p>
+          <div class="about-pillars-grid">
+            <div class="about-pillar-card">
+              <div class="about-pillar-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div class="about-pillar-info">
+                <strong>Timeless Dignity</strong>
+                <span>Poised, modern Indian grace</span>
+              </div>
+            </div>
+
+            <div class="about-pillar-card">
+              <div class="about-pillar-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="about-pillar-info">
+                <strong>Anti-Tarnish Polish</strong>
+                <span>Skin-friendly 18K lasting luster</span>
+              </div>
+            </div>
+
+            <div class="about-pillar-card">
+              <div class="about-pillar-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+              </div>
+              <div class="about-pillar-info">
+                <strong>Weightless Comfort</strong>
+                <span>Delightfully light for dawn to dusk</span>
+              </div>
             </div>
           </div>
 
-          <div class="about-feature-item">
-            <div class="about-feature-icon">✨</div>
-            <div class="about-feature-text">
-              <strong>Weightless Daily Comfort</strong>
-              <p>Engineered to feel delightfully lightweight from dawn till dusk.</p>
-            </div>
-          </div>
-
-          <div class="about-feature-item">
-            <div class="about-feature-icon">🛡️</div>
-            <div class="about-feature-text">
-              <strong>Protected Long-Lasting Finish</strong>
-              <p>Anti-tarnish PVD coating designed for real-world active wear.</p>
+          <div class="about-action-row">
+            <a class="btn primary about-cta-btn" href="category.html?cat=all">
+              <span>Explore Collection</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <div class="about-trust-tag">
+              <span class="trust-dot"></span>
+              <span>100% Anti-Tarnish • Skin Friendly</span>
             </div>
           </div>
         </div>
@@ -755,7 +784,7 @@
         <a href="#home" class="footer-logo">AYONIZA</a>
         <p class="footer-tagline">Grace of Sita — Purity with Grace</p>
         <div class="footer-contact">
-          <span>📍 Atelier: Indore, Madhya Pradesh, India</span>
+          <span>📍 Address: Indore, Madhya Pradesh, India</span>
           <span>📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
           <span>✉️ Email: <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
         </div>
@@ -803,13 +832,6 @@
         <a href="#reviews">Customer Reviews</a>
         <a href="login.html">My Account</a>
       </div>
-    </div>
-
-    <div class="footer-payment-strip">
-      <span class="footer-payment-pill">🔒 256-Bit SSL Encrypted</span>
-      <span class="footer-payment-pill">⚡ Instant UPI / QR</span>
-      <span class="footer-payment-pill">💳 Visa / Mastercard / RuPay</span>
-      <span class="footer-payment-pill">🛡️ PhonePe &amp; Razorpay Verified</span>
     </div>
 
     <p class="footer-bottom">

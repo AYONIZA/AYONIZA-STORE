@@ -97,12 +97,11 @@ const authLink = document.getElementById("authLink");
 const authLinkMobile = document.getElementById("authLinkMobile");
 
 function setAuthLink(element, user) {
-
     if (!element) return;
 
+    const isIcon = element.classList.contains("user-btn") || element.classList.contains("nav-icon-btn") || !!element.querySelector("svg");
 
     if (user) {
-
         const name =
             (
                 user.displayName ||
@@ -110,31 +109,22 @@ function setAuthLink(element, user) {
                 "Account"
             ).split(" ")[0];
 
-
-        element.textContent =
-            "My Account";
-
-
-        element.href =
-            "account.html";
-
-
-        element.onclick =
-            null;
-
+        if (!isIcon) {
+            element.textContent = "My Account";
+        }
+        element.title = "My Account (" + name + ")";
+        element.setAttribute("aria-label", "My Account (" + name + ")");
+        element.href = "account.html";
+        element.onclick = null;
     } else {
-
-        element.textContent =
-            "Login";
-
-        element.href =
-            "login.html";
-
-        element.onclick =
-            null;
-
+        if (!isIcon) {
+            element.textContent = "Login";
+        }
+        element.title = "Login / Account";
+        element.setAttribute("aria-label", "Login / Account");
+        element.href = "login.html";
+        element.onclick = null;
     }
-
 }
 
 /* ================= EXTRA LOGIN BUTTON (header ka pill button) ================= */
