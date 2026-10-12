@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AYONIZA Admin Panel</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
+            color: #222;
+        }
+
+        .topbar {
+            background: #111;
+            color: #fff;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .topbar button {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1400px, 95%);
+            margin: 25px auto 60px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stat-card strong {
+            font-size: 25px;
+        }
+
+        .orders-wrapper {
+            display: grid;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .order-id {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: #f2f2f2;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .order-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .section h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+        }
+
+        .section p {
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .items {
+            display: grid;
+            gap: 10px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+        }
+
+        .item img {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f5f5f5;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+        }
+
+        .item-meta {
+            color: #666;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .amount-box {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .payment-status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff2cc;
+            color: #8a6200;
+        }
+
+        .verified {
+            background: #d9f7df;
+            color: #1c6b2b;
+        }
+
+        .shipping-box {
+            display: grid;
+            gap: 10px;
+        }
+
+        .shipping-box input,
+        .status-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            background: #fff;
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .accept-btn,
+        .cancel-btn,
+        .save-btn {
+            border: 0;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .accept-btn {
+            background: #1f7a3d;
+            color: #fff;
+        }
+
+        .cancel-btn {
+            background: #b42318;
+            color: #fff;
+        }
+
+        .save-btn {
+            background: #111;
+            color: #fff;
+        }
+
+        .accept-btn:disabled,
+        .cancel-btn:disabled,
+        .save-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .tracking-link {
+            display: inline-block;
+            margin-top: 8px;
+            word-break: break-all;
+            color: #7d2f4e;
+        }
+
+        .notification-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f3f5;
+            border-radius: 8px;
+            border: 1px solid #eadde2;
+        }
+
+        .notification-box strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .empty,
+        .loading {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        /* MODAL */
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(500px, 100%);
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.2);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+        }
+
+        .modal label {
+            display: block;
+            margin-top: 14px;
+            font-weight: 600;
+        }
+
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            margin-top: 7px;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        .modal textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .modal-close,
+        .modal-confirm {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .modal-close {
+            background: #eee;
+        }
+
+        .modal-confirm {
+            background: #111;
+            color: #fff;
+        }
+
+
+        /* =====================================================
+           PRODUCT STOCK MANAGEMENT
+           ===================================================== */
+
+        .stock-management-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
+        }
+
+        .stock-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .stock-section-header h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+        }
+
+        .stock-section-header p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .stock-products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stock-product-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .stock-product-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stock-product-image {
+            width: 68px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 9px;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .stock-product-name {
+            margin: 0 0 5px;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+
+        .stock-product-price {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .stock-product-stock-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .stock-product-stock-row label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stock-input {
+            width: 85px;
+            padding: 9px 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .stock-save-btn {
+            border: 0;
+            padding: 9px 13px;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #111;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .stock-save-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .stock-current {
+            margin-top: 11px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stock-current.low {
+            color: #b54708;
+        }
+
+        .stock-current.out {
+            color: #b42318;
+        }
+
+        .stock-current.available {
+            color: #1c6b2b;
+        }
+
+        .stock-admin-message {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f2f7f3;
+            color: #1c6b2b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+
+
+        /* =====================================================
+           PRODUCT MANAGEMENT
+           ===================================================== */
+
+        .product-management-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 14px rgba(0,0,0,.08);
+        }
+
+        .product-management-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .product-management-header h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+        }
+
+        .product-management-header p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .product-form {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .product-form-title {
+            margin: 0 0 15px;
+            font-size: 17px;
+        }
+
+        .product-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .product-form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .product-form-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .product-form-field label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .product-form-field input,
+        .product-form-field select,
+        .product-form-field textarea {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            font: inherit;
+        }
+
+        .product-form-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .product-listed-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 4px;
+        }
+
+        .product-listed-row input {
+            width: auto;
+        }
+
+        .product-form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .product-list-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .product-manage-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .product-manage-top {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .product-manage-image {
+            width: 76px;
+            height: 76px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .product-manage-name {
+            margin: 0 0 5px;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+
+        .product-manage-meta {
+            margin: 3px 0;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .product-list-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .product-list-status.listed {
+            background: #e6f7eb;
+            color: #1c6b2b;
+        }
+
+        .product-list-status.unlisted {
+            background: #f2f2f2;
+            color: #666;
+        }
+
+        .product-manage-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .product-manage-actions button {
+            border: 0;
+            padding: 9px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .product-edit-btn {
+            background: #111;
+            color: #fff;
+        }
+
+        .product-toggle-btn {
+            background: #f2f2f2;
+            color: #222;
+        }
+
+        .product-delete-btn {
+            background: #b42318;
+            color: #fff;
+        }
+
+        .product-manage-actions button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .product-admin-message {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f2f7f3;
+            color: #1c6b2b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .product-manager-empty {
+            grid-column: 1 / -1;
+            background: #fff;
+            border: 1px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 850px) {
+
+            .product-list-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .order-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .product-list-grid,
+            .product-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-form-field.full {
+                grid-column: auto;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+    </style>
+
+
+<style>
+.extra-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}.extra-nav a{padding:10px 13px;background:#211820;color:#fff;border-radius:8px;text-decoration:none;font-size:13px}.extra-section{background:#fff;border-radius:14px;padding:20px;margin:22px 0;box-shadow:0 3px 14px rgba(0,0,0,.07);scroll-margin-top:90px}.extra-section h2{margin-top:0}.extra-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}.extra-stat{background:#f8f4f6;padding:15px;border-radius:10px}.extra-stat small{display:block;color:#655d62;margin-bottom:8px}.extra-stat strong{font-size:22px}.extra-table-wrap{overflow:auto;width:100%}.extra-table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}.extra-table th,.extra-table td{text-align:left;padding:11px;border-bottom:1px solid #eee;vertical-align:top}.extra-table th{background:#faf7f8}.extra-status{display:inline-block;padding:4px 7px;background:#f5eaf0;border-radius:6px;font-weight:700}.extra-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.extra-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}.extra-form input,.extra-form select{padding:10px;border:1px solid #ccc;border-radius:7px;font:inherit}.extra-btn{padding:8px 11px;border:0;border-radius:7px;background:#211820;color:#fff;cursor:pointer}.extra-btn.danger{background:#b42318}.extra-message{padding:10px;background:#f8f4f6;border-radius:7px;margin:10px 0}.extra-search{padding:10px;border:1px solid #ccc;border-radius:8px;width:min(360px,100%);margin:8px 0 14px}@media(max-width:650px){.extra-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.extra-form{grid-template-columns:1fr}.extra-section{padding:14px}}
+</style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <h1>
+        AYONIZA Admin Panel
+    </h1>
+
+    <button id="logoutBtn">
+        Logout
+    </button>
+
+</header>
+
+<nav class="admin-nav" aria-label="Admin sections">
+  <button type="button" class="active" data-target="dashboardSection">Overview & Orders</button>
+  <button type="button" data-target="productsSection">Products</button>
+  <button type="button" data-target="stockSection">Stock</button>
+  <button type="button" data-target="extra-reports">Reports</button>
+  <button type="button" data-target="extra-payments">Payments</button>
+  <button type="button" data-target="extra-customers">Customers</button>
+  <button type="button" data-target="extra-offers">Offers & Coupons</button>
+  <button type="button" id="refreshAdminData" class="nav-refresh">Refresh Data</button>
+</nav>
+
+<main class="container admin-view active" id="dashboardSection">
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <strong id="totalOrders">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>New Orders</h3>
+            <strong id="newOrders">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>Shipped</h3>
+            <strong id="shippedOrders">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>Delivered</h3>
+            <strong id="deliveredOrders">0</strong>
+        </div>
+
+    </div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading orders...
+    </div>
+
+
+    <div
+        id="ordersContainer"
+        class="orders-wrapper"
+    ></div>
+
+</main>
+
+
+<section class="extra-section admin-view" id="extra-reports">
+<h2>Sales Reports</h2><p>Figures are calculated from Firestore order records. Revenue counts only records whose paymentStatus is PAID, SUCCESS or VERIFIED.</p>
+<div class="extra-stats"><div class="extra-stat"><small>Verified Revenue (all time)</small><strong id="extraRevenue">₹0</strong></div><div class="extra-stat"><small>Total Orders</small><strong id="extraOrders">0</strong></div><div class="extra-stat"><small>Delivered Orders</small><strong id="extraDelivered">0</strong></div><div class="extra-stat"><small>Unverified / Other Payment Status</small><strong id="extraUnpaid">0</strong></div><div class="extra-stat"><small>Orders This Month</small><strong id="extraMonthOrders">0</strong></div><div class="extra-stat"><small>Verified Revenue This Month</small><strong id="extraMonthRevenue">₹0</strong></div></div>
+<div id="extraMessage" class="extra-message" hidden></div></section>
+<section class="extra-section admin-view" id="extra-payments"><h2>Payment Records</h2><p>Read-only payment ledger. This panel does not mark payments as successful; that must come from trusted Razorpay server-side verification/webhooks.</p><div id="paymentsTable"></div></section>
+<section class="extra-section admin-view" id="extra-customers"><h2>Customer Management</h2><p>Customer profile records from the existing <code>users</code> collection.</p><input id="customerSearch" class="extra-search" type="search" placeholder="Search name, email, phone or UID"><p>Showing <strong id="customerCount">0</strong> profiles</p><div id="customersTable"></div></section>
+<section class="extra-section admin-view" id="extra-offers"><h2>Offers & Coupons</h2><p>Creates offer records in Firestore. Checkout integration is a separate step: the storefront must validate the coupon and calculate discounts securely before using it.</p><form id="offerForm" class="extra-form"><label>Coupon Code<input id="offerCode" required maxlength="30" placeholder="e.g. AYONIZA10"></label><label>Discount Type<select id="offerType"><option value="percent">Percentage (%)</option><option value="flat">Flat amount (₹)</option></select></label><label>Discount Value<input id="offerValue" type="number" min="0.01" step="0.01" required></label><label>Minimum Order Amount (₹)<input id="offerMinimum" type="number" min="0" step="1" value="0"></label><label style="flex-direction:row;align-items:center"><input id="offerActive" type="checkbox" checked> Active</label><div style="align-self:end"><button class="extra-btn" type="submit">Save Offer</button></div></form><div id="offerMessage" class="extra-message" hidden></div><div id="offersTable"></div></section>
+
+
+
+
+
+
+    <!-- =====================================================
+         PRODUCT MANAGEMENT
+    ====================================================== -->
+
+    <section class="product-management-section admin-view" id="productsSection">
+
+        <div class="product-management-header">
+            <div>
+                <h2>Product Management</h2>
+                <p>Add, edit, list/unlist and delete products from the admin panel.</p>
+            </div>
+            <button
+                type="button"
+                id="refreshProductListBtn"
+                class="save-btn">
+                Refresh Products
+            </button>
+        </div>
+
+        <div
+            id="productAdminMessage"
+            class="product-admin-message"
+            hidden>
+        </div>
+
+        <form id="productForm" class="product-form">
+            <h3 id="productFormTitle" class="product-form-title">Add New Product</h3>
+
+            <input type="hidden" id="editingProductId" value="">
+
+            <div class="product-form-grid">
+
+                <div class="product-form-field">
+                    <label for="productNameInput">Product Name</label>
+                    <input
+                        type="text"
+                        id="productNameInput"
+                        required
+                        placeholder="e.g. Pearl Drop Earrings">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productPriceInput">Price (₹)</label>
+                    <input
+                        type="number"
+                        id="productPriceInput"
+                        min="0"
+                        step="1"
+                        required
+                        placeholder="199">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productCategoryInput">Category</label>
+                    <select id="productCategoryInput" required>
+                        <option value="earrings">Earrings</option>
+                        <option value="bracelets">Bracelets</option>
+                        <option value="sets">Jewellery Sets</option>
+                        <option value="kamarbandh">Kamarbandh</option>
+                        <option value="necklaces">Necklaces</option>
+                        <option value="hathphool">Hathphool</option>
+                        <option value="hair-accessories">Hair Accessories</option>
+                        <option value="anklets">Anklets</option>
+                        <option value="rings">Rings</option>
+                    </select>
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productDiscountInput">Discount (%)</label>
+                    <input
+                        type="number"
+                        id="productDiscountInput"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="0">
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productStockInput">Stock</label>
+                    <input
+                        type="number"
+                        id="productStockInput"
+                        min="0"
+                        step="1"
+                        value="0"
+                        required>
+                </div>
+
+                <div class="product-form-field">
+                    <label for="productImageInput">Image URL / Path</label>
+                    <input
+                        type="text"
+                        id="productImageInput"
+                        required
+                        placeholder="assets/earring-new.jpg or full image URL">
+                </div>
+
+                <div class="product-form-field full">
+                    <label for="productDescriptionInput">Description</label>
+                    <textarea
+                        id="productDescriptionInput"
+                        placeholder="Write a short product description"></textarea>
+                </div>
+
+                <div class="product-form-field full">
+                    <label>Website Status</label>
+                    <div class="product-listed-row">
+                        <input type="checkbox" id="productListedInput" checked>
+                        <label for="productListedInput">List this product on the website</label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="product-form-actions">
+                <button type="submit" class="save-btn" id="productSubmitBtn">
+                    Add Product
+                </button>
+                <button type="button" class="modal-close" id="productCancelEditBtn" hidden>
+                    Cancel Edit
+                </button>
+            </div>
+        </form>
+
+        <div id="productListContainer" class="product-list-grid">
+            <div class="product-manager-empty">
+                Loading products...
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PRODUCT STOCK MANAGEMENT
+    ====================================================== -->
+
+    <section class="stock-management-section admin-view" id="stockSection">
+
+        <div class="stock-section-header">
+
+            <div>
+                <h2>Product Stock</h2>
+                <p>
+                    Update product stock directly from the admin panel.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="syncProductsBtn"
+                class="save-btn">
+                Sync Products
+            </button>
+
+        </div>
+
+        <div
+            id="stockMessage"
+            class="stock-admin-message"
+            hidden>
+        </div>
+
+        <div
+            id="stockProductsContainer"
+            class="stock-products-grid">
+
+            <div class="empty">
+                Loading products...
+            </div>
+
+        </div>
+
+    </section>
+
+
+<!-- =====================================================
+     ACCEPT ORDER MODAL
+====================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="acceptModal"
+>
+
+    <div class="modal">
+
+        <h2>
+            Accept Order
+        </h2>
+
+        <p id="acceptOrderLabel"></p>
+
+        <label>
+            Courier Name
+
+            <input
+                type="text"
+                id="acceptCourier"
+                placeholder="e.g. Shiprocket"
+            >
+        </label>
+
+
+        <label>
+            Tracking ID
+
+            <input
+                type="text"
+                id="acceptTracking"
+                placeholder="Enter tracking ID"
+            >
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="acceptCloseBtn"
+            >
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="modal-confirm"
+                id="acceptConfirmBtn"
+            >
+                Confirm Order
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CANCEL ORDER MODAL
+====================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="cancelModal"
+>
+
+    <div class="modal">
+
+        <h2>
+            Cancel Order
+        </h2>
+
+        <p id="cancelOrderLabel"></p>
+
+        <label>
+            Cancellation Reason
+
+            <textarea
+                id="cancelReason"
+                placeholder="Enter cancellation reason"
+            ></textarea>
+
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="cancelCloseBtn"
+            >
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="modal-confirm"
+                id="cancelConfirmBtn"
+            >
+                Cancel Order
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script type="module" src="admin.js"></script>
+<script type="module" src="admin-extra.js"></script>
+
+<script>
+(function(){
+  const buttons=[...document.querySelectorAll('.admin-nav [data-target]')];
+  const views=[...document.querySelectorAll('.admin-view')];
+  function activate(id){
+    views.forEach(v=>v.classList.toggle('active',v.id===id));
+    buttons.forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  buttons.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.target)));
+})();
+</script>
+</body>
+</html>
