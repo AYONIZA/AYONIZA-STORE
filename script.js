@@ -3233,48 +3233,28 @@ function initApp() {
   // HERO SLIDER
   // ===================================================
 
-  const slides =
-    $("heroBannerSlider")
-      ?.querySelectorAll(
-        ".hero-banner-slide"
-      );
+  const slider = $("heroBannerSlider");
+  const slides = slider?.querySelectorAll(".hero-banner-slide");
+  const dots = slider?.parentElement?.querySelectorAll(".hero-slider-dot");
 
-  if (
-    slides?.length > 1
-  ) {
+  if (slides?.length > 1) {
+    let current = 0;
+    const showSlide = (idx) => {
+      slides[current]?.classList.remove("active");
+      dots?.[current]?.classList.remove("active");
+      current = idx;
+      slides[current]?.classList.add("active");
+      dots?.[current]?.classList.add("active");
+    };
 
-    let current =
-      0;
+    dots?.forEach((dot, idx) => {
+      dot.addEventListener("click", () => showSlide(idx));
+    });
 
-    setInterval(
-      () => {
-
-        if (
-          document.hidden
-        )
-          return;
-
-        slides[
-          current
-        ].classList.remove(
-          "active"
-        );
-
-        current =
-          (
-            current + 1
-          ) %
-          slides.length;
-
-        slides[
-          current
-        ].classList.add(
-          "active"
-        );
-
-      },
-      4000
-    );
+    setInterval(() => {
+      if (document.hidden) return;
+      showSlide((current + 1) % slides.length);
+    }, 4500);
   }
 
   // ===================================================

@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Shop | AYONIZA</title>
-<meta name="description" content="AYONIZA — shop jewellery by category.">
+<title>Shop Collections | AYONIZA</title>
+<meta name="description" content="AYONIZA — graceful, timeless jewellery curated by silhouette.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  .category-page-header { max-width: 1100px; margin: 0 auto; padding: 30px 20px 6px; }
-  .category-page-header .back-to-categories { margin-bottom: 12px; }
-  .category-page-header h1 { margin: 0; font-size: 26px; }
+  .category-page-header { max-width: 1260px; margin: 0 auto; padding: 36px clamp(1.25rem, 4vw, 3.5rem) 10px; }
+  .category-page-header .back-to-categories { margin-bottom: 14px; }
+  .category-page-header h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); font-family: var(--font-display); }
   .category-page-main .products-grid { margin-top: 24px; }
 </style>
 </head>
@@ -17,40 +20,50 @@
 
 <div class="announcement-bar">
   <div class="announcement-track">
-    <span>✨ Buy any 2 & Get 10% Off</span>
-    <span>🎁 Buy any 3 & Get 15% Off</span>
+    <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+    <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
     <span>💳 Extra 10% OFF on Prepaid Orders</span>
-    <span>🚚 Free Shipping across India</span>
-    <span>✨ Buy any 2 & Get 10% Off</span>
-    <span>🎁 Buy any 3 & Get 15% Off</span>
+    <span>🚚 Free Express Shipping across India</span>
+    <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+    <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+    <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
     <span>💳 Extra 10% OFF on Prepaid Orders</span>
-    <span>🚚 Free Shipping across India</span>
+    <span>🚚 Free Express Shipping across India</span>
+    <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
   </div>
 </div>
 
 <header class="navbar">
-  <a href="index.html#home" class="logo-text"><img src="assets/ayoniza-logo.jpeg" alt="AYONIZA" class="nav-logo-img">AYONIZA</a>
+  <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
+    <span class="logo-brand-name">AYONIZA</span>
+    <span class="logo-sub-tag">GRACE OF SITA</span>
+  </a>
 
   <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle menu">
     <span></span><span></span><span></span>
   </button>
 
   <nav id="primaryNav">
-    <a href="index.html#home">Home</a>
-    <a href="index.html#shop">Shop</a>
-    <a href="index.html#about">About</a>
-    <a href="index.html#contact">Contact</a>
-    <a href="return-policy.html">Return Policy</a>
-    <a href="login.html" id="authLinkMobile" class="mobile-auth-link">Login</a>
+    <a href="category.html?cat=all">Shop all</a>
+    <a href="category.html?cat=earrings">Earrings</a>
+    <a href="category.html?cat=necklaces">Necklaces</a>
+    <a href="category.html?cat=sets">Jewellery sets</a>
+    <a href="index.html#about">Our story</a>
+    <a href="login.html" id="authLinkMobile" class="mobile-auth-link">Login / Account</a>
   </nav>
 
   <div class="nav-actions">
-    <button class="search-btn" id="openSearchBtn" type="button" aria-label="Search products">🔍</button>
-    <a class="instagram-btn" href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Instagram</a>
-    <a class="auth-btn" id="authLink" href="login.html">Login</a>
-    <button class="cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
-      🛒 Cart <span id="cartCount">0</span>
+    <button class="nav-icon-btn search-btn" id="openSearchBtn" type="button" aria-label="Search products">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7.5"/><path d="m20 20-4.2-4.2"/></svg>
     </button>
+    <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </a>
+    <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="cart-badge" id="cartCount">0</span>
+    </button>
+    <a class="auth-btn" id="authLink" href="login.html" style="display:none !important;" hidden>Login</a>
   </div>
 </header>
 
