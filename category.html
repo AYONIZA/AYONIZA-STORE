@@ -1,287 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Shop Collections | AYONIZA</title>
-<meta name="description" content="AYONIZA — graceful, timeless jewellery curated by silhouette.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2.2">
-<style>
-  .category-page-header { max-width: 1260px; margin: 0 auto; padding: 36px clamp(1.25rem, 4vw, 3.5rem) 10px; }
-  .category-page-header .back-to-categories { margin-bottom: 14px; }
-  .category-page-header h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); font-family: var(--font-display); }
-  .category-page-main .products-grid { margin-top: 24px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Shop Collections | AYONIZA</title>
+  <meta name="description" content="AYONIZA — graceful, timeless jewellery curated by silhouette.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2.2">
+  <style>
+    .category-page-header {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px clamp(1.25rem, 4vw, 3.5rem) 10px;
+    }
+
+    .category-page-header .back-to-categories {
+      margin-bottom: 14px;
+    }
+
+    .category-page-header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-family: var(--font-display);
+    }
+
+    .category-page-main .products-grid {
+      margin-top: 24px;
+    }
+  </style>
 </head>
+
 <body class="category-page">
 
-<div class="announcement-bar">
-  <div class="announcement-track">
-    <span>✦ Buy Any 2 &amp; Get 10% Off</span>
-    <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
-    <span>💳 Extra 10% OFF on Prepaid Orders</span>
-    <span>🚚 Free Express Shipping across India</span>
-    <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
-    <span>✦ Buy Any 2 &amp; Get 10% Off</span>
-    <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
-    <span>💳 Extra 10% OFF on Prepaid Orders</span>
-    <span>🚚 Free Express Shipping across India</span>
-    <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+  <div class="announcement-bar">
+    <div class="announcement-track">
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+    </div>
   </div>
-</div>
 
-<header class="navbar">
-  <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
-    <span class="logo-brand-name">AYONIZA</span>
-    <span class="logo-sub-tag">GRACE OF SITA</span>
+  <header class="navbar">
+    <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
+      <span class="logo-brand-name">AYONIZA</span>
+      <span class="logo-sub-tag">GRACE OF SITA</span>
+    </a>
+
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav"
+      aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="primaryNav">
+      <a href="category.html?cat=all">Shop all</a>
+      <a href="category.html?cat=earrings">Earrings</a>
+      <a href="category.html?cat=necklaces">Necklaces</a>
+      <a href="category.html?cat=sets">Jewellery sets</a>
+      <a href="index.html#about">Our story</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="nav-icon-btn search-btn" id="openSearchBtn" type="button" aria-label="Search products">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="11" cy="11" r="7.5" />
+          <path d="m20 20-4.2-4.2" />
+        </svg>
+      </button>
+      <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </a>
+      <a href="login.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account"
+        title="Login / Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </a>
+      <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+          <path d="M3 6h18" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="searchBar">
+    <input type="text" id="searchInput" placeholder="Search in this category...">
+  </div>
+
+  <main class="category-page-main">
+    <div class="category-page-header">
+      <button class="back-to-categories" id="backToCategories" type="button"
+        onclick="window.location.href='index.html#shop'">← All Categories</button>
+      <h1 id="selectedCategoryTitle">Loading...</h1>
+    </div>
+
+    <section class="shop-section">
+      <div class="products-grid" id="productsGrid"></div>
+      <p class="no-results" id="noResults" hidden>No pieces in this category yet — check back soon.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+
+      <!-- Column 1: Brand & Contact -->
+      <div class="footer-col footer-brand-col">
+        <a href="index.html#home" class="footer-logo">AYONIZA</a>
+        <p class="footer-tagline">Grace of Sita</p>
+        <div class="footer-contact">
+          <span class="footer-contact-line">📍 Address: Indore, Madhya Pradesh, India</span>
+          <span class="footer-contact-line">📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
+          <span class="footer-contact-line">✉️ Email: <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+        </div>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
+          </a>
+          <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Column 2: Customer Care -->
+      <div class="footer-col footer-col-care">
+        <h4>Customer Care</h4>
+        <a href="return-policy.html">Return &amp; Exchange Policy</a>
+        <a href="track-order.html">Track Your Order</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+      </div>
+
+      <!-- Column 3: Shop by Category -->
+      <div class="footer-col footer-col-shop">
+        <h4>Shop by Category</h4>
+        <div class="footer-cat-links">
+          <a href="category.html?cat=all">All Jewellery</a>
+          <a href="category.html?cat=earrings">Earrings</a>
+          <a href="category.html?cat=bracelets">Bracelets</a>
+          <a href="category.html?cat=sets">Jewellery Sets</a>
+          <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+          <a href="category.html?cat=necklaces">Necklaces</a>
+          <a href="category.html?cat=hathphool">Hathphool</a>
+        </div>
+      </div>
+
+      <!-- Column 4: Quick Links -->
+      <div class="footer-col footer-col-links">
+        <h4>Quick Links</h4>
+        <a href="index.html#home">Home</a>
+        <a href="index.html#shop">Shop Collection</a>
+        <a href="index.html#about">The Ayoniza Story</a>
+        <a href="index.html#reviews">Customer Reviews</a>
+        <a href="login.html">Logout</a>
+      </div>
+
+    </div>
+
+    <!-- Divider Line -->
+    <div class="footer-divider-line"></div>
+
+    <!-- Copyright -->
+    <p class="footer-bottom">
+      © 2026 AYONIZA. All rights reserved. Grace of Sita.
+    </p>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener"
+    aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z" />
+    </svg>
   </a>
 
-  <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle menu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="cart-overlay" id="cartOverlay"></div>
 
-  <nav id="primaryNav">
-    <a href="category.html?cat=all">Shop all</a>
-    <a href="category.html?cat=earrings">Earrings</a>
-    <a href="category.html?cat=necklaces">Necklaces</a>
-    <a href="category.html?cat=sets">Jewellery sets</a>
-    <a href="index.html#about">Our story</a>
-  </nav>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-header">
+      <div>
+        <p class="small-title">Your bag</p>
+        <h3>Shopping Cart</h3>
+      </div>
+      <button class="close-cart" id="closeCartBtn" type="button" aria-label="Close cart">×</button>
+    </div>
 
-  <div class="nav-actions">
-    <button class="nav-icon-btn search-btn" id="openSearchBtn" type="button" aria-label="Search products">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7.5"/><path d="m20 20-4.2-4.2"/></svg>
-    </button>
-    <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    </a>
-    <a href="login.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account" title="Login / Account">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    </a>
-    <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <span class="cart-badge" id="cartCount">0</span>
-    </button>
-  </div>
-</header>
+    <div class="cart-items" id="cartItems">
+      <p class="cart-empty" id="cartEmpty">Your bag is empty.</p>
+    </div>
 
-<div id="searchBar">
-  <input type="text" id="searchInput" placeholder="Search in this category...">
-</div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <strong id="cartTotal">₹0</strong>
+      </div>
+      <p class="cart-note">Next step: enter your delivery details, then confirm on WhatsApp.</p>
+      <button class="checkout-btn" id="checkoutBtn" type="button">Proceed to Checkout</button>
+      <button class="continue-btn" id="continueShoppingBtn" type="button">Continue Shopping</button>
+    </div>
+  </aside>
 
-<main class="category-page-main">
-  <div class="category-page-header">
-    <button class="back-to-categories" id="backToCategories" type="button" onclick="window.location.href='index.html#shop'">← All Categories</button>
-    <h1 id="selectedCategoryTitle">Loading...</h1>
-  </div>
+  <div class="checkout-overlay" id="checkoutOverlay"></div>
 
-  <section class="shop-section">
-    <div class="products-grid" id="productsGrid"></div>
-    <p class="no-results" id="noResults" hidden>No pieces in this category yet — check back soon.</p>
-  </section>
-</main>
+  <div class="checkout-modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-labelledby="checkoutTitle">
+    <div class="checkout-header">
+      <button class="checkout-back" id="checkoutBack" type="button" aria-label="Back" hidden>←</button>
+      <h3 id="checkoutTitle">Address</h3>
+      <button class="checkout-close" id="checkoutClose" type="button" aria-label="Close">×</button>
+    </div>
 
-<footer class="site-footer">
-  <div class="footer-top">
-
-    <div class="footer-col footer-brand-col">
-      <a href="index.html#home" class="footer-logo">AYONIZA</a>
-      <p class="footer-tagline">Purity with Grace</p>
-      <p class="footer-contact">
-        <span>📍 Indore, Madhya Pradesh, India</span>
-        <span>📞 <a href="tel:+919203703177">+91 92037 03177</a></span>
-        <span>✉️ <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
-      </p>
-      <div class="footer-socials">
-        <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
-        </a>
-        <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20l1.4-4.2A8 8 0 1 1 9 18.3L4 20z"/><path d="M8.5 9.7c.3 2.9 2.7 5.2 5.5 5.5"/></svg>
-        </a>
+    <div class="checkout-steps" id="checkoutSteps">
+      <div class="step-item active" data-step="1">
+        <span class="step-circle">1</span>
+        <span class="step-label">Address</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="2">
+        <span class="step-circle">2</span>
+        <span class="step-label">Confirm</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="3">
+        <span class="step-circle">3</span>
+        <span class="step-label">Payment</span>
       </div>
     </div>
 
-    <div class="footer-col">
-      <h4>Help</h4>
-      <a href="return-policy.html">Return Policy</a>
-      <a href="https://wa.me/919203703177" target="_blank" rel="noopener">Track your Order</a>
-      <a href="privacy-policy.html">Privacy Policy</a>
-      <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
-    </div>
+    <div class="checkout-body">
 
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <a href="category.html?cat=all">All Jewellery</a>
-      <a href="category.html?cat=earrings">Earrings</a>
-      <a href="category.html?cat=bracelets">Bracelets</a>
-      <a href="category.html?cat=sets">Jewellery Sets</a>
-      <a href="category.html?cat=kamarbandh">Kamarbandh</a>
-      <a href="category.html?cat=necklaces">Necklaces</a>
-      <a href="category.html?cat=hathphool">Hathphool</a>
-    </div>
-
-    <div class="footer-col">
-      <h4>Explore</h4>
-      <a href="index.html#home">Home</a>
-      <a href="index.html#about">About</a>
-      <a href="index.html#contact">Contact</a>
-    </div>
-
-  </div>
-
-  <p class="footer-bottom">© 2026 AYONIZA. All rights reserved.</p>
-</footer>
-
-<a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z"/></svg>
-</a>
-
-<div class="cart-overlay" id="cartOverlay"></div>
-
-<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
-  <div class="cart-header">
-    <div>
-      <p class="small-title">Your bag</p>
-      <h3>Shopping Cart</h3>
-    </div>
-    <button class="close-cart" id="closeCartBtn" type="button" aria-label="Close cart">×</button>
-  </div>
-
-  <div class="cart-items" id="cartItems">
-    <p class="cart-empty" id="cartEmpty">Your bag is empty.</p>
-  </div>
-
-  <div class="cart-footer">
-    <div class="cart-total-row">
-      <span>Subtotal</span>
-      <strong id="cartTotal">₹0</strong>
-    </div>
-    <p class="cart-note">Next step: enter your delivery details, then confirm on WhatsApp.</p>
-    <button class="checkout-btn" id="checkoutBtn" type="button">Proceed to Checkout</button>
-    <button class="continue-btn" id="continueShoppingBtn" type="button">Continue Shopping</button>
-  </div>
-</aside>
-
-<div class="checkout-overlay" id="checkoutOverlay"></div>
-
-<div class="checkout-modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-labelledby="checkoutTitle">
-  <div class="checkout-header">
-    <button class="checkout-back" id="checkoutBack" type="button" aria-label="Back" hidden>←</button>
-    <h3 id="checkoutTitle">Address</h3>
-    <button class="checkout-close" id="checkoutClose" type="button" aria-label="Close">×</button>
-  </div>
-
-  <div class="checkout-steps" id="checkoutSteps">
-    <div class="step-item active" data-step="1">
-      <span class="step-circle">1</span>
-      <span class="step-label">Address</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step-item" data-step="2">
-      <span class="step-circle">2</span>
-      <span class="step-label">Confirm</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step-item" data-step="3">
-      <span class="step-circle">3</span>
-      <span class="step-label">Payment</span>
-    </div>
-  </div>
-
-  <div class="checkout-body">
-
-    <form class="checkout-step" id="checkoutForm" novalidate>
-      <label>Full Name
-        <input type="text" id="custName" name="custName" required autocomplete="name">
-      </label>
-      <label>Mobile Number
-        <input type="tel" id="custMobile" name="custMobile" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile number" autocomplete="tel">
-      </label>
-      <label>Address
-        <input type="text" id="custAddress" name="custAddress" required placeholder="House no., street, area" autocomplete="address-line1">
-      </label>
-      <label>Landmark <span class="optional">(optional)</span>
-        <input type="text" id="custLandmark" name="custLandmark" autocomplete="address-line2">
-      </label>
-      <div class="form-row">
-        <label>City
-          <input type="text" id="custCity" name="custCity" required autocomplete="address-level2">
+      <form class="checkout-step" id="checkoutForm" novalidate>
+        <label>Full Name
+          <input type="text" id="custName" name="custName" required autocomplete="name">
         </label>
-        <label>State
-          <input type="text" id="custState" name="custState" required autocomplete="address-level1">
+        <label>Mobile Number
+          <input type="tel" id="custMobile" name="custMobile" required inputmode="numeric" pattern="[0-9]{10}"
+            placeholder="10-digit mobile number" autocomplete="tel">
         </label>
-      </div>
-      <div class="form-row">
-        <label>PIN Code
-          <input type="text" id="custPin" name="custPin" required inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code">
+        <label>Address
+          <input type="text" id="custAddress" name="custAddress" required placeholder="House no., street, area"
+            autocomplete="address-line1">
         </label>
-        <label>Country
-          <input type="text" id="custCountry" name="custCountry" required value="India" autocomplete="country-name">
+        <label>Landmark <span class="optional">(optional)</span>
+          <input type="text" id="custLandmark" name="custLandmark" autocomplete="address-line2">
         </label>
-      </div>
-      <label class="checkbox-row">
-        <input type="checkbox" id="saveInfo" name="saveInfo">
-        Save this information for next time
-      </label>
-      <button type="submit" class="btn primary checkout-continue">Continue</button>
-    </form>
-
-    <div class="checkout-step" id="checkoutConfirmStep" hidden>
-      <div class="confirm-address-box">
-        <div class="confirm-address-top">
-          <strong id="confirmName"></strong>
-          <button type="button" class="change-link" id="changeAddressBtn">Change</button>
+        <div class="form-row">
+          <label>City
+            <input type="text" id="custCity" name="custCity" required autocomplete="address-level2">
+          </label>
+          <label>State
+            <input type="text" id="custState" name="custState" required autocomplete="address-level1">
+          </label>
         </div>
-        <p class="confirm-address-line" id="confirmAddressLine"></p>
-        <p class="confirm-phone-line">📞 <span id="confirmPhoneLine"></span></p>
-      </div>
-
-      <div class="order-summary" id="confirmOrderSummary"></div>
-
-      <div class="order-total-row">
-        <span>Total</span>
-        <strong id="confirmOrderTotal">₹0</strong>
-      </div>
-
-      <button type="button" class="btn primary checkout-continue" id="confirmContinueBtn">Continue to Payment</button>
-    </div>
-
-    <div class="checkout-step" id="checkoutPaymentStep" hidden>
-      <div class="payment-info-box">
-        <p class="payment-methods-line">Pay via UPI</p>
-        <div class="upi-qr-wrap">
-          <img src="assets/payment-qr.png" alt="PhonePe UPI QR code for AYONIZA" class="upi-qr-img">
+        <div class="form-row">
+          <label>PIN Code
+            <input type="text" id="custPin" name="custPin" required inputmode="numeric" pattern="[0-9]{6}"
+              autocomplete="postal-code">
+          </label>
+          <label>Country
+            <input type="text" id="custCountry" name="custCountry" required value="India" autocomplete="country-name">
+          </label>
         </div>
-        <p class="upi-scan-label">Scan &amp; Pay using any UPI app</p>
-        <div class="upi-id-row">
-          <span class="upi-id-value" id="upiIdValue">9589790094-2@ybl</span>
-          <button type="button" class="upi-copy-btn" id="upiCopyBtn">Copy</button>
+        <label class="checkbox-row">
+          <input type="checkbox" id="saveInfo" name="saveInfo">
+          Save this information for next time
+        </label>
+        <button type="submit" class="btn primary checkout-continue">Continue</button>
+      </form>
+
+      <div class="checkout-step" id="checkoutConfirmStep" hidden>
+        <div class="confirm-address-box">
+          <div class="confirm-address-top">
+            <strong id="confirmName"></strong>
+            <button type="button" class="change-link" id="changeAddressBtn">Change</button>
+          </div>
+          <p class="confirm-address-line" id="confirmAddressLine"></p>
+          <p class="confirm-phone-line">📞 <span id="confirmPhoneLine"></span></p>
         </div>
-        <a class="upi-pay-link" id="upiPayLink" href="#">Pay with UPI App</a>
-        <p class="payment-sub">After paying, tap "Place Order" below and share your payment screenshot there — your order will be confirmed once payment is verified.</p>
+
+        <div class="order-summary" id="confirmOrderSummary"></div>
+
+        <div class="order-total-row">
+          <span>Total</span>
+          <strong id="confirmOrderTotal">₹0</strong>
+        </div>
+
+        <button type="button" class="btn primary checkout-continue" id="confirmContinueBtn">Continue to Payment</button>
       </div>
 
-      <div class="order-summary" id="orderSummary"></div>
+      <div class="checkout-step" id="checkoutPaymentStep" hidden>
+        <div class="payment-info-box">
+          <p class="payment-methods-line">Pay via UPI</p>
+          <div class="upi-qr-wrap">
+            <img src="assets/payment-qr.png" alt="PhonePe UPI QR code for AYONIZA" class="upi-qr-img">
+          </div>
+          <p class="upi-scan-label">Scan &amp; Pay using any UPI app</p>
+          <div class="upi-id-row">
+            <span class="upi-id-value" id="upiIdValue">9589790094-2@ybl</span>
+            <button type="button" class="upi-copy-btn" id="upiCopyBtn">Copy</button>
+          </div>
+          <a class="upi-pay-link" id="upiPayLink" href="#">Pay with UPI App</a>
+          <p class="payment-sub">After paying, tap "Place Order" below and share your payment screenshot there — your
+            order will be confirmed once payment is verified.</p>
+        </div>
 
-      <div class="order-total-row">
-        <span>Total</span>
-        <strong id="orderTotal">₹0</strong>
+        <div class="order-summary" id="orderSummary"></div>
+
+        <div class="order-total-row">
+          <span>Total</span>
+          <strong id="orderTotal">₹0</strong>
+        </div>
+
+        <button type="button" class="btn primary checkout-submit" id="placeOrderBtn">Place Order</button>
       </div>
 
-      <button type="button" class="btn primary checkout-submit" id="placeOrderBtn">Place Order</button>
     </div>
-
   </div>
-</div>
-  
-<script type="module" src="script.js"></script>
-<script type="module" src="auth.js"></script>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="auth.js"></script>
 </body>
+
 </html>

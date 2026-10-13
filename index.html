@@ -12,7 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.2">
+  <link rel="stylesheet" href="style.css?v=7.0">
 
   <!--
   Home page par products direct render nahi hote; #productsGrid data-source hai.
@@ -143,7 +143,8 @@
                 <path d="m12 5 7 7-7 7" />
               </svg>
             </a>
-            <a class="btn secondary hero-btn-secondary" href="https://wa.me/919203703177" target="_blank" rel="noopener">
+            <a class="btn secondary hero-btn-secondary" href="https://wa.me/919203703177" target="_blank"
+              rel="noopener">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
                   d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
@@ -261,93 +262,160 @@
         </p>
       </div>
 
-      <!-- CATEGORIES LOOKBOOK GRID -->
+      <!-- CATEGORIES LOOKBOOK GRID (4 IN ONE ROW) -->
       <div class="category-grid" id="categoryGrid">
+        <!-- Row 1: Core Jewellery -->
         <a class="category-tile" href="category.html?cat=earrings">
           <div class="category-tile-media">
             <img src="assets/earring-1.jpg" alt="Earrings Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
+            <span class="cat-chip-tag">✨ Anti-Tarnish</span>
           </div>
           <div class="category-tile-caption">
-            <span>Earrings</span>
-            <span class="category-tile-action">Explore →</span>
-          </div>
-        </a>
-
-        <a class="category-tile" href="category.html?cat=bracelets">
-          <div class="category-tile-media">
-            <img src="assets/pink%20bracelet.jpg" alt="Bracelets Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
-          </div>
-          <div class="category-tile-caption">
-            <span>Bracelets</span>
-            <span class="category-tile-action">Explore →</span>
-          </div>
-        </a>
-
-        <a class="category-tile" href="category.html?cat=sets">
-          <div class="category-tile-media">
-            <img src="assets/jewellery-set-1-1.jpg" alt="Jewellery Sets Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
-          </div>
-          <div class="category-tile-caption">
-            <span>Jewellery Sets</span>
-            <span class="category-tile-action">Explore →</span>
-          </div>
-        </a>
-
-        <a class="category-tile" href="category.html?cat=kamarbandh">
-          <div class="category-tile-media">
-            <img src="assets/kamarbandh-1.png" alt="Kamarbandh Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
-          </div>
-          <div class="category-tile-caption">
-            <span>Kamarbandh</span>
-            <span class="category-tile-action">Explore →</span>
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Earrings</h3>
+              <p class="cat-subtitle">Studs, hoops &amp; floral drops</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
           </div>
         </a>
 
         <a class="category-tile" href="category.html?cat=necklaces">
           <div class="category-tile-media">
             <img src="assets/necklace-1.jpg" alt="Necklaces Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
+            <span class="cat-chip-tag">🌿 18K Polish</span>
           </div>
           <div class="category-tile-caption">
-            <span>Necklaces</span>
-            <span class="category-tile-action">Explore →</span>
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Necklaces</h3>
+              <p class="cat-subtitle">Pendants, chokers &amp; chains</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="category-tile" href="category.html?cat=bracelets">
+          <div class="category-tile-media">
+            <img src="assets/pink%20bracelet.jpg" alt="Bracelets Collection" loading="lazy">
+            <span class="cat-chip-tag">✦ Delicate Fit</span>
+          </div>
+          <div class="category-tile-caption">
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Bracelets</h3>
+              <p class="cat-subtitle">Charm chains &amp; cuffs</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="category-tile" href="category.html?cat=sets">
+          <div class="category-tile-media">
+            <img src="assets/jewellery-set-1-1.jpg" alt="Jewellery Sets Collection" loading="lazy">
+            <span class="cat-chip-tag">👑 Festive &amp; Bridal</span>
+          </div>
+          <div class="category-tile-caption">
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Jewellery Sets</h3>
+              <p class="cat-subtitle">Necklace &amp; earring sets</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Row 2: Signature & Statement -->
+        <a class="category-tile" href="category.html?cat=kamarbandh">
+          <div class="category-tile-media">
+            <img src="assets/kamarbandh-1.png" alt="Kamarbandh Collection" loading="lazy">
+            <span class="cat-chip-tag">✨ Saree Waistbands</span>
+          </div>
+          <div class="category-tile-caption">
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Kamarbandh</h3>
+              <p class="cat-subtitle">Graceful festive waist chains</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
           </div>
         </a>
 
         <a class="category-tile" href="category.html?cat=hathphool">
           <div class="category-tile-media">
-            <img src="assets/hathphool-infinity.png" alt="Hathphool Collection" loading="lazy">
-            <div class="category-tile-overlay"></div>
+            <img src="assets/hathphool-black-beads.png" alt="Hathphool Collection" loading="lazy">
+            <span class="cat-chip-tag">✦ Artisan Chains</span>
           </div>
           <div class="category-tile-caption">
-            <span>Hathphool</span>
-            <span class="category-tile-action">Explore →</span>
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Hathphool</h3>
+              <p class="cat-subtitle">Ornate hand chains &amp; rings</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
           </div>
         </a>
 
-        <a class="category-tile category-tile-text" href="category.html?cat=hair-accessories">
-          <div class="cat-text-icon">✨</div>
-          <span>Hair Accessories</span>
-          <p>Delicate pins, bows &amp; adornments</p>
-          <span class="category-tile-action" style="margin-top:12px;">Browse Pieces →</span>
+        <a class="category-tile" href="category.html?cat=anklets">
+          <div class="category-tile-media">
+            <img src="assets/anklets.jpg" alt="Anklets Collection" loading="lazy">
+            <span class="cat-chip-tag">✦ Graceful Charms</span>
+          </div>
+          <div class="category-tile-caption">
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Anklets</h3>
+              <p class="cat-subtitle">Subtle chains &amp; tinkling pearls</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
         </a>
 
-        <a class="category-tile category-tile-text" href="category.html?cat=anklets">
-          <div class="cat-text-icon">✦</div>
-          <span>Anklets</span>
-          <p>Subtle chains &amp; tinkling charms</p>
-          <span class="category-tile-action" style="margin-top:12px;">Browse Pieces →</span>
-        </a>
-
-        <a class="category-tile category-tile-text" href="category.html?cat=rings">
-          <div class="cat-text-icon">💍</div>
-          <span>Rings</span>
-          <p>Minimal stackables &amp; statement bands</p>
-          <span class="category-tile-action" style="margin-top:12px;">Browse Pieces →</span>
+        <a class="category-tile" href="category.html?cat=rings">
+          <div class="category-tile-media">
+            <img src="assets/rings.jpg" alt="Rings Collection" loading="lazy">
+            <span class="cat-chip-tag">✨ Stackable 18K</span>
+          </div>
+          <div class="category-tile-caption">
+            <div class="cat-caption-info">
+              <h3 class="cat-name">Rings</h3>
+              <p class="cat-subtitle">Stackables &amp; statement bands</p>
+            </div>
+            <span class="cat-action-btn" aria-hidden="true">
+              <span>Explore</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
         </a>
       </div>
 
@@ -778,13 +846,15 @@
   <!-- ================= SITE FOOTER ================= -->
   <footer class="site-footer">
     <div class="footer-top">
+
+      <!-- Column 1: Brand & Contact -->
       <div class="footer-col footer-brand-col">
         <a href="#home" class="footer-logo">AYONIZA</a>
-        <p class="footer-tagline">Grace of Sita </p>
+        <p class="footer-tagline">Grace of Sita</p>
         <div class="footer-contact">
-          <span>📍 Address: Indore, Madhya Pradesh, India</span>
-          <span>📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
-          <span>✉️ Email: <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+          <span class="footer-contact-line">📍 Address: Indore, Madhya Pradesh, India</span>
+          <span class="footer-contact-line">📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
+          <span class="footer-contact-line">✉️ Email: <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
         </div>
         <div class="footer-socials">
           <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener" aria-label="Instagram">
@@ -803,7 +873,8 @@
         </div>
       </div>
 
-      <div class="footer-col">
+      <!-- Column 2: Customer Care -->
+      <div class="footer-col footer-col-care">
         <h4>Customer Care</h4>
         <a href="return-policy.html">Return &amp; Exchange Policy</a>
         <a href="track-order.html">Track Your Order</a>
@@ -811,27 +882,36 @@
         <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
       </div>
 
-      <div class="footer-col">
+      <!-- Column 3: Shop by Category -->
+      <div class="footer-col footer-col-shop">
         <h4>Shop by Category</h4>
-        <a href="category.html?cat=all">All Jewellery</a>
-        <a href="category.html?cat=earrings">Earrings</a>
-        <a href="category.html?cat=bracelets">Bracelets</a>
-        <a href="category.html?cat=sets">Jewellery Sets</a>
-        <a href="category.html?cat=kamarbandh">Kamarbandh</a>
-        <a href="category.html?cat=necklaces">Necklaces</a>
-        <a href="category.html?cat=hathphool">Hathphool</a>
+        <div class="footer-cat-links">
+          <a href="category.html?cat=all">All Jewellery</a>
+          <a href="category.html?cat=earrings">Earrings</a>
+          <a href="category.html?cat=bracelets">Bracelets</a>
+          <a href="category.html?cat=sets">Jewellery Sets</a>
+          <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+          <a href="category.html?cat=necklaces">Necklaces</a>
+          <a href="category.html?cat=hathphool">Hathphool</a>
+        </div>
       </div>
 
-      <div class="footer-col">
+      <!-- Column 4: Quick Links -->
+      <div class="footer-col footer-col-links">
         <h4>Quick Links</h4>
         <a href="#home">Home</a>
         <a href="#shop">Shop Collection</a>
         <a href="#about">The Ayoniza Story</a>
         <a href="#reviews">Customer Reviews</a>
-        <a href="login.html">My Account</a>
+        <a href="login.html">Logout</a>
       </div>
+
     </div>
 
+    <!-- Divider Line -->
+    <div class="footer-divider-line"></div>
+
+    <!-- Copyright -->
     <p class="footer-bottom">
       © 2026 AYONIZA. All rights reserved. Grace of Sita.
     </p>
