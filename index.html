@@ -25,6 +25,19 @@
       display: none !important;
     }
   </style>
+
+  <!-- Clean 'index.html' from browser address bar -->
+  <script>
+    (function () {
+      try {
+        var path = window.location.pathname;
+        if (path.endsWith('/index.html') || path === '/index.html' || path.endsWith('/index') || path === '/index') {
+          var cleanPath = path.replace(/\/index(\.html)?$/, '/') || '/';
+          window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
 <body>

@@ -14,8 +14,23 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
+    <!-- Clean '.html' from browser address bar -->
+    <script>
+        (function () {
+            try {
+                var path = window.location.pathname;
+                if (path.endsWith('.html')) {
+                    var cleanPath = path.endsWith('/index.html') || path === '/index.html'
+                        ? (path.replace(/\/index\.html$/, '/') || '/')
+                        : path.replace(/\.html$/, '');
+                    window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <!-- Core Styles -->
-    <link rel="stylesheet" href="style.css?v=7.1">
+    <link rel="stylesheet" href="style.css?v=7.2">
 
     <style>
         /* =================================================
