@@ -88,6 +88,7 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -466,38 +467,77 @@ nav#primaryNav a:hover::after {
   box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.15);
 }
 
-/* ---------- Hero Section ---------- */
+/* ---------- Hero Section (Full-Width Editorial Campaign) ---------- */
 .hero {
   position: relative;
-  display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.hero-fullwidth-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: clamp(540px, 78vh, 700px);
+  border-radius: 0;
+  overflow: hidden;
+  border: none;
+  box-shadow: none;
+  display: flex;
   align-items: center;
-  gap: clamp(2.5rem, 5vw, 5rem);
-  padding: clamp(3rem, 6vw, 5.5rem) clamp(1.25rem, 4vw, 3.5rem);
+  background: #18050B;
+}
+
+.hero-fullwidth-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% center;
+  z-index: 1;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-fullwidth-wrapper:hover .hero-fullwidth-img {
+  transform: scale(1.02);
+}
+
+/* Luxury Editorial Scrim Overlay for Contrast & Readability */
+.hero-fullwidth-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    rgba(251, 248, 243, 0.98) 0%,
+    rgba(251, 248, 243, 0.94) clamp(440px, 40vw, 680px),
+    rgba(251, 248, 243, 0.65) clamp(560px, 54vw, 880px),
+    rgba(251, 248, 243, 0.15) clamp(680px, 66vw, 1100px),
+    rgba(251, 248, 243, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Overlaid Editorial Content */
+.hero-content-overlay {
+  position: relative;
+  z-index: 3;
+  width: 100%;
   max-width: var(--max-w);
   margin: 0 auto;
-  overflow: visible;
-}
-
-/* Ambient luxury light aura */
-.hero-bg-glow {
-  position: absolute;
-  top: -10%;
-  right: -5%;
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(197, 160, 89, 0.15) 0%, rgba(77, 21, 39, 0.05) 50%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(40px);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
+  padding: clamp(3.5rem, 6vw, 5.5rem) clamp(1.25rem, 4vw, 3.5rem);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.hero-content-overlay > * {
+  max-width: 580px;
 }
 
 .hero-pill-badge {
@@ -659,144 +699,23 @@ nav#primaryNav a:hover::after {
   color: var(--gold-dark);
 }
 
-/* Hero Showcase Frame */
-.hero-banner-container {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-}
-
-.hero-banner-frame {
-  position: relative;
-  border-radius: 24px;
-  padding: 8px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(244, 239, 234, 0.6) 100%);
-  border: 1.5px solid rgba(197, 160, 89, 0.35);
-  box-shadow: 0 24px 60px -15px rgba(50, 12, 25, 0.18), 0 8px 24px rgba(197, 160, 89, 0.12);
-}
-
-.hero-banner-media {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 4.75;
-  border-radius: 18px;
-  overflow: hidden;
-  background: var(--ivory-warm);
-}
-
-.hero-main-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 10%;
-  display: block;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.hero-banner-frame:hover .hero-main-img {
-  transform: scale(1.025);
-}
-
-/* Corner Tag on Slider */
+/* Corner Tag on Full-Width Banner */
 .hero-corner-tag {
   position: absolute;
-  top: 22px;
-  right: 22px;
-  z-index: 10;
-  background: rgba(35, 8, 16, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #F8EDD7;
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(197, 160, 89, 0.4);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-}
-
-/* Interactive Slider Dots */
-.hero-slider-dots {
-  position: absolute;
-  bottom: 24px;
+  top: 24px;
   right: 24px;
   z-index: 10;
-  display: flex;
-  gap: 6px;
-  background: rgba(35, 8, 16, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 5px 8px;
+  background: rgba(35, 8, 16, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #F8EDD7;
+  padding: 0.38rem 0.95rem;
   border-radius: var(--radius-full);
-}
-
-.hero-slider-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.hero-slider-dot.active {
-  width: 22px;
-  border-radius: 4px;
-  background: var(--gold-light);
-}
-
-/* Floating Luxury Feature Pill */
-.hero-floating-badge {
-  position: absolute;
-  bottom: -16px;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(197, 160, 89, 0.4);
-  border-radius: 16px;
-  padding: 0.85rem 1.35rem;
-  box-shadow: 0 14px 34px rgba(50, 12, 25, 0.14), 0 2px 8px rgba(197, 160, 89, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  z-index: 15;
-  transition: transform var(--transition-fast);
-}
-
-.hero-floating-badge:hover {
-  transform: translateY(-2px);
-}
-
-.hero-badge-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(197, 160, 89, 0.2) 0%, rgba(197, 160, 89, 0.08) 100%);
-  border: 1px solid rgba(197, 160, 89, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold-dark);
-  font-size: 1.1rem;
-}
-
-.hero-badge-title {
-  font-family: var(--font-display);
-  font-size: 1.12rem;
+  border: 1px solid rgba(197, 160, 89, 0.45);
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--plum-900);
-  margin: 0;
-  line-height: 1.2;
-}
-
-.hero-badge-subtitle {
-  font-size: 0.74rem;
-  color: var(--ink-500);
-  margin: 2px 0 0;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
 }
 
 /* ---------- Curated Silhouettes / Collection Strip (Arched Cards) ---------- */
@@ -2607,21 +2526,62 @@ nav#primaryNav a:hover::after {
 /* ---------- Responsive Layout Breakpoints ---------- */
 @media (max-width: 992px) {
   .hero {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 3rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
   }
 
-  .hero-content {
+  .hero-fullwidth-wrapper {
+    min-height: 560px;
+    border-radius: 0;
+    align-items: flex-start;
+  }
+
+  .hero-fullwidth-img {
+    object-position: 70% 20%;
+  }
+
+  .hero-fullwidth-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(251, 248, 243, 0.96) 0%,
+      rgba(251, 248, 243, 0.92) 54%,
+      rgba(251, 248, 243, 0.55) 80%,
+      rgba(251, 248, 243, 0.12) 100%
+    );
+  }
+
+  .hero-content-overlay {
+    max-width: 100%;
+    padding: 2.5rem 1.5rem 3rem;
     align-items: center;
+    text-align: center;
+  }
+
+  .hero-corner-tag {
+    display: none;
+  }
+
+  .hero-pill-badge {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero .buttons {
     justify-content: center;
+    width: 100%;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-perks {
     justify-content: center;
+    width: 100%;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .about-editorial-wrap {
@@ -2635,6 +2595,7 @@ nav#primaryNav a:hover::after {
 
   .trust-strip {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
   }
 
   .footer-top {
@@ -2643,36 +2604,89 @@ nav#primaryNav a:hover::after {
 }
 
 @media (max-width: 768px) {
+  /* Sleek luxury mobile header */
   .navbar {
-    flex-wrap: wrap;
-    padding: 0.8rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
   .menu-toggle {
     display: flex;
-    order: -1;
-    margin-right: 4px;
+    order: 1;
+    margin: 0;
+    padding: 5px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
   }
 
   .logo-text {
-    order: 0;
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0;
+    flex-shrink: 1;
+  }
+
+  .logo-brand-name {
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .logo-sub-tag {
+    font-size: 0.48rem;
+    letter-spacing: 0.2em;
+    margin-top: 2px;
   }
 
   .nav-actions {
-    order: 1;
-    margin-left: auto;
+    order: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  .nav-icon-btn {
+    padding: 4px;
+  }
+
+  .nav-icon-btn svg {
+    width: 19px;
+    height: 19px;
   }
 
   nav#primaryNav {
-    order: 3;
+    order: 4;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     width: 100%;
+    background: rgba(250, 247, 242, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 16px 36px rgba(45, 14, 25, 0.12);
+    padding: 1.2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.25);
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.2rem 0 0.5rem;
-    gap: 1rem;
+    gap: 1.1rem;
+    margin: 0;
+    z-index: 99;
     display: none;
-    border-top: 1px solid var(--line);
-    margin-top: 0.8rem;
   }
 
   nav#primaryNav.open {
@@ -2691,41 +2705,280 @@ nav#primaryNav a:hover::after {
     display: none !important;
   }
 
-  .pp-grid {
-    grid-template-columns: 1fr;
+  /* Curated Silhouettes Track */
+  .collection-strip {
+    padding: 2.25rem 1rem 1.75rem;
   }
 
-  .hero-floating-badge {
-    left: 12px;
-    bottom: -12px;
-    padding: 0.6rem 0.9rem;
+  .silhouettes-sub-title {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
   }
-}
 
-@media (max-width: 540px) {
+  .silhouettes-main-heading {
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem);
+  }
+
+  .collection-strip-track {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 0 0.25rem 0.85rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .collection-strip-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collection-tile {
+    flex: 0 0 115px;
+    scroll-snap-align: start;
+  }
+
+  .collection-tile-label {
+    font-size: 0.78rem;
+    margin-top: 0.55rem;
+  }
+
+  /* Trust Strip: Clean 2x2 grid */
   .trust-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem;
+    padding: 0 1rem;
+    margin: 2rem auto 1.5rem;
   }
 
-  .footer-top {
-    grid-template-columns: 1fr;
+  .trust-item {
+    padding: 1.1rem 0.75rem;
+    border-radius: 14px;
+    gap: 0.35rem;
+  }
+
+  .trust-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 0.1rem;
+  }
+
+  .trust-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .trust-item h4 {
+    font-size: 0.82rem;
+    line-height: 1.25;
+  }
+
+  .trust-item p {
+    font-size: 0.7rem;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  /* Lookbook Categories Grid: 2-column mobile layout */
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .category-tile-caption {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .category-tile-caption span {
+    font-size: 0.82rem;
+  }
+
+  .category-tile-action {
+    font-size: 0.72rem;
+  }
+
+  .category-tile-text {
+    padding: 1.1rem 0.8rem;
+    text-align: center;
+  }
+
+  .category-tile-text span {
+    font-size: 0.85rem;
+  }
+
+  .category-tile-text p {
+    font-size: 0.72rem;
+  }
+
+  /* Products Grid: 2-column mobile cards */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .product-info {
+    padding: 0.65rem;
+  }
+
+  .product-category {
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+  }
+
+  .product-info h3 {
+    font-size: 0.84rem;
+    line-height: 1.3;
+    min-height: 2.6em;
+    margin: 0 0 0.3rem;
+  }
+
+  .product-description {
+    display: none;
+  }
+
+  .product-price {
+    font-size: 0.92rem;
   }
 
   .product-actions {
+    flex-direction: column;
+    gap: 0.35rem;
     width: 100%;
+    margin-top: 0.4rem;
   }
 
   .add-cart-btn,
   .product-button {
     flex: 1;
+    width: 100%;
     text-align: center;
+    padding: 0.45rem 0.4rem;
+    font-size: 0.72rem;
+  }
+
+  /* About section mobile */
+  .about {
+    padding: 2.5rem 1rem 1.5rem;
+  }
+
+  .about-editorial-wrap {
+    padding: 1.8rem 1.2rem;
+    border-radius: 18px;
+  }
+
+  .about-heading {
+    font-size: 2rem;
+  }
+
+  .about-lead-text {
+    font-size: 0.92rem;
+  }
+
+  .about-body-text {
+    font-size: 0.86rem;
+  }
+
+  .about-pillar-card {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .about-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .about-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .about-trust-tag {
+    justify-content: center;
+    font-size: 0.76rem;
+  }
+
+  .pp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 540px) {
+  /* Hero Content Mobile Fine-Tuning */
+  .hero-content-overlay {
+    padding: 2rem 1.15rem 2.5rem;
+  }
+
+  .hero-pill-badge {
+    font-size: 0.66rem;
+    padding: 0.32rem 0.8rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-heading {
+    font-size: clamp(1.95rem, 7.5vw, 2.45rem);
+    line-height: 1.16;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-description {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    max-width: 30ch;
+  }
+
+  .hero .buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.82rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .hero-perks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    padding-top: 1.1rem;
+    width: 100%;
+  }
+
+  .hero-perk-card {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.6rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2.2rem 1rem 1.8rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.65rem;
+    text-align: center;
+    padding: 1.25rem 1rem;
   }
 
   .whatsapp-float {
-    bottom: 1.25rem;
-    right: 1.25rem;
-    width: 50px;
-    height: 50px;
+    bottom: 1.1rem;
+    right: 1.1rem;
+    width: 48px;
+    height: 48px;
   }
 }
 
