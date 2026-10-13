@@ -151,8 +151,10 @@ function setExtraLoginButtons(user) {
       el.textContent = "Logout";
       el.href = "#";
       el.onclick = doLogout;
-    } else if (el.dataset.wasLogin === "1") {
-      el.textContent = "Login";
+    } else {
+      if (el.textContent.trim().toLowerCase() === "logout") {
+        el.textContent = "Login";
+      }
       el.href = "login.html";
       el.onclick = null;
     }

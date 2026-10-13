@@ -2071,7 +2071,7 @@ nav#primaryNav a:hover::after {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 120;
+  z-index: 9990;
 }
 
 .cart-overlay.active {
@@ -2089,7 +2089,7 @@ nav#primaryNav a:hover::after {
   box-shadow: -15px 0 40px rgba(0, 0, 0, 0.2);
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  z-index: 130;
+  z-index: 9995;
   display: flex;
   flex-direction: column;
 }
@@ -2278,7 +2278,7 @@ nav#primaryNav a:hover::after {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 140;
+  z-index: 10000;
 }
 
 .checkout-overlay.active {
@@ -2297,7 +2297,7 @@ nav#primaryNav a:hover::after {
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
   border: 1px solid var(--gold-border);
-  z-index: 150;
+  z-index: 10005;
   display: flex;
   flex-direction: column;
   opacity: 0;
