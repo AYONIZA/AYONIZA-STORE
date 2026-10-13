@@ -2,799 +2,633 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | AYONIZA — Grace of Sita</title>
+    <link rel="icon" type="image/jpeg" href="assets/ayoniza-logo.jpeg">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>My Account | AYONIZA</title>
-
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        rel="stylesheet"
-        href="style.css"
-    >
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="style.css?v=7.1">
 
     <style>
-
         /* =================================================
-           ACCOUNT PAGE
+           ACCOUNT PAGE LUXURY CUSTOM STYLING
         ================================================= */
-
         .account-page {
-            min-height: calc(100vh - 90px);
-            padding: 55px 20px 80px;
+            min-height: calc(100vh - 120px);
+            padding: 50px 20px 90px;
             background: #faf7f4;
         }
 
-
         .account-container {
-            width: min(1050px, 100%);
+            width: min(840px, 100%);
             margin: 0 auto;
         }
 
-
         .account-header {
-            margin-bottom: 30px;
+            margin-bottom: 34px;
+            text-align: left;
         }
-
 
         .account-header .small-title {
+            color: #C5A059;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
             margin-bottom: 8px;
+            display: inline-block;
         }
-
 
         .account-header h1 {
             margin: 0;
-            color: #6e213e;
-            font-size: 38px;
-            line-height: 1.2;
+            color: #2D0B18;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
         }
 
-
-        .account-header p:last-child {
-            margin-top: 10px;
-            color: #777;
+        .account-header p.account-desc {
+            margin: 10px 0 0;
+            color: #6C5D65;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
-
-        /* =================================================
-           PROFILE CARD
-        ================================================= */
-
+        /* Profile Card */
         .account-card {
-            background: #fff;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow:
-                0 6px 25px rgba(0, 0, 0, .07);
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 38px 40px;
+            box-shadow: 0 10px 30px rgba(45, 11, 24, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.22);
+            position: relative;
         }
-
 
         .account-card-title {
-            margin: 0 0 5px;
-            color: #6e213e;
-            font-size: 24px;
+            margin: 0 0 6px;
+            color: #2D0B18;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.65rem;
+            font-weight: 600;
         }
-
 
         .account-card-subtitle {
-            margin: 0 0 25px;
-            color: #777;
-            font-size: 14px;
+            margin: 0 0 28px;
+            color: #7A6973;
+            font-size: 0.88rem;
         }
 
-
-        /* =================================================
-           FORM
-        ================================================= */
-
+        /* Form Controls */
         .account-form {
             display: grid;
-            gap: 18px;
+            gap: 20px;
         }
-
 
         .account-form label {
             display: block;
-            font-size: 14px;
+            font-size: 0.84rem;
             font-weight: 600;
-            color: #333;
+            color: #3C2732;
+            letter-spacing: 0.02em;
         }
 
+        .account-form label small {
+            font-weight: normal;
+            color: #8C7883;
+            font-size: 0.76rem;
+            margin-left: 4px;
+        }
 
         .account-form input {
             width: 100%;
-            margin-top: 7px;
-            padding: 13px 14px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            background: #fff;
-            color: #222;
-            font: inherit;
+            margin-top: 8px;
+            padding: 13px 16px;
+            border: 1px solid #E4D8DF;
+            border-radius: 10px;
+            background: #FCFBFA;
+            color: #2D0B18;
+            font-family: inherit;
+            font-size: 0.94rem;
             outline: none;
-            transition:
-                border-color .2s ease,
-                box-shadow .2s ease;
+            transition: all 0.2s ease;
         }
-
 
         .account-form input:focus {
+            background: #ffffff;
             border-color: #8c3b5a;
-            box-shadow:
-                0 0 0 3px rgba(140,59,90,.10);
+            box-shadow: 0 0 0 3px rgba(140, 59, 90, 0.12);
         }
-
 
         .account-form input[readonly] {
-            background: #f6f4f2;
-            color: #777;
+            background: #F4F1EE;
+            color: #7D6C76;
             cursor: not-allowed;
+            border-color: #E2DBD6;
         }
-
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
+            gap: 20px;
         }
 
-
-        /* =================================================
-           ACTIONS
-        ================================================= */
-
+        /* Actions */
         .account-actions {
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-top: 8px;
-            padding-top: 8px;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 10px;
         }
-
 
         .account-btn {
-            min-width: 150px;
-            padding: 13px 22px;
-            border-radius: 8px;
-            border: 1px solid #8c3b5a;
-            font: inherit;
-            font-size: 15px;
+            min-width: 160px;
+            padding: 13px 26px;
+            border-radius: 9999px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
             cursor: pointer;
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease,
-                background .2s ease;
+            transition: all 0.25s ease;
+            text-align: center;
         }
-
-
-        .account-btn:hover {
-            transform: translateY(-1px);
-            box-shadow:
-                0 5px 14px rgba(0,0,0,.08);
-        }
-
 
         .save-profile-btn {
-            background: #7d2945;
-            color: #fff;
+            background: linear-gradient(135deg, #3A1021 0%, #581932 100%);
+            color: #ffffff;
+            border: 1px solid #3A1021;
+            box-shadow: 0 6px 18px rgba(58, 16, 33, 0.25);
         }
-
 
         .save-profile-btn:hover {
-            background: #68213a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(58, 16, 33, 0.35);
+            background: linear-gradient(135deg, #2D0B18 0%, #461327 100%);
         }
-
 
         .logout-btn {
-            background: #fff;
-            color: #7d2945;
+            background: #ffffff;
+            color: #6E213E;
+            border: 1px solid #D6BFC8;
         }
-
 
         .logout-btn:hover {
-            background: #fbf3f6;
+            background: #F8EDF1;
+            border-color: #6E213E;
+            transform: translateY(-1px);
         }
 
+        /* Status Banner */
+        .account-message {
+            display: none;
+            margin-top: 18px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+        }
 
-        /* =================================================
-           MY ORDERS CARD
-        ================================================= */
+        .account-message.show {
+            display: block !important;
+        }
 
+        .account-message.success {
+            background: #ECF8EE;
+            color: #1A682F;
+            border: 1px solid #B8E4C0;
+        }
+
+        .account-message.error {
+            background: #FDF0EE;
+            color: #A32218;
+            border: 1px solid #F5C5C0;
+        }
+
+        /* My Orders Card */
         .my-orders-section {
-            margin-top: 25px;
+            margin-top: 28px;
         }
-
 
         .my-orders-card {
             width: 100%;
             display: flex;
             align-items: center;
-            gap: 17px;
-
-            padding: 20px 22px;
-
-            background: #fff;
-
-            border: 1px solid #eadde2;
-            border-radius: 15px;
-
+            gap: 20px;
+            padding: 22px 28px;
+            background: #ffffff;
+            border: 1px solid rgba(197, 160, 89, 0.28);
+            border-radius: 18px;
             text-decoration: none;
-            color: #222;
-
-            box-shadow:
-                0 5px 18px rgba(0,0,0,.055);
-
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease,
-                border-color .2s ease;
+            color: #2D0B18;
+            box-shadow: 0 8px 24px rgba(45, 11, 24, 0.04);
+            transition: all 0.25s ease;
         }
-
 
         .my-orders-card:hover {
-            transform: translateY(-2px);
-
-            border-color: #8c3b5a;
-
-            box-shadow:
-                0 9px 24px rgba(0,0,0,.08);
+            transform: translateY(-3px);
+            border-color: #C5A059;
+            box-shadow: 0 12px 32px rgba(45, 11, 24, 0.09);
         }
 
-
         .my-orders-icon {
-            width: 50px;
-            height: 50px;
-
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            flex: 0 0 50px;
-
-            background: #f7e9ef;
-            border-radius: 12px;
-
-            color: #7d2945;
-            font-size: 23px;
+            flex: 0 0 52px;
+            background: #F8EDF1;
+            border: 1px solid rgba(110, 33, 62, 0.12);
+            border-radius: 14px;
+            color: #6E213E;
+            font-size: 24px;
         }
-
 
         .my-orders-content {
             flex: 1;
             min-width: 0;
         }
 
-
         .my-orders-content strong {
             display: block;
-            margin-bottom: 5px;
-
-            color: #6e213e;
-            font-size: 18px;
+            margin-bottom: 4px;
+            color: #2D0B18;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 600;
         }
-
 
         .my-orders-content span {
             display: block;
-
-            color: #777;
-            font-size: 13px;
-            line-height: 1.5;
+            color: #6C5D65;
+            font-size: 0.86rem;
+            line-height: 1.4;
         }
-
 
         .my-orders-arrow {
-            color: #8c3b5a;
-            font-size: 25px;
+            color: #C5A059;
+            font-size: 26px;
             line-height: 1;
+            transition: transform 0.2s ease;
         }
 
-
-        /* =================================================
-           STATUS MESSAGE
-        ================================================= */
-
-        .account-message {
-            display: none;
-
-            margin-top: 18px;
-            padding: 13px 15px;
-
-            border-radius: 9px;
-            font-size: 14px;
+        .my-orders-card:hover .my-orders-arrow {
+            transform: translateX(4px);
+            color: #6E213E;
         }
 
-
-        .account-message.show {
-            display: block;
-        }
-
-
-        .account-message.success {
-            background: #eaf7ed;
-            color: #216b32;
-            border: 1px solid #c8e7cf;
-        }
-
-
-        .account-message.error {
-            background: #fff1f0;
-            color: #9f1c14;
-            border: 1px solid #f0c7c2;
-        }
-
-
-        /* =================================================
-           FOOTER
-        ================================================= */
-
-        .account-footer-space {
-            height: 20px;
-        }
-
-
-        /* =================================================
-           MOBILE
-        ================================================= */
-
-        @media (max-width: 700px) {
-
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
             .account-page {
-                padding:
-                    35px 16px 60px;
+                padding: 30px 16px 60px;
             }
-
-
-            .account-header h1 {
-                font-size: 30px;
-            }
-
 
             .account-card {
-                padding: 22px 18px;
+                padding: 24px 20px;
+                border-radius: 16px;
             }
-
 
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 18px;
+                gap: 16px;
             }
-
 
             .account-actions {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 12px;
             }
-
 
             .account-btn {
                 width: 100%;
             }
 
-
             .my-orders-card {
-                padding:
-                    17px 15px;
+                padding: 18px 20px;
+                gap: 16px;
             }
 
-
-            .my-orders-content strong {
-                font-size: 16px;
+            .my-orders-icon {
+                width: 44px;
+                height: 44px;
+                flex: 0 0 44px;
+                font-size: 20px;
             }
-
         }
-
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =====================================================
-     NAVBAR
-====================================================== -->
-
-<header class="navbar">
-
-    <a
-        href="index.html#home"
-        class="logo-text"
-    >
-
-        <img
-            src="assets/ayoniza-logo.jpeg"
-            alt="AYONIZA"
-            class="nav-logo-img"
-        >
-
-        AYONIZA
-
-    </a>
-
-
-    <nav>
-
-        <a href="index.html#home">
-            Home
-        </a>
-
-        <a href="index.html#shop">
-            Shop
-        </a>
-
-        <a href="index.html#about">
-            About
-        </a>
-
-        <a href="index.html#contact">
-            Contact
-        </a>
-
-        <a href="return-policy.html">
-            Return Policy
-        </a>
-
-    </nav>
-
-
-    <div class="nav-actions">
-
-        <a
-            class="instagram-btn"
-            href="https://www.instagram.com/_ayoniza_/"
-            target="_blank"
-            rel="noopener"
-        >
-            Instagram
-        </a>
-
-
-        <a
-            class="auth-btn"
-            id="authLink"
-            href="account.html"
-        >
-            My Account
-        </a>
-
-
-        <button
-            class="cart-btn"
-            id="openCartBtn"
-            type="button"
-        >
-            🛒 Cart
-            <span id="cartCount">
-                0
-            </span>
-        </button>
-
+    <!-- ================= ANNOUNCEMENT BAR ================= -->
+    <div class="announcement-bar">
+        <div class="announcement-track">
+            <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+            <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+            <span>💳 Extra 10% OFF on Prepaid Orders</span>
+            <span>🚚 Free Express Shipping across India</span>
+            <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+            <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+            <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+            <span>💳 Extra 10% OFF on Prepaid Orders</span>
+            <span>🚚 Free Express Shipping across India</span>
+            <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+        </div>
     </div>
 
-</header>
+    <!-- ================= STICKY LUXURY NAVBAR ================= -->
+    <header class="navbar" id="siteHeader">
+        <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
+            <span class="logo-brand-name">AYONIZA</span>
+            <span class="logo-sub-tag">GRACE OF SITA</span>
+        </a>
+
+        <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav"
+            aria-label="Toggle navigation menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav id="primaryNav" aria-label="Primary Navigation">
+            <a href="category.html?cat=all">Shop all</a>
+            <a href="category.html?cat=earrings">Earrings</a>
+            <a href="category.html?cat=necklaces">Necklaces</a>
+            <a href="category.html?cat=sets">Jewellery sets</a>
+            <a href="index.html#about">Our story</a>
+            <a href="my-orders.html" class="mobile-auth-link" style="display:none;">My Orders</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="category.html?cat=all" class="nav-icon-btn search-btn" aria-label="Search jewellery">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <circle cx="11" cy="11" r="7.5" />
+                    <path d="m20 20-4.2-4.2" />
+                </svg>
+            </a>
+
+            <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </a>
+
+            <a href="account.html" class="nav-icon-btn user-btn active" id="authLink" aria-label="My Account"
+                title="My Account">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </a>
+
+            <a href="index.html#shop" class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" aria-label="Cart">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                    <path d="M3 6h18" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <span class="cart-badge" id="cartCount">0</span>
+            </a>
+        </div>
+    </header>
 
 
-<!-- =====================================================
-     ACCOUNT PAGE
-====================================================== -->
+    <!-- ================= MAIN ACCOUNT CONTENT ================= -->
+    <main class="account-page">
+        <div class="account-container">
 
-<main class="account-page">
+            <!-- PAGE HEADER -->
+            <div class="account-header">
+                <span class="small-title">AYONIZA ACCOUNT</span>
+                <h1>My Account</h1>
+                <p class="account-desc">
+                    Manage your delivery details for effortless checkout and explore your order history.
+                </p>
+            </div>
 
-    <div class="account-container">
+            <!-- PROFILE CARD -->
+            <section class="account-card">
+                <h2 class="account-card-title">Profile Information</h2>
+                <p class="account-card-subtitle">Saved delivery &amp; contact information for your orders</p>
+
+                <form id="accountForm" class="account-form">
+
+                    <!-- FULL NAME -->
+                    <label>
+                        Full Name
+                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name"
+                            autocomplete="name" required>
+                    </label>
+
+                    <!-- EMAIL (READONLY) -->
+                    <label>
+                        Email Address <small>(Registered Account)</small>
+                        <input type="email" id="email" name="email" placeholder="Your account email"
+                            autocomplete="email" readonly>
+                    </label>
+
+                    <!-- PHONE -->
+                    <label>
+                        Mobile Number
+                        <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number"
+                            inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel" required>
+                    </label>
+
+                    <!-- ADDRESS -->
+                    <label>
+                        Address
+                        <input type="text" id="address" name="address" placeholder="House/Flat no., Street, Area"
+                            autocomplete="address-line1" required>
+                    </label>
+
+                    <!-- LANDMARK -->
+                    <label>
+                        Landmark <small>(Optional)</small>
+                        <input type="text" id="landmark" name="landmark" placeholder="Nearby landmark or apartment name"
+                            autocomplete="address-line2">
+                    </label>
+
+                    <!-- CITY + STATE -->
+                    <div class="form-row">
+                        <label>
+                            City
+                            <input type="text" id="city" name="city" placeholder="City" autocomplete="address-level2"
+                                required>
+                        </label>
+
+                        <label>
+                            State
+                            <input type="text" id="state" name="state" placeholder="State" autocomplete="address-level1"
+                                required>
+                        </label>
+                    </div>
+
+                    <!-- PIN + COUNTRY -->
+                    <div class="form-row">
+                        <label>
+                            PIN Code
+                            <input type="text" id="pincode" name="pincode" placeholder="6-digit PIN code"
+                                inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code" required>
+                        </label>
+
+                        <label>
+                            Country
+                            <input type="text" id="country" name="country" value="India" autocomplete="country-name"
+                                required>
+                        </label>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="account-actions">
+                        <button type="submit" id="saveProfileBtn" class="account-btn save-profile-btn">
+                            Save Profile
+                        </button>
+
+                        <button type="button" id="logoutBtn" class="account-btn logout-btn">
+                            Logout
+                        </button>
+                    </div>
+
+                    <!-- MESSAGE BANNER -->
+                    <div id="accountMessage" class="account-message" role="alert"></div>
+
+                </form>
+            </section>
+
+            <!-- MY ORDERS SECTION -->
+            <section class="my-orders-section">
+                <a href="my-orders.html" class="my-orders-card" aria-label="Go to My Orders">
+                    <div class="my-orders-icon" aria-hidden="true">
+                        📦
+                    </div>
+                    <div class="my-orders-content">
+                        <strong>My Orders</strong>
+                        <span>View past purchases, status updates and delivery tracking</span>
+                    </div>
+                    <span class="my-orders-arrow" aria-hidden="true">
+                        →
+                    </span>
+                </a>
+            </section>
+
+        </div>
+    </main>
 
 
-        <!-- PAGE HEADER -->
+    <!-- ================= SITE FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-top">
 
-        <div class="account-header">
+            <!-- Column 1: Brand & Contact -->
+            <div class="footer-col footer-brand-col">
+                <a href="index.html#home" class="footer-logo">AYONIZA</a>
+                <p class="footer-tagline">Grace of Sita</p>
+                <div class="footer-contact">
+                    <span class="footer-contact-line">📍 Address: Indore, Madhya Pradesh, India</span>
+                    <span class="footer-contact-line">📞 Helpline: <a href="tel:+919203703177">+91 92037
+                            03177</a></span>
+                    <span class="footer-contact-line">✉️ Email: <a
+                            href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener"
+                        aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
 
-            <p class="small-title">
-                AYONIZA ACCOUNT
-            </p>
+            <!-- Column 2: Customer Care -->
+            <div class="footer-col footer-col-care">
+                <h4>Customer Care</h4>
+                <a href="return-policy.html">Return &amp; Exchange Policy</a>
+                <a href="my-orders.html">Track Your Order</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+            </div>
 
-            <h1>
-                My Account
-            </h1>
+            <!-- Column 3: Shop by Category -->
+            <div class="footer-col footer-col-shop">
+                <h4>Shop by Category</h4>
+                <div class="footer-cat-links">
+                    <a href="category.html?cat=all">All Jewellery</a>
+                    <a href="category.html?cat=earrings">Earrings</a>
+                    <a href="category.html?cat=bracelets">Bracelets</a>
+                    <a href="category.html?cat=sets">Jewellery Sets</a>
+                    <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+                    <a href="category.html?cat=necklaces">Necklaces</a>
+                    <a href="category.html?cat=hathphool">Hathphool</a>
+                </div>
+            </div>
 
-            <p>
-                Manage your profile and view your orders.
-            </p>
+            <!-- Column 4: Quick Links -->
+            <div class="footer-col footer-col-links">
+                <h4>Quick Links</h4>
+                <a href="index.html#home">Home</a>
+                <a href="category.html?cat=all">Shop Collection</a>
+                <a href="index.html#about">The Ayoniza Story</a>
+                <a href="index.html#reviews">Customer Reviews</a>
+                <a href="my-orders.html">My Orders</a>
+            </div>
 
         </div>
 
-
-        <!-- PROFILE CARD -->
-
-        <section class="account-card">
-
-            <h2 class="account-card-title">
-                Profile Information
-            </h2>
-
-            <p class="account-card-subtitle">
-                Your saved delivery information
-            </p>
-
-
-            <form
-                id="accountForm"
-                class="account-form"
-            >
-
-
-                <!-- FULL NAME -->
-
-                <label>
-
-                    Full Name
-
-                    <input
-                        type="text"
-                        id="fullName"
-                        name="fullName"
-                        placeholder="Enter your full name"
-                        autocomplete="name"
-                        required
-                    >
-
-                </label>
-
-
-                <!-- EMAIL -->
-
-                <label>
-
-                    Email Address
-
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Your email"
-                        autocomplete="email"
-                        readonly
-                    >
-
-                </label>
-
-
-                <!-- PHONE -->
-
-                <label>
-
-                    Mobile Number
-
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        placeholder="10-digit mobile number"
-                        inputmode="numeric"
-                        pattern="[0-9]{10}"
-                        autocomplete="tel"
-                        required
-                    >
-
-                </label>
-
-
-                <!-- ADDRESS -->
-
-                <label>
-
-                    Address
-
-                    <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        placeholder="House no., street, area"
-                        autocomplete="address-line1"
-                        required
-                    >
-
-                </label>
-
-
-                <!-- LANDMARK -->
-
-                <label>
-
-                    Landmark
-
-                    <input
-                        type="text"
-                        id="landmark"
-                        name="landmark"
-                        placeholder="Nearby landmark (optional)"
-                        autocomplete="address-line2"
-                    >
-
-                </label>
-
-
-                <!-- CITY + STATE -->
-
-                <div class="form-row">
-
-                    <label>
-
-                        City
-
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            placeholder="City"
-                            autocomplete="address-level2"
-                            required
-                        >
-
-                    </label>
-
-
-                    <label>
-
-                        State
-
-                        <input
-                            type="text"
-                            id="state"
-                            name="state"
-                            placeholder="State"
-                            autocomplete="address-level1"
-                            required
-                        >
-
-                    </label>
-
-                </div>
-
-
-                <!-- PIN + COUNTRY -->
-
-                <div class="form-row">
-
-                    <label>
-
-                        PIN Code
-
-                        <input
-                            type="text"
-                            id="pincode"
-                            name="pincode"
-                            placeholder="6-digit PIN"
-                            inputmode="numeric"
-                            pattern="[0-9]{6}"
-                            autocomplete="postal-code"
-                            required
-                        >
-
-                    </label>
-
-
-                    <label>
-
-                        Country
-
-                        <input
-                            type="text"
-                            id="country"
-                            name="country"
-                            value="India"
-                            autocomplete="country-name"
-                            required
-                        >
-
-                    </label>
-
-                </div>
-
-
-                <!-- ACTIONS -->
-
-                <div class="account-actions">
-
-                    <button
-                        type="submit"
-                        id="saveProfileBtn"
-                        class="account-btn save-profile-btn"
-                    >
-                        Save Profile
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="logoutBtn"
-                        class="account-btn logout-btn"
-                    >
-                        Logout
-                    </button>
-
-                </div>
-
-
-                <!-- MESSAGE -->
-
-                <div
-                    id="accountMessage"
-                    class="account-message"
-                ></div>
-
-
-            </form>
-
-        </section>
-
-
-        <!-- MY ORDERS -->
-
-        <section class="my-orders-section">
-
-            <a
-                href="my-orders.html"
-                class="my-orders-card"
-            >
-
-                <div class="my-orders-icon">
-                    📦
-                </div>
-
-
-                <div class="my-orders-content">
-
-                    <strong>
-                        My Orders
-                    </strong>
-
-                    <span>
-                        View all your orders,
-                        order status and tracking
-                    </span>
-
-                </div>
-
-
-                <span
-                    class="my-orders-arrow"
-                    aria-hidden="true"
-                >
-                    →
-                </span>
-
-            </a>
-
-        </section>
-
-
-        <div class="account-footer-space"></div>
-
-
-    </div>
-
-</main>
-
-
-<!-- =====================================================
-     SCRIPTS
-====================================================== -->
-
-<script
-    type="module"
-    src="account.js"
-></script>
-
-<script
-    type="module"
-    src="auth.js"
-></script>
-
+        <!-- Divider Line -->
+        <div class="footer-divider-line"></div>
+
+        <!-- Copyright -->
+        <p class="footer-bottom">
+            © 2026 AYONIZA. All rights reserved. Grace of Sita.
+        </p>
+    </footer>
+
+    <!-- ================= FLOATING WHATSAPP BUTTON ================= -->
+    <a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener"
+        aria-label="Chat with Ayoniza styling concierge on WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z" />
+        </svg>
+    </a>
+
+    <!-- ================= NAVBAR INTERACTIVITY SCRIPT ================= -->
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById("menuToggle");
+        const primaryNav = document.getElementById("primaryNav");
+        if (menuToggle && primaryNav) {
+            menuToggle.addEventListener("click", () => {
+                const isOpen = primaryNav.classList.toggle("open");
+                menuToggle.setAttribute("aria-expanded", isOpen);
+            });
+        }
+    </script>
+
+    <!-- ================= AUTH & ACCOUNT SCRIPTS ================= -->
+    <script type="module" src="account.js"></script>
+    <script type="module" src="auth.js"></script>
 
 </body>
 

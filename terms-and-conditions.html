@@ -1,139 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Terms &amp; Conditions | AYONIZA</title>
-<meta name="description" content="AYONIZA — terms and conditions for using our website and purchasing our jewellery.">
-<link rel="stylesheet" href="style.css">
-<style>
-  .policy-wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 70px; }
-  .policy-wrap h1 { font-size: 30px; margin: 0 0 6px; }
-  .policy-updated { opacity: .65; font-size: 14px; margin: 0 0 32px; }
-  .policy-wrap h2 { font-size: 19px; margin: 34px 0 10px; }
-  .policy-wrap p, .policy-wrap li { line-height: 1.75; opacity: .88; font-size: 15.5px; }
-  .policy-wrap ul { padding-left: 20px; margin: 8px 0; }
-  .policy-wrap a { color: inherit; text-decoration: underline; }
-  .policy-note {
-    background: #f6eef0; border: 1px solid #e4d3d8; border-radius: 10px;
-    padding: 14px 16px; font-size: 14px; margin: 30px 0; opacity: .85;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Terms &amp; Conditions | AYONIZA — Grace of Sita</title>
+    <meta name="description" content="AYONIZA — terms and conditions for using our website and purchasing our luxury jewellery.">
+    <link rel="icon" type="image/jpeg" href="assets/ayoniza-logo.jpeg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="style.css?v=7.1">
+
+    <style>
+        .policy-page {
+            min-height: calc(100vh - 120px);
+            padding: 50px 20px 90px;
+            background: #faf7f4;
+        }
+
+        .policy-container {
+            width: min(840px, 100%);
+            margin: 0 auto;
+        }
+
+        .policy-header {
+            margin-bottom: 34px;
+            text-align: left;
+        }
+
+        .policy-header .small-title {
+            color: #C5A059;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .policy-header h1 {
+            margin: 0;
+            color: #2D0B18;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2.2rem, 4.2vw, 3.1rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+
+        .policy-header p.policy-desc {
+            margin: 10px 0 0;
+            color: #6C5D65;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .policy-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 42px 45px;
+            box-shadow: 0 10px 30px rgba(45, 11, 24, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.22);
+        }
+
+        .policy-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(45, 11, 24, 0.06);
+        }
+
+        .policy-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .policy-card h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.48rem;
+            font-weight: 700;
+            color: #2D0B18;
+            margin: 0 0 14px;
+            padding-bottom: 0;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .sec-badge {
+            font-family: 'Karla', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: #F8EDF1;
+            color: #6E213E;
+            border: 1px solid rgba(110, 33, 62, 0.14);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            letter-spacing: 0.06em;
+            flex-shrink: 0;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .policy-card p {
+            color: #4A3A43;
+            font-size: 0.94rem;
+            line-height: 1.7;
+            margin: 0 0 12px;
+        }
+
+        .policy-card ul {
+            margin: 10px 0 16px;
+            padding-left: 20px;
+        }
+
+        .policy-card li {
+            color: #4A3A43;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            margin-bottom: 8px;
+        }
+
+        .policy-card strong {
+            color: #2D0B18;
+        }
+
+        .policy-card a {
+            color: #6E213E;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .policy-note-box {
+            background: #FDF9F2;
+            border: 1px solid #DFC085;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 26px;
+            font-size: 0.88rem;
+            color: #6E5334;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 768px) {
+            .policy-page {
+                padding: 30px 16px 60px;
+            }
+
+            .policy-card {
+                padding: 26px 20px;
+                border-radius: 16px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<header class="navbar">
-  <a href="index.html#home" class="logo-text"><img src="assets/ayoniza-logo.jpeg" alt="AYONIZA" class="nav-logo-img">AYONIZA</a>
-  <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle menu">
-    <span></span><span></span><span></span>
-  </button>
-  <nav id="primaryNav">
-    <a href="index.html#home">Home</a>
-    <a href="index.html#shop">Shop</a>
-    <a href="index.html#about">About</a>
-    <a href="index.html#contact">Contact</a>
-    <a href="return-policy.html">Return Policy</a>
-    <a href="login.html" id="authLinkMobile" class="mobile-auth-link">Login</a>
-  </nav>
-  <div class="nav-actions">
-    <a class="instagram-btn" href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener">Instagram</a>
-    <a class="auth-btn" id="authLink" href="login.html">Login</a>
-    <button class="cart-btn" id="openCartBtn" type="button" aria-label="Open cart">🛒 Cart <span id="cartCount">0</span></button>
-  </div>
-</header>
+    <!-- ================= ANNOUNCEMENT MARQUEE ================= -->
+    <div class="announcement-bar" role="region" aria-label="Special Offers">
+        <div class="announcement-track">
+            <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+            <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+            <span>💳 Extra 10% OFF on Prepaid Orders</span>
+            <span>🚚 Free Express Shipping across India</span>
+            <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+            <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+            <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+            <span>💳 Extra 10% OFF on Prepaid Orders</span>
+            <span>🚚 Free Express Shipping across India</span>
+            <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+        </div>
+    </div>
 
-<main class="policy-wrap">
-  <h1>Terms &amp; Conditions</h1>
-  <p class="policy-updated">Last updated: October 2026</p>
+    <!-- ================= STICKY LUXURY NAVBAR ================= -->
+    <header class="navbar" id="siteHeader">
+        <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
+            <span class="logo-brand-name">AYONIZA</span>
+            <span class="logo-sub-tag">GRACE OF SITA</span>
+        </a>
 
-  <p>Welcome to AYONIZA. By visiting this website or placing an order with us, you agree to the terms below. Please read them carefully. If you do not agree, please do not use the website.</p>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav"
+            aria-label="Toggle navigation menu">
+            <span></span><span></span><span></span>
+        </button>
 
-  <h2>1. About us</h2>
-  <p>AYONIZA is a jewellery brand based in Indore, Madhya Pradesh, India. You can reach us at <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a> or <a href="tel:+919203703177">+91 92037 03177</a>.</p>
+        <nav id="primaryNav" aria-label="Primary Navigation">
+            <a href="category.html?cat=all">Shop all</a>
+            <a href="category.html?cat=earrings">Earrings</a>
+            <a href="category.html?cat=necklaces">Necklaces</a>
+            <a href="category.html?cat=sets">Jewellery sets</a>
+            <a href="index.html#about">Our story</a>
+        </nav>
 
-  <h2>2. Products and pricing</h2>
-  <ul>
-    <li>We try to show our products, photos and descriptions as accurately as possible. Colours may look slightly different on different screens, and handmade or fashion jewellery may have small variations.</li>
-    <li>All prices are in Indian Rupees (₹) and are shown on the product listing.</li>
-    <li>We may change prices, offers or product availability at any time without prior notice. The price at the time you place your order applies to that order.</li>
-    <li>If a product is out of stock or a price is shown incorrectly by mistake, we may cancel or correct the order and will inform you on WhatsApp. Any amount already paid for a cancelled order will be refunded.</li>
-  </ul>
+        <div class="nav-actions">
+            <a href="category.html?cat=all" class="nav-icon-btn search-btn" aria-label="Search jewellery">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <circle cx="11" cy="11" r="7.5" />
+                    <path d="m20 20-4.2-4.2" />
+                </svg>
+            </a>
 
-  <h2>3. Offers and discounts</h2>
-  <ul>
-    <li>Offers shown on the website (such as discounts on buying 2 or 3 products, extra discount on prepaid orders, and free shipping across India) apply as described when they are running.</li>
-    <li>Offers may be changed, paused or withdrawn at any time and cannot be exchanged for cash.</li>
-    <li>Where a discount applies to your order, it will be confirmed with you on WhatsApp before you pay.</li>
-  </ul>
+            <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </a>
 
-  <h2>4. How to order</h2>
-  <ul>
-    <li>You add products to your cart, enter your delivery details and choose "Place Order on WhatsApp". This sends your order details to us.</li>
-    <li>Sending an order is a request to buy. Your order is confirmed only after we reply and your payment is verified.</li>
-    <li>Please make sure your name, mobile number and full address (with PIN code) are correct. We are not responsible for delays or failed delivery caused by incorrect or incomplete details.</li>
-  </ul>
+            <a href="account.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account"
+                title="Login / Account">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </a>
 
-<h2>5. Payment</h2>
-<ul>
-  <li>All orders are prepaid. <strong>Cash on Delivery (COD) is not available.</strong></li>
-  <li>Payments are processed securely through the payment gateway available on the AYONIZA website.</li>
-  <li>Once the payment is completed successfully, the order will be created and payment status will be updated through the payment system.</li>
-  <li>If a payment is unsuccessful, cancelled, or remains pending, the order may not be processed until the payment is successfully completed and verified.</li>
-  <li>Please complete your payment only through the official payment options provided on the AYONIZA website.</li>
-  <li>AYONIZA will never ask you to share your UPI PIN, card PIN, OTP, CVV, password, or other confidential payment credentials.</li>
-</ul>
+            <a href="index.html#shop" class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn"
+                aria-label="Open shopping cart">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                    <path d="M3 6h18" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <span class="cart-badge" id="cartCount">0</span>
+            </a>
+        </div>
+    </header>
 
-  <h2>6. Shipping and delivery</h2>
-  <ul>
-    <li>We ship across India. Free shipping is available as mentioned on our website.</li>
-    <li>Orders are usually delivered within <strong>5–7 days</strong> after your order is confirmed and payment is verified. Exact timing may vary slightly depending on your location and courier partner. We will share dispatch and tracking updates on WhatsApp where available.</li>
-    <li>Delays caused by courier services, weather, strikes or other events outside our control are not our responsibility, but we will help you follow up.</li>
-  </ul>
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="policy-page">
+        <div class="policy-container">
 
-  <h2>7. Returns and refunds</h2>
-  <p>Returns, replacements and refunds are governed by our <a href="return-policy.html">Return &amp; Refund Policy</a>, which forms part of these terms. In short, return requests must be made within 2 days of delivery with an unedited, continuous unboxing video, and are accepted for wrong, damaged or missing items.</p>
+            <div class="policy-header">
+                <span class="small-title">AYONIZA LEGAL TERMS</span>
+                <h1>Terms &amp; Conditions</h1>
+                <p class="policy-desc">
+                    <strong>Last updated: October 2026</strong><br>
+                    Welcome to AYONIZA. By visiting this website or placing an order with us, you agree to the terms below. Please read them carefully. If you do not agree, please do not use the website.
+                </p>
+            </div>
 
-  <h2>8. Jewellery care</h2>
-  <p>To keep your jewellery looking good for longer, keep it away from water, perfume, sprays and harsh chemicals, and store it in a dry place. Normal wear and tear, or damage caused by misuse, is not covered under the return policy.</p>
+            <section class="policy-card">
 
-  <h2>9. Your account</h2>
-  <p>If you create an account or log in, you are responsible for keeping your login details safe and for activity under your account. Please provide accurate information. We may suspend an account that is misused.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">01</span> About us</h2>
+                    <p>
+                        AYONIZA is a jewellery brand based in Indore, Madhya Pradesh, India. You can reach us at <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a> or <a href="tel:+919203703177">+91 92037 03177</a>.
+                    </p>
+                </div>
 
-  <h2>10. Acceptable use</h2>
-  <ul>
-    <li>Do not misuse the website, attempt to break or disrupt it, or use it for anything unlawful.</li>
-    <li>Do not place false, fraudulent or abusive orders. We may refuse or cancel such orders.</li>
-  </ul>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">02</span> Products and pricing</h2>
+                    <p>We try to show our products, photos and descriptions as accurately as possible. Colours may look slightly different on different screens, and handmade or fashion jewellery may have small variations.</p>
+                    <p>All prices are in Indian Rupees (₹) and are shown on the product listing.</p>
+                    <p>We may change prices, offers or product availability at any time without prior notice. The price at the time you place your order applies to that order.</p>
+                    <p>If a product is out of stock or a price is shown incorrectly by mistake, we may cancel or correct the order and will inform you on WhatsApp. Any amount already paid for a cancelled order will be refunded.</p>
+                </div>
 
-  <h2>11. Intellectual property</h2>
-  <p>The AYONIZA name, logo, product photos, designs and content on this website belong to AYONIZA. Please do not copy, reproduce or use them for commercial purposes without our written permission.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">03</span> Offers and discounts</h2>
+                    <p>Offers shown on the website (such as discounts on buying 2 or 3 products, extra discount on prepaid orders, and free shipping across India) apply as described when they are running.</p>
+                    <p>Offers may be changed, paused or withdrawn at any time and cannot be exchanged for cash.</p>
+                    <p>Where a discount applies to your order, it will be confirmed with you on WhatsApp before you pay.</p>
+                </div>
 
-  <h2>12. Limitation of liability</h2>
-  <p>We make reasonable efforts to keep the website available and accurate, but we do not guarantee that it will always be error-free or uninterrupted. To the extent permitted by law, AYONIZA is not liable for indirect or consequential losses arising from the use of this website. Nothing in these terms limits your rights as a consumer under applicable Indian law.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">04</span> How to order</h2>
+                    <p>You add products to your cart, enter your delivery details and choose "Place Order on WhatsApp". This sends your order details to us.</p>
+                    <p>Sending an order is a request to buy. Your order is confirmed only after we reply and your payment is verified.</p>
+                    <p>Please make sure your name, mobile number and full address (with PIN code) are correct. We are not responsible for delays or failed delivery caused by incorrect or incomplete details.</p>
+                </div>
 
-  <h2>13. Privacy</h2>
-  <p>How we collect and use your information is explained in our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">05</span> Payment</h2>
+                    <p>All orders are prepaid. Cash on Delivery (COD) is not available.</p>
+                    <p>Payments are processed securely through the payment gateway available on the AYONIZA website.</p>
+                    <p>Once the payment is completed successfully, the order will be created and payment status will be updated through the payment system.</p>
+                    <p>If a payment is unsuccessful, cancelled, or remains pending, the order may not be processed until the payment is successfully completed and verified.</p>
+                    <p>Please complete your payment only through the official payment options provided on the AYONIZA website.</p>
+                    <p>AYONIZA will never ask you to share your UPI PIN, card PIN, OTP, CVV, password, or other confidential payment credentials.</p>
+                </div>
 
-  <h2>14. Changes to these terms</h2>
-  <p>We may update these terms from time to time. The latest version will always be on this page, with the date it was last updated.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">06</span> Shipping and delivery</h2>
+                    <p>We ship across India. Free shipping is available as mentioned on our website.</p>
+                    <p>Orders are usually delivered within 5–7 days after your order is confirmed and payment is verified. Exact timing may vary slightly depending on your location and courier partner. We will share dispatch and tracking updates on WhatsApp where available.</p>
+                    <p>Delays caused by courier services, weather, strikes or other events outside our control are not our responsibility, but we will help you follow up.</p>
+                </div>
 
-  <h2>15. Governing law</h2>
-  <p>These terms are governed by the laws of India. Any dispute will be subject to the jurisdiction of the courts at Indore, Madhya Pradesh, subject to your rights as a consumer under applicable law.</p>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">07</span> Returns and refunds</h2>
+                    <p>
+                        Returns, replacements and refunds are governed by our <a href="return-policy.html">Return &amp; Refund Policy</a>, which forms part of these terms. In short, return requests must be made within 2 days of delivery with an unedited, continuous unboxing video, and are accepted for wrong, damaged or missing items.
+                    </p>
+                </div>
 
-  <h2>16. Contact us</h2>
-  <p>For any questions about these terms, orders or your purchase, contact us:</p>
-  <ul>
-    <li>Email: <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></li>
-    <li>Phone / WhatsApp: <a href="tel:+919203703177">+91 92037 03177</a> (<a href="https://wa.me/919203703177" target="_blank" rel="noopener">chat on WhatsApp</a>)</li>
-    <li>Address: Indore, Madhya Pradesh, India</li>
-  </ul>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">08</span> Jewellery care</h2>
+                    <p>
+                        To keep your jewellery looking good for longer, keep it away from water, perfume, sprays and harsh chemicals, and store it in a dry place. Normal wear and tear, or damage caused by misuse, is not covered under the return policy.
+                    </p>
+                </div>
 
-  <div class="policy-note">
-    Note: this is a general terms template written for AYONIZA's current process and is not legal advice. It is worth having a professional review it, especially before you start accepting payments through a payment gateway.
-  </div>
-</main>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">09</span> Your account</h2>
+                    <p>
+                        If you create an account or log in, you are responsible for keeping your login details safe and for activity under your account. Please provide accurate information. We may suspend an account that is misused.
+                    </p>
+                </div>
 
-<script src="script.js"></script>
-<script type="module" src="auth.js"></script>
+                <div class="policy-section">
+                    <h2><span class="sec-badge">10</span> Acceptable use</h2>
+                    <p>Do not misuse the website, attempt to break or disrupt it, or use it for anything unlawful.</p>
+                    <p>Do not place false, fraudulent or abusive orders. We may refuse or cancel such orders.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">11</span> Intellectual property</h2>
+                    <p>
+                        The AYONIZA name, logo, product photos, designs and content on this website belong to AYONIZA. Please do not copy, reproduce or use them for commercial purposes without our written permission.
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">12</span> Limitation of liability</h2>
+                    <p>
+                        We make reasonable efforts to keep the website available and accurate, but we do not guarantee that it will always be error-free or uninterrupted. To the extent permitted by law, AYONIZA is not liable for indirect or consequential losses arising from the use of this website. Nothing in these terms limits your rights as a consumer under applicable Indian law.
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">13</span> Privacy</h2>
+                    <p>
+                        How we collect and use your information is explained in our <a href="privacy-policy.html">Privacy Policy</a>.
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">14</span> Changes to these terms</h2>
+                    <p>
+                        We may update these terms from time to time. The latest version will always be on this page, with the date it was last updated.
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">15</span> Governing law</h2>
+                    <p>
+                        These terms are governed by the laws of India. Any dispute will be subject to the jurisdiction of the courts at Indore, Madhya Pradesh, subject to your rights as a consumer under applicable law.
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2><span class="sec-badge">16</span> Contact us</h2>
+                    <p>For any questions about these terms, orders or your purchase, contact us:</p>
+                    <p>
+                        <strong>Email:</strong> <a href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a><br>
+                        <strong>Phone / WhatsApp:</strong> <a href="tel:+919203703177">+91 92037 03177</a> (<a href="https://wa.me/919203703177" target="_blank" rel="noopener">chat on WhatsApp</a>)<br>
+                        <strong>Address:</strong> Indore, Madhya Pradesh, India
+                    </p>
+                </div>
+
+                <div class="policy-note-box">
+                    ✦ <strong>Note:</strong> This is a general terms template written for AYONIZA's current process and is not legal advice. It is worth having a professional review it, especially before you start accepting payments through a payment gateway.
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ================= SITE FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-top">
+
+            <div class="footer-col footer-brand-col">
+                <a href="index.html#home" class="footer-logo">AYONIZA</a>
+                <p class="footer-tagline">Grace of Sita</p>
+                <div class="footer-contact">
+                    <span class="footer-contact-line">📍 Address: Indore, Madhya Pradesh, India</span>
+                    <span class="footer-contact-line">📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
+                    <span class="footer-contact-line">✉️ Email: <a
+                            href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener"
+                        aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col footer-col-care">
+                <h4>Customer Care</h4>
+                <a href="return-policy.html">Return &amp; Exchange Policy</a>
+                <a href="my-orders.html">Track Your Order</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+            </div>
+
+            <div class="footer-col footer-col-shop">
+                <h4>Shop by Category</h4>
+                <div class="footer-cat-links">
+                    <a href="category.html?cat=all">All Jewellery</a>
+                    <a href="category.html?cat=earrings">Earrings</a>
+                    <a href="category.html?cat=bracelets">Bracelets</a>
+                    <a href="category.html?cat=sets">Jewellery Sets</a>
+                    <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+                    <a href="category.html?cat=necklaces">Necklaces</a>
+                    <a href="category.html?cat=hathphool">Hathphool</a>
+                </div>
+            </div>
+
+            <div class="footer-col footer-col-links">
+                <h4>Quick Links</h4>
+                <a href="index.html#home">Home</a>
+                <a href="category.html?cat=all">Shop Collection</a>
+                <a href="index.html#about">The Ayoniza Story</a>
+                <a href="index.html#reviews">Customer Reviews</a>
+                <a href="my-orders.html">My Orders</a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider-line"></div>
+
+        <p class="footer-bottom">
+            © 2026 AYONIZA. All rights reserved. Grace of Sita.
+        </p>
+    </footer>
+
+    <!-- Floating WhatsApp -->
+    <a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener"
+        aria-label="Chat with Ayoniza styling concierge on WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z" />
+        </svg>
+    </a>
+
+    <script>
+        const menuToggle = document.getElementById("menuToggle");
+        const primaryNav = document.getElementById("primaryNav");
+        if (menuToggle && primaryNav) {
+            menuToggle.addEventListener("click", () => {
+                const isOpen = primaryNav.classList.toggle("open");
+                menuToggle.setAttribute("aria-expanded", isOpen);
+            });
+        }
+        try {
+            const cart = JSON.parse(localStorage.getItem("ayonizaCart") || "[]");
+            const count = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+            const badge = document.getElementById("cartCount");
+            if (badge) badge.textContent = count;
+        } catch (e) {}
+    </script>
+    <script type="module" src="auth.js"></script>
+
 </body>
+
 </html>

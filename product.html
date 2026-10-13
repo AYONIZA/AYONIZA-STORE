@@ -186,42 +186,61 @@
 
 <body>
 
+  <!-- ================= ANNOUNCEMENT MARQUEE ================= -->
+  <div class="announcement-bar" role="region" aria-label="Special Offers">
+    <div class="announcement-track">
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+    </div>
+  </div>
 
-<!-- ================= NAVBAR ================= -->
-
-<header class="navbar">
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar" id="siteHeader">
     <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
-        <span class="logo-brand-name">AYONIZA</span>
-        <span class="logo-sub-tag">GRACE OF SITA</span>
+      <span class="logo-brand-name">AYONIZA</span>
+      <span class="logo-sub-tag">GRACE OF SITA</span>
     </a>
 
-    <nav id="primaryNav">
-        <a href="category.html?cat=all">Shop all</a>
-        <a href="category.html?cat=earrings">Earrings</a>
-        <a href="category.html?cat=necklaces">Necklaces</a>
-        <a href="category.html?cat=sets">Jewellery sets</a>
-        <a href="index.html#about">Our story</a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav"
+      aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="primaryNav" aria-label="Primary Navigation">
+      <a href="category.html?cat=all">Shop all</a>
+      <a href="category.html?cat=earrings">Earrings</a>
+      <a href="category.html?cat=necklaces">Necklaces</a>
+      <a href="category.html?cat=sets">Jewellery sets</a>
+      <a href="index.html#about">Our story</a>
     </nav>
 
     <div class="nav-actions">
-        <a href="category.html?cat=all" class="nav-icon-btn search-btn" aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7.5"/><path d="m20 20-4.2-4.2"/></svg>
-        </a>
-        <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </a>
-        <a href="login.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account" title="Login / Account">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-            </svg>
-        </a>
-        <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span class="cart-badge" id="cartCount">0</span>
-        </button>
+      <a href="category.html?cat=all" class="nav-icon-btn search-btn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7.5"/><path d="m20 20-4.2-4.2"/></svg>
+      </a>
+      <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </a>
+      <a href="login.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account" title="Login / Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </a>
+      <button class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn" type="button" aria-label="Open cart">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
     </div>
-</header>
+  </header>
 
 
 <!-- ================= PRODUCT ================= -->

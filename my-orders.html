@@ -1,69 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | AYONIZA — Grace of Sita</title>
+    <link rel="icon" type="image/jpeg" href="assets/ayoniza-logo.jpeg">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
 
-    <title>My Orders | AYONIZA</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="style.css?v=7.1">
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f4f1;
+            font-family: var(--font-body, 'Karla', sans-serif);
+            background: #faf7f4;
             color: #222;
-        }
-
-        .topbar {
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            padding: 18px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .logo {
-            color: #6e213e;
-            font-size: 24px;
-            text-decoration: none;
-            font-weight: 700;
-            letter-spacing: .04em;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-        }
-
-        .topbar-actions a {
-            color: #333;
-            text-decoration: none;
         }
 
         .page {
             width: min(1050px, 94%);
-            margin: 30px auto 60px;
+            margin: 40px auto 70px;
         }
 
         .page-header {
-            margin-bottom: 22px;
+            margin-bottom: 28px;
+        }
+
+        .page-header .small-title {
+            color: #C5A059;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: #2D0B18;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 600;
         }
 
         .small-title {
@@ -276,30 +263,73 @@
 
 <body>
 
+  <!-- ================= ANNOUNCEMENT MARQUEE ================= -->
+  <div class="announcement-bar" role="region" aria-label="Special Offers">
+    <div class="announcement-track">
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+      <span>✦ Buy Any 2 &amp; Get 10% Off</span>
+      <span>🎁 Buy Any 3 &amp; Get 15% Off</span>
+      <span>💳 Extra 10% OFF on Prepaid Orders</span>
+      <span>🚚 Free Express Shipping across India</span>
+      <span>✨ 100% Anti-Tarnish &amp; Skin-Friendly</span>
+    </div>
+  </div>
 
-<header class="topbar">
-
-    <a
-        href="index.html"
-        class="logo"
-    >
-        AYONIZA
+  <!-- ================= HEADER / NAVBAR ================= -->
+  <header class="navbar" id="siteHeader">
+    <a href="index.html#home" class="logo-text" aria-label="AYONIZA Home">
+      <span class="logo-brand-name">AYONIZA</span>
+      <span class="logo-sub-tag">GRACE OF SITA</span>
     </a>
 
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav"
+      aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
 
-    <div class="topbar-actions">
+    <nav id="primaryNav" aria-label="Primary Navigation">
+      <a href="category.html?cat=all">Shop all</a>
+      <a href="category.html?cat=earrings">Earrings</a>
+      <a href="category.html?cat=necklaces">Necklaces</a>
+      <a href="category.html?cat=sets">Jewellery sets</a>
+      <a href="index.html#about">Our story</a>
+    </nav>
 
-        <a href="account.html">
-            My Account
-        </a>
-
-        <a href="index.html">
-            Shop
-        </a>
-
+    <div class="nav-actions">
+      <a href="category.html?cat=all" class="nav-icon-btn search-btn" aria-label="Search jewellery">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="11" cy="11" r="7.5" />
+          <path d="m20 20-4.2-4.2" />
+        </svg>
+      </a>
+      <a href="category.html?cat=all" class="nav-icon-btn wishlist-btn" aria-label="Wishlist">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </a>
+      <a href="account.html" class="nav-icon-btn user-btn" id="authLink" aria-label="Login / Account"
+        title="Login / Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </a>
+      <a href="index.html#shop" class="nav-icon-btn cart-icon-btn cart-btn" id="openCartBtn"
+        aria-label="Open shopping cart">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+          <path d="M3 6h18" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        <span class="cart-badge" id="cartCount">0</span>
+      </a>
     </div>
-
-</header>
+  </header>
 
 
 <main class="page">
@@ -398,12 +428,103 @@
 
 </main>
 
+    <!-- ================= SITE FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-top">
 
-<script
-    type="module"
-    src="my-orders.js"
-></script>
+            <div class="footer-col footer-brand-col">
+                <a href="index.html#home" class="footer-logo">AYONIZA</a>
+                <p class="footer-tagline">Grace of Sita</p>
+                <div class="footer-contact">
+                    <span class="footer-contact-line">📍 Address: Indore, Madhya Pradesh, India</span>
+                    <span class="footer-contact-line">📞 Helpline: <a href="tel:+919203703177">+91 92037 03177</a></span>
+                    <span class="footer-contact-line">✉️ Email: <a
+                            href="mailto:ayoniza.support@gmail.com">ayoniza.support@gmail.com</a></span>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://www.instagram.com/_ayoniza_/" target="_blank" rel="noopener"
+                        aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/919203703177" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
 
+            <div class="footer-col footer-col-care">
+                <h4>Customer Care</h4>
+                <a href="return-policy.html">Return &amp; Exchange Policy</a>
+                <a href="my-orders.html">Track Your Order</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+            </div>
+
+            <div class="footer-col footer-col-shop">
+                <h4>Shop by Category</h4>
+                <div class="footer-cat-links">
+                    <a href="category.html?cat=all">All Jewellery</a>
+                    <a href="category.html?cat=earrings">Earrings</a>
+                    <a href="category.html?cat=bracelets">Bracelets</a>
+                    <a href="category.html?cat=sets">Jewellery Sets</a>
+                    <a href="category.html?cat=kamarbandh">Kamarbandh</a>
+                    <a href="category.html?cat=necklaces">Necklaces</a>
+                    <a href="category.html?cat=hathphool">Hathphool</a>
+                </div>
+            </div>
+
+            <div class="footer-col footer-col-links">
+                <h4>Quick Links</h4>
+                <a href="index.html#home">Home</a>
+                <a href="category.html?cat=all">Shop Collection</a>
+                <a href="index.html#about">The Ayoniza Story</a>
+                <a href="index.html#reviews">Customer Reviews</a>
+                <a href="my-orders.html">My Orders</a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider-line"></div>
+
+        <p class="footer-bottom">
+            © 2026 AYONIZA. All rights reserved. Grace of Sita.
+        </p>
+    </footer>
+
+    <!-- Floating WhatsApp -->
+    <a class="whatsapp-float" href="https://wa.me/919203703177" target="_blank" rel="noopener"
+        aria-label="Chat with Ayoniza styling concierge on WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.3c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.2.4-.2.6-.1.2.1 1.5.7 1.8.8.3.1.5.2.5.3.1.2.1.6-.1 1.1z" />
+        </svg>
+    </a>
+
+    <script>
+        const menuToggle = document.getElementById("menuToggle");
+        const primaryNav = document.getElementById("primaryNav");
+        if (menuToggle && primaryNav) {
+            menuToggle.addEventListener("click", () => {
+                const isOpen = primaryNav.classList.toggle("open");
+                menuToggle.setAttribute("aria-expanded", isOpen);
+            });
+        }
+        try {
+            const cart = JSON.parse(localStorage.getItem("ayonizaCart") || "[]");
+            const count = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+            const badge = document.getElementById("cartCount");
+            if (badge) badge.textContent = count;
+        } catch (e) {}
+    </script>
+    <script type="module" src="my-orders.js"></script>
+    <script type="module" src="auth.js"></script>
 
 </body>
 

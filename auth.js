@@ -38,7 +38,7 @@ const db = getFirestore(app);
 
 /* ================= AUTH STATE ================= */
 
-const DEBUG = true; // testing ke baad false kar dena
+const DEBUG = false; // set to false for production
 
 let currentUser = null;
 let authReady = false;

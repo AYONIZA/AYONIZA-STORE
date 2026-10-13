@@ -280,17 +280,28 @@ h6 {
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
   padding: 1.1rem clamp(1.5rem, 5vw, 4.5rem);
-  background: rgba(250, 247, 242, 0.95);
+  background: rgba(250, 247, 242, 0.98);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(43, 32, 36, 0.08);
   transition: all var(--transition-smooth);
+}
+
+.nav-logo-img {
+  width: 36px;
+  height: 36px;
+  max-width: 36px;
+  max-height: 36px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: var(--radius-xs);
 }
 
 .logo-text {
@@ -2819,7 +2830,10 @@ nav#primaryNav a:hover::after {
     gap: 0.5rem;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+    background: rgba(250, 247, 242, 0.98);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .menu-toggle {
