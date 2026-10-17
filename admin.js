@@ -2614,8 +2614,8 @@ acceptConfirmBtn?.addEventListener(
             return;
         }
 
-        const order = selectedOrder;
-       const order = selectedOrder;
+      
+const order = selectedOrder;
 
 const payload = {
     // Internal AYONIZA order ID
