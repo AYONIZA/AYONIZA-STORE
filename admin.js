@@ -2587,162 +2587,146 @@ function createOrderCard(
 
 
 // =====================================================
-// ACCEPT ORDER
+// ACCEPT ORDER — FSHIP SHIPMENT CREATION
+// Existing product, stock, cancellation and admin logic preserved.
+// Requires the secure Cloudflare Worker route described separately.
 // =====================================================
+
+const FSHIP_WAREHOUSE_ID = "347486";
+const FSHIP_CREATE_ENDPOINT =
+    "https://ayoniza-payment.ayoniza-support.workers.dev/fship/create-shipment";
 
 acceptConfirmBtn?.addEventListener(
     "click",
     async () => {
+        if (!selectedOrder) return;
 
-        if (!selectedOrder) {
+        // Never create a shipment for an unpaid/unverified order.
+        const paymentStatus = String(selectedOrder.paymentStatus || "").toUpperCase();
+        if (!["PAID", "SUCCESS", "VERIFIED"].includes(paymentStatus)) {
+            alert("Payment verified nahi hai. Is order ka shipment create nahi hoga.");
             return;
         }
 
-        const courier =
-            acceptCourier?.value.trim() ||
-            "";
-
-        const trackingNumber =
-            acceptTracking?.value.trim() ||
-            "";
-
-
-        if (!courier) {
-
-            alert(
-                "Courier name enter karo."
-            );
-
-            acceptCourier?.focus();
-
+        // Prevent duplicate shipment creation when an AWB already exists.
+        if (selectedOrder.awb || selectedOrder.trackingNumber || selectedOrder.fshipOrderId) {
+            alert("Is order ke liye shipment/AWB pehle se saved hai. Duplicate shipment nahi banaya.");
             return;
         }
 
+        const order = selectedOrder;
+        const payload = {
+            // Firestore order identity (used when saving the AWB after success)
+            orderId: String(order.orderId || order.firebaseId || "").trim(),
+            warehouseId: FSHIP_WAREHOUSE_ID,
 
-        if (!trackingNumber) {
+            // These IDs are required by the Worker to verify a real captured payment
+            // directly with Razorpay before it creates a shipment.
+            razorpayOrderId: String(order.razorpayOrderId || "").trim(),
+            razorpayPaymentId: String(order.razorpayPaymentId || "").trim(),
 
-            alert(
-                "Tracking ID enter karo."
-            );
+            customerName: String(order.customerName || order.name || "").trim(),
+            customerPhone: String(order.phone || order.mobile || "").trim(),
+            customerEmail: String(order.email || "").trim(),
+            addressLine1: String(order.address || "").trim(),
+            addressLine2: String(order.addressLine2 || "").trim(),
+            landmark: String(order.landmark || "").trim(),
+            pincode: String(order.pincode || order.pinCode || "").trim(),
+            city: String(order.city || "").trim(),
+            state: String(order.state || "").trim(),
+            country: String(order.country || "India").trim(),
+            amount: Number(order.total ?? order.amount ?? 0),
+            paymentMode: "PREPAID",
+            expressType: "surface",
 
-            acceptTracking?.focus();
+            // IMPORTANT: provisional dimensions. Change these to the actual packed parcel.
+            weightKg: 0.25,
+            lengthCm: 15,
+            widthCm: 10,
+            heightCm: 5,
 
+            items: Array.isArray(order.items) ? order.items : []
+        };
+
+        const missing = [];
+        if (!payload.orderId) missing.push("Order ID");
+        if (!payload.razorpayOrderId) missing.push("Razorpay Order ID");
+        if (!payload.razorpayPaymentId) missing.push("Razorpay Payment ID");
+        if (!payload.customerName) missing.push("customer name");
+        if (!payload.customerPhone) missing.push("phone");
+        if (!payload.addressLine1) missing.push("delivery address");
+        if (!/^\d{6}$/.test(payload.pincode)) missing.push("6-digit pincode");
+        if (!payload.city) missing.push("city");
+        if (!payload.state) missing.push("state");
+        if (!Number.isFinite(payload.amount) || payload.amount <= 0) missing.push("valid total amount");
+        if (!payload.items.length) missing.push("order products");
+
+        if (missing.length) {
+            alert("Shipment create nahi ho sakta. Order mein ye details missing/invalid hain: " + missing.join(", "));
             return;
         }
-
 
         try {
+            acceptConfirmBtn.disabled = true;
+            acceptConfirmBtn.textContent = "Fship shipment bana raha hai...";
 
-            acceptConfirmBtn.disabled =
-                true;
+            const currentUser = auth.currentUser;
+            if (!currentUser) throw new Error("Admin login session expire ho gayi. Dobara login karein.");
+            if (!isAdmin(currentUser)) throw new Error("Admin permission verify nahi hui.");
 
-            acceptConfirmBtn.textContent =
-                "Confirming...";
+            const idToken = await currentUser.getIdToken(true);
+            const response = await fetch(FSHIP_CREATE_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
+                body: JSON.stringify(payload)
+            });
 
+            let result = {};
+            try { result = await response.json(); }
+            catch { throw new Error("Shipping server se valid JSON response nahi mila."); }
 
-            const trackingUrl =
-                TRACK_BASE_URL +
-                encodeURIComponent(
-                    selectedOrder.orderId
-                );
+            if (!response.ok || result.success !== true || !result.awb) {
+                throw new Error(result.message || `Fship shipment create nahi hua (HTTP ${response.status}).`);
+            }
 
-
+            const trackingUrl = TRACK_BASE_URL + encodeURIComponent(order.orderId || order.firebaseId);
             const orderForMessage = {
-
-                ...selectedOrder,
-
-                courier:
-                    courier,
-
-                trackingNumber:
-                    trackingNumber
+                ...order,
+                courier: "Fship",
+                trackingNumber: String(result.awb)
             };
+            const message = makeConfirmationMessage(orderForMessage, trackingUrl);
 
-
-            const message =
-                makeConfirmationMessage(
-                    orderForMessage,
-                    trackingUrl
-                );
-
-
-            await updateDoc(
-
-                doc(
-                    db,
-                    "orders",
-                    selectedOrder.firebaseId
-                ),
-
-                {
-
-                    orderStatus:
-                        "ACCEPTED",
-
-                    courier:
-                        courier,
-
-                    trackingNumber:
-                        trackingNumber,
-
-                    trackingUrl:
-                        trackingUrl,
-
-                    notificationType:
-                        "ORDER_CONFIRMED",
-
-                    notificationTitle:
-                        "Order Confirmed",
-
-                    notificationMessage:
-                        message,
-
-                    notificationCreatedAt:
-                        serverTimestamp(),
-
-                    notificationSent:
-                        false,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
+            // Save shipment only after backend reports successful creation.
+            await updateDoc(doc(db, "orders", order.firebaseId), {
+                orderStatus: "ACCEPTED",
+                courier: "Fship",
+                trackingNumber: String(result.awb),
+                awb: String(result.awb),
+                fshipOrderId: result.fshipOrderId ? String(result.fshipOrderId) : "",
+                trackingUrl,
+                shippingWarehouseId: FSHIP_WAREHOUSE_ID,
+                shippingCreatedAt: serverTimestamp(),
+                notificationType: "ORDER_CONFIRMED",
+                notificationTitle: "Order Confirmed",
+                notificationMessage: message,
+                notificationCreatedAt: serverTimestamp(),
+                notificationSent: false,
+                updatedAt: serverTimestamp()
+            });
 
             closeAcceptModal();
-
-
-            alert(
-                "Order confirmed successfully."
-            );
-
-
+            alert("FShip shipment create ho gaya. AWB: " + result.awb + "\nLabel/pickup abhi alag steps hain.");
             await loadOrders();
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Accept order error:",
-                error
-            );
-
-            alert(
-                "Order accept nahi ho paya:\n" +
-                error.message
-            );
-
-        }
-
-        finally {
-
-            acceptConfirmBtn.disabled =
-                false;
-
-            acceptConfirmBtn.textContent =
-                "Confirm Order";
+        } catch (error) {
+            console.error("Fship accept-order error:", error);
+            alert("Order accept/shipment create nahi hua:\n" + (error?.message || "Unknown error"));
+        } finally {
+            acceptConfirmBtn.disabled = false;
+            acceptConfirmBtn.textContent = "Confirm Order";
         }
     }
 );
