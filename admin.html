@@ -1046,67 +1046,63 @@
     </section>
 
 
-<!-- =====================================================
-     ACCEPT ORDER MODAL
-====================================================== -->
 
-<div
-    class="modal-backdrop"
-    id="acceptModal"
->
+<!-- FSHIP ACCEPT ORDER MODAL -->
+<div class="modal-backdrop" id="acceptModal">
+  <div class="modal">
+    <h2>Accept Order — FShip</h2>
 
-    <div class="modal">
+    <p id="acceptOrderLabel"></p>
 
-        <h2>
-            Accept Order
-        </h2>
+    <p>
+      Parcel ki details enter karein. Shipment create hone ke baad
+      FShip se Waybill/AWB number milega.
+    </p>
 
-        <p id="acceptOrderLabel"></p>
+    <label>
+      Weight (kg)
+      <input id="fshipWeight" type="number"
+        min="0.01" step="0.01" value="0.20" required>
+    </label>
 
-        <label>
-            Courier Name
+    <label>
+      Length (cm)
+      <input id="fshipLength" type="number"
+        min="1" step="0.1" value="15" required>
+    </label>
 
-            <input
-                type="text"
-                id="acceptCourier"
-                placeholder="e.g. Shiprocket"
-            >
-        </label>
+    <label>
+      Width (cm)
+      <input id="fshipWidth" type="number"
+        min="1" step="0.1" value="10" required>
+    </label>
 
+    <label>
+      Height (cm)
+      <input id="fshipHeight" type="number"
+        min="1" step="0.1" value="5" required>
+    </label>
 
-        <label>
-            Tracking ID
+    <label>
+      Shipping mode
+      <select id="fshipExpressType">
+        <option value="surface">Surface</option>
+        <option value="air">Air</option>
+      </select>
+    </label>
 
-            <input
-                type="text"
-                id="acceptTracking"
-                placeholder="Enter tracking ID"
-            >
-        </label>
+    <div id="fshipResult" style="margin:12px 0"></div>
 
+    <div class="modal-actions">
+      <button type="button" id="acceptCancelBtn">
+        Cancel
+      </button>
 
-        <div class="modal-actions">
-
-            <button
-                type="button"
-                class="modal-close"
-                id="acceptCloseBtn"
-            >
-                Back
-            </button>
-
-            <button
-                type="button"
-                class="modal-confirm"
-                id="acceptConfirmBtn"
-            >
-                Confirm Order
-            </button>
-
-        </div>
-
+      <button type="button" id="acceptConfirmBtn">
+        Create FShip Shipment
+      </button>
     </div>
-
+  </div>
 </div>
 
 
