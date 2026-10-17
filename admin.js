@@ -2615,39 +2615,83 @@ acceptConfirmBtn?.addEventListener(
         }
 
         const order = selectedOrder;
-        const payload = {
-            // Firestore order identity (used when saving the AWB after success)
-            orderId: String(order.orderId || order.firebaseId || "").trim(),
-            warehouseId: FSHIP_WAREHOUSE_ID,
+       const order = selectedOrder;
 
-            // These IDs are required by the Worker to verify a real captured payment
-            // directly with Razorpay before it creates a shipment.
-            razorpayOrderId: String(order.razorpayOrderId || "").trim(),
-            razorpayPaymentId: String(order.razorpayPaymentId || "").trim(),
+const payload = {
+    // Internal AYONIZA order ID
+    orderId: String(
+        order.orderId || order.firebaseId || ""
+    ).trim(),
 
-            customerName: String(order.customerName || order.name || "").trim(),
-            customerPhone: String(order.phone || order.mobile || "").trim(),
-            customerEmail: String(order.email || "").trim(),
-            addressLine1: String(order.address || "").trim(),
-            addressLine2: String(order.addressLine2 || "").trim(),
-            landmark: String(order.landmark || "").trim(),
-            pincode: String(order.pincode || order.pinCode || "").trim(),
-            city: String(order.city || "").trim(),
-            state: String(order.state || "").trim(),
-            country: String(order.country || "India").trim(),
-            amount: Number(order.total ?? order.amount ?? 0),
-            paymentMode: "PREPAID",
-            expressType: "surface",
+    // Razorpay payment verification ke liye zaroori
+    razorpayOrderId: String(
+        order.razorpayOrderId || ""
+    ).trim(),
 
-            // IMPORTANT: provisional dimensions. Change these to the actual packed parcel.
-            weightKg: 0.25,
-            lengthCm: 15,
-            widthCm: 10,
-            heightCm: 5,
+    razorpayPaymentId: String(
+        order.razorpayPaymentId || ""
+    ).trim(),
 
-            items: Array.isArray(order.items) ? order.items : []
-        };
+    warehouseId: FSHIP_WAREHOUSE_ID,
 
+    customerName: String(
+        order.customerName || order.name || ""
+    ).trim(),
+
+    customerPhone: String(
+        order.phone || order.mobile || ""
+    ).trim(),
+
+    customerEmail: String(
+        order.email || ""
+    ).trim(),
+
+    addressLine1: String(
+        order.address || ""
+    ).trim(),
+
+    addressLine2: String(
+        order.addressLine2 || ""
+    ).trim(),
+
+    landmark: String(
+        order.landmark || ""
+    ).trim(),
+
+    pincode: String(
+        order.pincode || order.pinCode || ""
+    ).trim(),
+
+    city: String(
+        order.city || ""
+    ).trim(),
+
+    state: String(
+        order.state || ""
+    ).trim(),
+
+    country: String(
+        order.country || "India"
+    ).trim(),
+
+    amount: Number(
+        order.total ?? order.amount ?? 0
+    ),
+
+    paymentMode: "PREPAID",
+
+    // Actual parcel dimensions se replace karein jab zaroori ho
+    weightKg: 0.25,
+    lengthCm: 15,
+    widthCm: 10,
+    heightCm: 5,
+
+    expressType: "surface",
+
+    items: Array.isArray(order.items)
+        ? order.items
+        : []
+};
         const missing = [];
         if (!payload.orderId) missing.push("Order ID");
         if (!payload.razorpayOrderId) missing.push("Razorpay Order ID");
