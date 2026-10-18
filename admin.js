@@ -750,6 +750,28 @@ ordersContainer?.addEventListener("click", async (e) => {
 // START
 // =====================================================
 
-onAuthStateChanged(auth, (user) => {
-    if (user && ADMIN_UIDS.includes(user.uid)) loadOrders();
+// =====================================================
+// AUTH — PRODUCTS / STOCK
+// Order management is handled by admin-orders.js
+// =====================================================
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        alert("Please login as admin.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (!isAdmin(user)) {
+        alert("Access denied. Admin account required.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Products and stock remain in admin.js.
+    // Orders are loaded by admin-orders.js.
+    await Promise.allSettled([
+        loadProducts(),
+        loadProductManager()
+    ]);
 });
