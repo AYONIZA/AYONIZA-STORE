@@ -1,13 +1,15 @@
 // =====================================================
-// AYONIZA — NEW ORDER MANAGEMENT (admin-orders.js)
-// Flow: NEW -> PACKED -> SHIPMENT_CREATED -> PICKED_UP -> IN_TRANSIT -> DELIVERED
-//       (+ CANCELLED with refundStatus)
+// AYONIZA — ADMIN (admin.js)
+// Part 1: Order management
+//   Flow: NEW -> PACKED -> SHIPMENT_CREATED -> PICKED_UP -> IN_TRANSIT -> DELIVERED
+//         (+ CANCELLED with refundStatus)
+// Part 2: Product + Stock management (Firestore collection "products")
 // =====================================================
 
 import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-    getFirestore, collection, getDocs, getDoc, updateDoc, doc, serverTimestamp
+    getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -44,6 +46,8 @@ let current = null; // order currently open in a modal
 // =====================================================
 // HELPERS
 // =====================================================
+
+const $ = (id) => document.getElementById(id);
 
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -151,7 +155,6 @@ document.body.insertAdjacentHTML("beforeend", `
   </div>
 </div></div>`);
 
-const $ = (id) => document.getElementById(id);
 const closeDim = () => { current = null; $("dimModal").classList.remove("show"); };
 const closeCxl = () => { current = null; $("cxlModal").classList.remove("show"); };
 
@@ -183,7 +186,7 @@ function cancelMessage(o, reason, refundStatus) {
 }
 
 // =====================================================
-// RENDER
+// RENDER ORDERS
 // =====================================================
 
 const PICKUP_LABELS = {
@@ -715,7 +718,7 @@ async function checkRefundStatus(o, btn) {
 }
 
 // =====================================================
-// CLICK HANDLER (event delegation)
+// ORDERS CLICK HANDLER (event delegation)
 // =====================================================
 
 ordersContainer?.addEventListener("click", async (e) => {
@@ -747,9 +750,271 @@ ordersContainer?.addEventListener("click", async (e) => {
 });
 
 // =====================================================
+// =====================================================
+// PART 2: PRODUCTS + STOCK
+// Collection: "products"
+// Fields: name, price, category, discount, stock, image, description, listed
+// =====================================================
+// =====================================================
+
+const CATEGORY_LABELS = {
+    earrings: "Earrings", bracelets: "Bracelets", sets: "Jewellery Sets",
+    kamarbandh: "Kamarbandh", necklaces: "Necklaces", hathphool: "Hathphool",
+    "hair-accessories": "Hair Accessories", anklets: "Anklets", rings: "Rings"
+};
+
+let products = [];
+
+// Purane documents me field names thode alag ho sakte hain, isliye fallbacks
+const pName = (p) => p.name || p.title || p.productName || "Unnamed";
+const pImage = (p) => p.image || p.img || p.imageUrl || p.imagePath || "";
+const pListed = (p) => (p.listed ?? p.isListed ?? p.active ?? true) !== false;
+
+function flash(id, text, isError = false) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = text;
+    el.hidden = false;
+    el.style.background = isError ? "#fde4e1" : "#f2f7f3";
+    el.style.color = isError ? "#b42318" : "#1c6b2b";
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.hidden = true; }, 5000);
+}
+
+async function loadProducts() {
+    const manage = $("productListContainer");
+    const stock = $("stockProductsContainer");
+    if (manage) manage.innerHTML = `<div class="product-manager-empty">Loading products...</div>`;
+    if (stock) stock.innerHTML = `<div class="empty">Loading products...</div>`;
+
+    try {
+        const snap = await getDocs(collection(db, "products"));
+        products = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => pName(a).localeCompare(pName(b)));
+        renderManage();
+        renderStock();
+    } catch (err) {
+        console.error("Products load error:", err);
+        const msg = err.code === "permission-denied"
+            ? "Firestore rules me 'products' collection ka read/write permission nahi hai."
+            : err.message;
+        const html = `<strong>Products load nahi ho paaye.</strong><br><br>${esc(msg)}`;
+        if (manage) manage.innerHTML = `<div class="product-manager-empty">${html}</div>`;
+        if (stock) stock.innerHTML = `<div class="empty">${html}</div>`;
+    }
+}
+
+function renderManage() {
+    const box = $("productListContainer");
+    if (!box) return;
+    if (!products.length) {
+        box.innerHTML = `<div class="product-manager-empty">Abhi koi product nahi hai. Upar form se pehla product add karein.</div>`;
+        return;
+    }
+    box.innerHTML = products.map((p) => {
+        const listed = pListed(p);
+        return `
+        <div class="product-manage-card" data-id="${esc(p.id)}">
+          <div class="product-manage-top">
+            <img class="product-manage-image" src="${esc(pImage(p))}" alt="${esc(pName(p))}">
+            <div>
+              <h4 class="product-manage-name">${esc(pName(p))}</h4>
+              <p class="product-manage-meta">${money(p.price)}${Number(p.discount) ? ` | ${Number(p.discount)}% off` : ""}</p>
+              <p class="product-manage-meta">${esc(CATEGORY_LABELS[p.category] || p.category || "—")} | Stock: ${Number(p.stock || 0)}</p>
+              <span class="product-list-status ${listed ? "listed" : "unlisted"}">${listed ? "Listed" : "Unlisted"}</span>
+            </div>
+          </div>
+          <div class="product-manage-actions">
+            <button type="button" class="product-edit-btn" data-action="edit">Edit</button>
+            <button type="button" class="product-toggle-btn" data-action="toggle">${listed ? "Unlist" : "List"}</button>
+            <button type="button" class="product-delete-btn" data-action="delete">Delete</button>
+          </div>
+        </div>`;
+    }).join("");
+}
+
+function renderStock() {
+    const box = $("stockProductsContainer");
+    if (!box) return;
+    if (!products.length) {
+        box.innerHTML = `<div class="empty">Koi product nahi mila.</div>`;
+        return;
+    }
+    box.innerHTML = products.map((p) => {
+        const s = Number(p.stock || 0);
+        const cls = s <= 0 ? "out" : s <= 5 ? "low" : "available";
+        const txt = s <= 0 ? "Out of stock" : s <= 5 ? `Low stock: ${s}` : `In stock: ${s}`;
+        return `
+        <div class="stock-product-card" data-id="${esc(p.id)}">
+          <div class="stock-product-top">
+            <img class="stock-product-image" src="${esc(pImage(p))}" alt="${esc(pName(p))}">
+            <div>
+              <h4 class="stock-product-name">${esc(pName(p))}</h4>
+              <p class="stock-product-price">${money(p.price)}</p>
+            </div>
+          </div>
+          <div class="stock-product-stock-row">
+            <label>Stock</label>
+            <input class="stock-input" type="number" min="0" step="1" value="${s}">
+            <button type="button" class="stock-save-btn" data-action="savestock">Save</button>
+          </div>
+          <div class="stock-current ${cls}">${txt}</div>
+        </div>`;
+    }).join("");
+}
+
+// ---------- Add / Edit form ----------
+
+function resetProductForm() {
+    $("productForm").reset();
+    $("editingProductId").value = "";
+    $("productDiscountInput").value = 0;
+    $("productStockInput").value = 0;
+    $("productListedInput").checked = true;
+    $("productFormTitle").textContent = "Add New Product";
+    $("productSubmitBtn").textContent = "Add Product";
+    $("productCancelEditBtn").hidden = true;
+}
+
+function startEditProduct(p) {
+    $("editingProductId").value = p.id;
+    $("productNameInput").value = p.name || p.title || p.productName || "";
+    $("productPriceInput").value = p.price ?? 0;
+    $("productCategoryInput").value = p.category || "earrings";
+    $("productDiscountInput").value = p.discount ?? 0;
+    $("productStockInput").value = p.stock ?? 0;
+    $("productImageInput").value = pImage(p);
+    $("productDescriptionInput").value = p.description || "";
+    $("productListedInput").checked = pListed(p);
+    $("productFormTitle").textContent = "Edit Product";
+    $("productSubmitBtn").textContent = "Update Product";
+    $("productCancelEditBtn").hidden = false;
+    $("productForm").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+$("productForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("productSubmitBtn");
+    const editingId = $("editingProductId").value;
+
+    const data = {
+        name: $("productNameInput").value.trim(),
+        price: Number($("productPriceInput").value),
+        category: $("productCategoryInput").value,
+        discount: Number($("productDiscountInput").value || 0),
+        stock: Math.max(0, Math.floor(Number($("productStockInput").value || 0))),
+        image: $("productImageInput").value.trim(),
+        description: $("productDescriptionInput").value.trim(),
+        listed: $("productListedInput").checked,
+        updatedAt: serverTimestamp()
+    };
+
+    if (!data.name || !Number.isFinite(data.price) || data.price < 0 || !data.image) {
+        flash("productAdminMessage", "Name, valid price aur image zaroori hain.", true);
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+    try {
+        if (editingId) {
+            await updateDoc(doc(db, "products", editingId), data);
+            flash("productAdminMessage", "Product update ho gaya.");
+        } else {
+            await addDoc(collection(db, "products"), { ...data, createdAt: serverTimestamp() });
+            flash("productAdminMessage", "Product add ho gaya.");
+        }
+        resetProductForm();
+        await loadProducts();
+    } catch (err) {
+        console.error(err);
+        flash("productAdminMessage", "Save nahi hua: " + err.message, true);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = $("editingProductId").value ? "Update Product" : "Add Product";
+    }
+});
+
+$("productCancelEditBtn")?.addEventListener("click", resetProductForm);
+
+// ---------- Product list actions ----------
+
+$("productListContainer")?.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn || btn.disabled) return;
+    const card = btn.closest("[data-id]");
+    const p = card && products.find((x) => x.id === card.dataset.id);
+    if (!p) return;
+
+    try {
+        if (btn.dataset.action === "edit") {
+            startEditProduct(p);
+        } else if (btn.dataset.action === "toggle") {
+            btn.disabled = true;
+            const nowListed = pListed(p);
+            await updateDoc(doc(db, "products", p.id), { listed: !nowListed, updatedAt: serverTimestamp() });
+            flash("productAdminMessage", nowListed ? "Product unlist ho gaya." : "Product list ho gaya.");
+            await loadProducts();
+        } else if (btn.dataset.action === "delete") {
+            if (!confirm(`"${pName(p)}" ko permanently delete karna hai?`)) return;
+            btn.disabled = true;
+            await deleteDoc(doc(db, "products", p.id));
+            flash("productAdminMessage", "Product delete ho gaya.");
+            await loadProducts();
+        }
+    } catch (err) {
+        console.error(err);
+        flash("productAdminMessage", "Action fail hua: " + err.message, true);
+        btn.disabled = false;
+    }
+});
+
+// ---------- Stock actions ----------
+
+$("stockProductsContainer")?.addEventListener("click", async (e) => {
+    const btn = e.target.closest('[data-action="savestock"]');
+    if (!btn || btn.disabled) return;
+    const card = btn.closest("[data-id]");
+    const p = card && products.find((x) => x.id === card.dataset.id);
+    if (!p) return;
+
+    const val = Number(card.querySelector(".stock-input").value);
+    if (!Number.isFinite(val) || val < 0) {
+        flash("stockMessage", "Valid stock number daalein.", true);
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+    try {
+        await updateDoc(doc(db, "products", p.id), { stock: Math.floor(val), updatedAt: serverTimestamp() });
+        flash("stockMessage", `${pName(p)}: stock ${Math.floor(val)} save ho gaya.`);
+        await loadProducts();
+    } catch (err) {
+        console.error(err);
+        flash("stockMessage", "Stock save nahi hua: " + err.message, true);
+        btn.disabled = false;
+        btn.textContent = "Save";
+    }
+});
+
+["refreshProductListBtn", "syncProductsBtn"].forEach((id) => {
+    $(id)?.addEventListener("click", loadProducts);
+});
+
+// "Refresh Data" (top nav) orders aur products dono reload kare
+$("refreshAdminData")?.addEventListener("click", () => {
+    loadOrders();
+    loadProducts();
+});
+
+// =====================================================
 // START
 // =====================================================
 
 onAuthStateChanged(auth, (user) => {
-    if (user && ADMIN_UIDS.includes(user.uid)) loadOrders();
+    if (user && ADMIN_UIDS.includes(user.uid)) {
+        loadOrders();
+        loadProducts();
+    }
 });
