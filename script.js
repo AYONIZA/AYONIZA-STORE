@@ -1,3 +1,4 @@
+
 import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseConfig } from "./firebase-config.js";
@@ -1172,6 +1173,13 @@ function initApp() {
     };
   }
 
+    function generateOrderId() {
+    const time = String(Date.now() % 1000000).padStart(6, "0");
+    const rand = String(
+      crypto.getRandomValues(new Uint32Array(1))[0] % 100000
+    ).padStart(5, "0");
+    return "AYNZ" + time + rand;
+  }
 
   function getCheckoutTotal() {
 
@@ -2213,13 +2221,8 @@ function initApp() {
                 db
               } = await fs();
 
-              const orderRef =
-                m.doc(
-                  m.collection(
-                    db,
-                    "orders"
-                  )
-                );
+                           const orderRef =
+                m.doc(db, "orders", generateOrderId());
 
               await m.setDoc(
                 orderRef,
