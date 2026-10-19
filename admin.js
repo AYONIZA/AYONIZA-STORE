@@ -523,7 +523,8 @@ async function printLabel(o, btn) {
             const r = await adminFetch("/fship/label", {
                 awb: o.awb || o.trackingNumber,
                 orderId: o.orderId,
-                fshipOrderId: o.fshipOrderId || ""
+                fshipOrderId: o.fshipOrderId || "",
+                pickupOrderId: o.pickupOrderId || ""
             });
 
             if (r.labelUrl) {
@@ -553,6 +554,7 @@ async function requestPickup(o, btn) {
         await patchOrder(o, {
             pickupStatus: "REQUESTED",
             pickupRequestedAt: serverTimestamp(),
+            pickupOrderId: r.pickupOrderId ? String(r.pickupOrderId) : "",
             pickupMessage: String(r.message || "")
         });
     });
