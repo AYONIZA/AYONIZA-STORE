@@ -436,7 +436,7 @@ $("dimSaveBtn").addEventListener("click", async (e) => {
 // =====================================================
 
 async function shipOrder(o, btn) {
-    await busy(btn, "Shipment ban rahi hai...", async () => {
+    await busy(btn, "Shipment creation is in progress...", async () => {
         const fresh = await freshOrder(o); // double click / stale UI se duplicate rokne ke liye
 
         if (fresh.awb || fresh.trackingNumber || fresh.fshipOrderId) {
@@ -505,7 +505,7 @@ async function shipOrder(o, btn) {
             });
         } catch (saveErr) {
             // Shipment FShip par ban chuki hai, isliye AWB kho na jaye.
-            alert(`IMPORTANT: FShip shipment ban gayi (AWB: ${r.awb}) lekin Firestore save fail hua.\nAWB note kar lo aur dobara "Ready to Ship" mat dabana.\n\n${saveErr.message}`);
+            alert(`IMPORTANT: FShip shipment created successfully (AWB: ${r.awb}) lekin Firestore save fail hua.\nAWB note kar lo aur dobara "Ready to Ship" mat dabana.\n\n${saveErr.message}`);
             throw saveErr;
         }
     });
