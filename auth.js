@@ -36,6 +36,61 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
+/* ================= LOGIN ATTEMPT LIMIT (Cloudflare Worker) ================= */
+
+const LOGIN_WORKER_URL = "https://ayoniza-payment.ayoniza-support.workers.dev";
+
+// Worker se pooch ke dekhta hai ki is email par 60 minute me 7 galat koshish
+// to nahi ho chuki. Password sahi ho to hi aage badhne deta hai.
+// Limit poori ho to error throw karta hai (message customer ko dikhega).
+async function checkLoginLimit(email, password) {
+  let res;
+  let data = {};
+
+  try {
+    res = await fetch(LOGIN_WORKER_URL + "/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    data = await res.json().catch(() => ({}));
+  } catch (networkError) {
+    // Worker tak pahunch nahi paye: customer ko lock na karein, normal login chalne dein
+    console.error("Login limit service unreachable:", networkError);
+    return;
+  }
+
+  // Password sahi hai
+  if (res.ok && data.success) return;
+
+  // Worker me koi server problem (5xx): customer ko lock na karein
+  if (res.status >= 500) {
+    console.error("Login limit service error:", data);
+    return;
+  }
+
+  const limitError = new Error("login-limit");
+
+  if (data.locked) {
+    const mins = Number(data.retryAfterMinutes) || 60;
+    limitError.userMessage =
+      "Too many incorrect attempts. Please try again in " +
+      mins + (mins === 1 ? " minute." : " minutes.");
+  } else if (typeof data.remainingAttempts === "number") {
+    const n = data.remainingAttempts;
+    limitError.userMessage =
+      "Email or password is incorrect. " +
+      n + (n === 1 ? " attempt remaining." : " attempts remaining.");
+  } else if (res.status === 403) {
+    limitError.userMessage = "This account has been disabled.";
+  } else {
+    limitError.userMessage = "Please check your email and password and try again.";
+  }
+
+  throw limitError;
+}
+
+
 /* ================= AUTH STATE ================= */
 
 const DEBUG = false; // set to false for production
@@ -329,16 +384,19 @@ if (form) {
         setTimeout(goHome, 700);
       }
 
-      /* ========== LOGIN ========== */
+      /* ========== LOGIN (7 galat koshish / 60 minute limit) ========== */
 
       else {
+        // Pehle Worker se limit check (galat password par error throw karta hai)
+        await checkLoginLimit(email, password);
+
         const credential = await signInWithEmailAndPassword(auth, email, password);
         await saveUserProfile(credential.user);
         goHome();
       }
     } catch (error) {
       console.error("Authentication error:", error);
-      showMessage(friendlyError(error.code));
+      showMessage(error.userMessage || friendlyError(error.code));
     } finally {
       signupInProgress = false;
       submitBtn.disabled = false;
